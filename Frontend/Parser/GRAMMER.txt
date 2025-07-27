@@ -1,0 +1,4 @@
+primExpr -> value | '(' wholeExpr ')'
+mulExpr -> primExpr ('*'|'/' primExpr)*
+addExpr -> mulExpr ('+'|'-' mulExpr)
+wholeExpr -> addExpr 
