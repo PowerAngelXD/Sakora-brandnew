@@ -1,5 +1,5 @@
-#ifndef LEXER_H
-#define LEXER_H
+#ifndef SAKORA_LEXER_H
+#define SAKORA_LEXER_H
 
 #include <iostream>
 #include <vector>

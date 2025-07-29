@@ -1,5 +1,5 @@
-#ifndef LEXERERROR_H
-#define LEXERERROR_H
+#ifndef SAKORA_LEXERERROR_H
+#define SAKORA_LEXERERROR_H
 #include "BasicError.h"
 #include <exception>
 

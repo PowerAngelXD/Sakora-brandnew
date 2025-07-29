@@ -12,7 +12,11 @@ file(GLOB SRC_FILES "main.cpp"
                     "Frontend/Lexer/*.h"
                     "Frontend/Lexer/*.cpp"
                     "Frontend/Parser/*.h"
-                    "Frontend/Parser/*.cpp")
+                    "Frontend/Parser/*.cpp"
+                    "Frontend/Generator/*.h"
+                    "Frontend/Generator/*.cpp"
+                    "Backend/*.h"
+                    "Backend/*.cpp")
 
         
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} )

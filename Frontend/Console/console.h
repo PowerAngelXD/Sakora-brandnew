@@ -1,5 +1,5 @@
-#ifndef CONSOLE_H
-#define CONSOLE_H
+#ifndef SAKORA_CONSOLE_H
+#define SAKORA_CONSOLE_H
 
 #include <iostream>
 #include <vector>

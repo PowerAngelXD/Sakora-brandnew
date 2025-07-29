@@ -15,7 +15,7 @@ namespace INS {
         return column;
     }
 
-    const InsOp Instruction::getOp() {
+    const InsOp& Instruction::getOp() {
         return instruction;
     }
 }

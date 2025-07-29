@@ -1,16 +1,16 @@
-#ifndef INS_H
-#define INS_H
+#ifndef SAKORA_INS_H
+#define SAKORA_INS_H
 
 #include <iostream>
 #include <vector>
 #include <any>
 
 namespace INS {
-    enum InsOp {PUSH, POP, ADD, SUB, MUL, DIV};
+    enum InsOp {NULL_CMD, PUSH, POP, ADD, SUB, MUL, DIV};
 
     class Instruction {
-        int line, column;
         InsOp instruction;
+        int line, column;
         std::vector<std::any> args;
     public:
         Instruction(InsOp op, int ln, int col, std::initializer_list<std::any> paras);
@@ -18,7 +18,7 @@ namespace INS {
 
         const int& getLine();
         const int& getColumn();
-        const InsOp getOp();
+        const InsOp& getOp();
     };
 }
 

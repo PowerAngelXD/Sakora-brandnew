@@ -26,7 +26,7 @@ void sakoraConsole::sakConsole::run() {
             Parser p(sequence);
             auto ast = p.parseWholeExpr();
 
-            std::cout<<AST::wholeExprToString(ast)<<std::endl;
+            std::cout<<ast->toString()<<std::endl;
         }
     }
     catch (...) {

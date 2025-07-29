@@ -1,5 +1,5 @@
-#ifndef BASICERROR_H
-#define BASICERROR_H
+#ifndef SAKORA_BASICERROR_H
+#define SAKORA_BASICERROR_H
 #include <exception>
 #include <iostream>
 
