@@ -1,7 +1,8 @@
-#ifndef PARSER_H
-#define PARSER_H
+#ifndef SAKORA_PARSER_H
+#define SAKORA_PARSER_H
 
 #include "ast.h"
+#include "../../Error/ParserError.h"
 
 class Parser {
     std::size_t index = 0;
@@ -13,8 +14,6 @@ public:
     Lexer::Token peek();
     // 读取当前index下token之后，index+1
     Lexer::Token eat();
-    // 一个方便使用的函数
-    std::shared_ptr<Lexer::Token> eatAsPtr();
 
     // checker
     bool isPrimExpr();
@@ -23,10 +22,10 @@ public:
     bool isWholeExpr();
 
     // parser
-    AST::Node parsePrimExpr();
-    AST::Node parseAddExpr();
-    AST::Node parseMulExpr();
-    AST::Node parseWholeExpr();
+    std::shared_ptr<AST::PrimExprNode> parsePrimExpr();
+    std::shared_ptr<AST::MulExprNode> parseMulExpr();
+    std::shared_ptr<AST::AddExprNode> parseAddExpr();
+    std::shared_ptr<AST::WholeExprNode> parseWholeExpr();
 };
 
 #endif

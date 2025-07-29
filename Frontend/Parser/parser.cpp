@@ -13,10 +13,6 @@ Lexer::Token Parser::eat() {
     return seq.at(index ++);
 }
 
-std::shared_ptr<Lexer::Token> Parser::eatAsPtr() {
-    return std::make_shared<Lexer::Token>(eat());
-}
-
 
 // 目前的表达式仅支持数字计算
 bool Parser::isPrimExpr() {
@@ -31,123 +27,60 @@ bool Parser::isMulExpr() {
     return isAddExpr();
 }
 
-/*
-    PrimExpr:
-    if is WholeExpr (has '()'):
-        branchs:
-            0 -> '('
-            1 -> wholeExpr
-            2 -> ')'
-    else:
-        content:
-            value
-*/
-AST::Node Parser::parsePrimExpr() {
-    if (!isPrimExpr()) {
-        // TODO: ERROR
+std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
+    if(!isPrimExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Literal Or Expression", peek().line, peek().column);
     }
 
+    auto node = std::make_shared<AST::PrimExprNode>();
     if (peek().content == "(") {
-        AST::Node node(AST::WholeExpr);
-
-        node.branchs.emplace_back(AST::Node(AST::Op, eat()));
-        node.branchs.emplace_back(parseWholeExpr());
-
-        if (peek().content != ")") { 
-            // TODO: ERROR
-        }
-        else node.branchs.emplace_back(AST::Node(AST::Op, eat()));
-
+        eat();
+        node->wholeExpr = parseWholeExpr();
+        eat();
         return node;
     }
-    else if (peek().type == Lexer::Number) {
-        AST::Node node(AST::Value);
-
-        node.content = eat();
-
+    else {
+        node->literal = std::make_shared<Lexer::Token>(eat());
         return node;
     }
-    else return { AST::NoneNode };
 }
 
-/*
-    MulExpr:
-    branchs:
-        0 -> primExprs
-        1 -> ops
-    tips: 当MulExpr没有运算符的时候就是一个字面量，没有branch[1]
-*/
-AST::Node Parser::parseMulExpr() {
-    if (!isMulExpr()) {
-        // TODO: ERROR
+std::shared_ptr<AST::MulExprNode> Parser::parseMulExpr() {
+    if(!isMulExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Literal Or Expression", peek().line, peek().column);
     }
 
-    AST::Node node = { AST::MulExpr };
-
-    node.branchs.emplace_back(AST::Node(AST::Branch)); // 0 -> primExprs
-
-    bool hasOp = false;
-
-    node.branchs.at(0).branchs.emplace_back(parsePrimExpr());
-    while (peek().type == Lexer::Symbol && (peek().content == "*" || peek().content == "/")) {
-        if (!hasOp) {
-            node.branchs.emplace_back(AST::Node(AST::Branch)); // 1 -> ops
-        }
-        hasOp = true;
-        node.branchs.at(1).branchs.emplace_back(AST::Node(AST::Op, eat()));
-
-        if (!isPrimExpr()) {
-            // TODO: ERROR
-        }
-
-        node.branchs.at(0).branchs.emplace_back(parsePrimExpr());
+    auto node = std::make_shared<AST::MulExprNode>();
+    node->prims.emplace_back(parsePrimExpr());
+    while ((peek().content == "*" || peek().content == "/") && peek().type == Lexer::Symbol) {
+        node->ops.emplace_back(std::make_shared<Lexer::Token>(eat()));
+        node->prims.emplace_back(parsePrimExpr());
     }
 
     return node;
 }
 
-/*
-    AddExpr:
-    branchs:
-        0 -> mulExprs
-        1 -> ops
-
-*/
-AST::Node Parser::parseAddExpr() {
-    if (!isAddExpr()) {
-        // TODO: ERROR
+std::shared_ptr<AST::AddExprNode> Parser::parseAddExpr() {
+    if(!isMulExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Literal Or Expression", peek().line, peek().column);
     }
 
-    AST::Node node = { AST::AddExpr };
-
-    node.branchs.emplace_back(AST::Node(AST::Branch)); // 0 -> mulExprs
-
-    bool hasOp = false;
-
-    node.branchs.at(0).branchs.emplace_back(parseMulExpr());
-    while (peek().type == Lexer::Symbol && (peek().content == "+" || peek().content == "-")) {
-        if (!hasOp) {
-            node.branchs.emplace_back(AST::Node(AST::Branch)); // 1 -> ops
-        }
-        hasOp = true;
-        node.branchs.at(1).branchs.emplace_back(AST::Node(AST::Op, eat()));
-
-        if (!isPrimExpr()) {
-            // TODO: ERROR
-        }
-
-        node.branchs.at(0).branchs.emplace_back(parseMulExpr());
-    }
-
-    if (!hasOp) {
-        // TODO: ERROR
+    auto node = std::make_shared<AST::AddExprNode>();
+    node->muls.emplace_back(parseMulExpr());
+    while ((peek().content == "+" || peek().content == "-") && peek().type == Lexer::Symbol) {
+        node->ops.emplace_back(std::make_shared<Lexer::Token>(eat()));
+        node->muls.emplace_back(parseMulExpr());
     }
 
     return node;
 }
 
-AST::Node Parser::parseWholeExpr() {
-    if (isAddExpr()) return parseAddExpr();
-    else return { AST::NoneNode };
+std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
+    auto node = std::make_shared<AST::WholeExprNode>();
+    
+    node->addExpr = parseAddExpr();
+
+    return node;
 }
+
 

@@ -1,76 +1,49 @@
 #include "ast.h"
+#include <sstream>
 
-AST::Node::Node(AST::NodeType t) {
-    type = t;
-}
+namespace AST {
+    std::string Node::toString() {
+        return "<AST::Node>";
+    }
 
-AST::Node::Node(AST::NodeType t, Lexer::Token c) {
-    type = t;
-    content = c;
-}
-
-std::string AST::nodeToString(Node n) {
-    return "[Node: " + n.content.toString() + "]";
-}
-
-std::string AST::noneToString(Node n) {
-    return "[NoneNode" + std::to_string(n.type) + "]";
-}
-
-std::string AST::primExprToString(Node n) {
-    if (n.type == AST::WholeExpr) {
-        if (n.branchs.at(1).type == AST::AddExpr) {
-            return addExprToString(n.branchs.at(1));
+    std::string PrimExprNode::toString() {
+        if (literal) {
+            return literal->content;
+        } else if (wholeExpr) {
+            return "(" + wholeExpr->toString() + ")";
         }
-        else return nodeToString(n);
+        return "<PrimExprNode: null>";
     }
-    else {
-        return nodeToString(n);
-    }
-}
 
-std::string AST::mulExprToString(Node n) {
-    if (n.branchs.at(0).branchs.at(0).type == AST::WholeExpr) {
-        // TODO: 尚未完善
-        return "[MulExprNode: " + wholeExprToString(n.branchs.at(0).branchs.at(0).branchs.at(1)) + "]";
-    }
-    else {
-        std::string result = "[MulExprNode: " + primExprToString(n.branchs.at(0).branchs.at(0));
-        bool hasOp = false;
-        for(std::size_t i = 0; i < n.branchs.at(0).branchs.size() - 1; i ++) {
-            if (n.branchs.size() == 1) {
-                return result + "]";
-            }   
-            else {
-                if(!hasOp) {result += ", ";}
-                hasOp = true;
-                result += nodeToString(n.branchs.at(1).branchs.at(i)) + ", ";
-                if (i == n.branchs.at(1).branchs.size() - 1) {
-                    result += primExprToString(n.branchs.at(0).branchs.at(i + 1));
-                }
-                else {
-                    result += primExprToString(n.branchs.at(0).branchs.at(i + 1)) + ", ";
-                }
+    std::string MulExprNode::toString() {
+        std::ostringstream oss;
+        oss << "<MulExprNode: ";
+        for (size_t i = 0; i < prims.size(); ++i) {
+            if (i > 0 && i-1 < ops.size() && ops[i-1]) {
+                oss << " " << ops[i-1]->content << " ";
             }
+            if (prims[i]) oss << prims[i]->toString();
         }
-        return result + "]";
+        oss << ">";
+        return oss.str();
+    }
+
+    std::string AddExprNode::toString() {
+        std::ostringstream oss;
+        oss << "<AddExprNode: ";
+        for (size_t i = 0; i < muls.size(); ++i) {
+            if (i > 0 && i-1 < ops.size() && ops[i-1]) {
+                oss << " " << ops[i-1]->content << " ";
+            }
+            if (muls[i]) oss << muls[i]->toString();
+        }
+        oss << ">";
+        return oss.str();
+    }
+
+    std::string WholeExprNode::toString() {
+        if (addExpr) return addExpr->toString();
+        return "<WholeExprNode: null>";
     }
 }
 
-std::string AST::addExprToString(Node n) {
-    std::string result = "[AddExprNode: " + mulExprToString(n.branchs.at(0).branchs.at(0)) + ", ";
-    for(std::size_t i = 0; i < n.branchs.at(0).branchs.size() - 1; i ++) {
-        result += nodeToString(n.branchs.at(1).branchs.at(i)) + ", ";
-        if (i == n.branchs.at(1).branchs.size() - 1) {
-            result += mulExprToString(n.branchs.at(0).branchs.at(i + 1));
-        }
-        else {
-            result += mulExprToString(n.branchs.at(0).branchs.at(i + 1)) + ", ";
-        }
-    }
-    return result + "]";
-}
-
-std::string AST::wholeExprToString(Node n) {
-    return addExprToString(n);
-}

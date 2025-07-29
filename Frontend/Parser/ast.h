@@ -1,35 +1,47 @@
-#ifndef AST_EXPR_H
-#define AST_EXPR_H
-
-#define InitBranchs std::make_shared<std::vector<AST::Node>>()
+#ifndef SAKORA_AST_EXPR_H
+#define SAKORA_AST_EXPR_H
 
 #include "../Lexer/lexer.h"
 #include <memory>
 
 namespace AST {
-    // 区分各个Node的类型，parser根据这个来生成对应的Node
-    enum NodeType {
-        NoneNode, Value, Op, Branch, 
-        PrimExpr, MulExpr, AddExpr, WholeExpr
+    class Node {
+    public:
+        virtual std::string toString();
     };
 
-    struct Node {
-        NodeType type;
+    class WholeExprNode;
 
-        Lexer::Token content;
-        std::vector<Node> branchs;
+    class PrimExprNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> literal = nullptr;
+        std::shared_ptr<WholeExprNode> wholeExpr = nullptr;
 
-        Node(NodeType t);
-        Node(NodeType t, Lexer::Token c);
+        std::string toString() override;
     };
 
-    std::string nodeToString(Node n);
-    std::string noneToString(Node n);
+    class MulExprNode : public Node {
+    public:
+        std::vector<std::shared_ptr<PrimExprNode>> prims;
+        std::vector<std::shared_ptr<Lexer::Token>> ops;
 
-    std::string primExprToString(Node n);
-    std::string mulExprToString(Node n);
-    std::string addExprToString(Node n);
-    std::string wholeExprToString(Node n);
+        std::string toString() override;
+    };
+
+    class AddExprNode : public Node {
+    public:
+        std::vector<std::shared_ptr<MulExprNode>> muls;
+        std::vector<std::shared_ptr<Lexer::Token>> ops;
+
+        std::string toString() override;
+    };
+
+    class WholeExprNode : public Node {
+    public:
+        std::shared_ptr<AddExprNode> addExpr = nullptr;
+
+        std::string toString() override;
+    };
 }
 
 #endif
