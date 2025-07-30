@@ -20,6 +20,8 @@ namespace INS {
         const int& getColumn();
         const InsOp& getOp();
     };
+
+    Instruction genIns(InsOp op, int ln, int col, std::initializer_list<std::any> paras);
 }
 
 #endif

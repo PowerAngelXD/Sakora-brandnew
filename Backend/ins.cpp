@@ -1,21 +1,24 @@
 #include "ins.h"
 
-namespace INS {
-    Instruction::Instruction(InsOp op, int ln, int col, std::initializer_list<std::any> paras)
-        : instruction(op), line(ln), column(col), args(paras) {}
 
-    Instruction::Instruction(InsOp op, int ln, int col)
-        : instruction(op), line(ln), column(col) {}
+INS::Instruction::Instruction(InsOp op, int ln, int col, std::initializer_list<std::any> paras)
+    : instruction(op), line(ln), column(col), args(paras) {}
 
-    const int& Instruction::getLine() {
-        return line;
-    }
+INS::Instruction::Instruction(InsOp op, int ln, int col)
+    : instruction(op), line(ln), column(col) {}
 
-    const int& Instruction::getColumn() {
-        return column;
-    }
+const int& INS::Instruction::getLine() {
+    return line;
+}
 
-    const InsOp& Instruction::getOp() {
-        return instruction;
-    }
+const int& INS::Instruction::getColumn() {
+    return column;
+}
+
+const INS::InsOp& INS::Instruction::getOp() {
+    return instruction;
+}
+
+INS::Instruction INS::genIns(InsOp op, int ln, int col, std::initializer_list<std::any> paras) {
+    return Instruction(op, ln, col, paras);
 }
