@@ -64,7 +64,8 @@ void sakVM::run() {
         }
     }
     // for debug:
-    std::cout << "[result]: " << runtime.top().getIntVal() << std::endl;
+    std::cout << "[result]: ";
+    getTop().printValue();
 }
  
 sakValue& sakVM::getTop() {

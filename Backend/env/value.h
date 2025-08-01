@@ -36,6 +36,7 @@ public:
     const int& getIntVal();
     const std::string& getStrVal();
     const double& getFloatVal();
+    void printValue();
 
     // 运算符
     sakValue operator +(sakValue val);

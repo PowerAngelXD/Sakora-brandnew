@@ -3,6 +3,7 @@
 #include "type/sak_string.h"
 #include "type/sak_float.h"
 #include <stdexcept>
+#include <iostream>
 
 sakValue::sakValue(int&& v) : value(sakType::sakInt(v)) {}
 sakValue::sakValue(std::string&& v) : value(sakType::sakString(v)) {}
@@ -206,6 +207,23 @@ sakValue sakValue::operator /(sakValue val) {
         }
     default:
         throw VMError::NotMatchedTypeError("/", val.defLine, val.defColumn);
+    }
+}
+
+void sakValue::printValue() {
+    switch (getType()) {
+    case sakType::Int:
+        std::cout << getIntVal() << std::endl;
+        break;
+    case sakType::Float:
+        std::cout << getFloatVal() << std::endl;
+        break;
+    case sakType::String:
+        std::cout << getStrVal() << std::endl;
+        break;
+    default:
+        std::cout << "<Unknown Value>" << std::endl;
+        break;
     }
 }
 

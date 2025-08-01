@@ -5,11 +5,16 @@ void Generator::generate(AST::PrimExprNode node) {
         generate(*node.wholeExpr);
     }
     else {
-        if(node.literal->content.find('.') != std::string::npos) {
-            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genFloatVal(node.literal->content, node.literal->line, node.literal->column)}));
+        if (node.literal->type == Lexer::Number) {
+            if (node.literal->content.find('.') != std::string::npos) {
+                insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genFloatVal(node.literal->content, node.literal->line, node.literal->column)}));
+            }
+            else {
+                insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genIntVal(node.literal->content, node.literal->line, node.literal->column)}));
+            }
         }
-        else {
-            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genIntVal(node.literal->content, node.literal->line, node.literal->column)}));
+        else if (node.literal->type == Lexer::String) {
+            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genStringVal(node.literal->content, node.literal->line, node.literal->column)}));
         }
     }
 }
