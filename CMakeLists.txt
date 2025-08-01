@@ -16,7 +16,11 @@ file(GLOB SRC_FILES "main.cpp"
                     "Frontend/Generator/*.h"
                     "Frontend/Generator/*.cpp"
                     "Backend/*.h"
-                    "Backend/*.cpp")
-
+                    "Backend/*.cpp"
+                    "Backend/env/type/*.h"
+                    "Backend/env/type/*.cpp"
+                    "Backend/env/*.h"
+                    "Backend/env/*.cpp"
+                    )
         
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} )
