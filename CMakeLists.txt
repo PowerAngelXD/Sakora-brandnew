@@ -21,6 +21,8 @@ file(GLOB SRC_FILES "main.cpp"
                     "Backend/env/type/*.cpp"
                     "Backend/env/*.h"
                     "Backend/env/*.cpp"
+                    "Backend/vm/*.cpp"
+                    "Backend/vm/*.h"
                     )
         
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES} )
