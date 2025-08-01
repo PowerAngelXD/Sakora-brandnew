@@ -6,10 +6,10 @@ void Generator::generate(AST::PrimExprNode node) {
     }
     else {
         if(node.literal->content.find('.')) {
-            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {atof(node.literal->content.c_str())}));
+            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genFloatVal(node.literal->content)}));
         }
         else {
-            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {atoi(node.literal->content.c_str())}));
+            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::genIntVal(node.literal->content)}));
         }
     }
 }
