@@ -21,6 +21,7 @@ namespace INS {
         const int& getLine();
         const int& getColumn();
         const InsOp& getOp();
+        const sakValue& getParas(std::size_t i = 0);
     };
 
     Instruction genIns(InsOp op, int ln, int col, std::initializer_list<sakValue> paras);

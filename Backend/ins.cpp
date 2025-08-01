@@ -19,6 +19,10 @@ const INS::InsOp& INS::Instruction::getOp() {
     return instruction;
 }
 
+const sakValue& INS::Instruction::getParas(std::size_t i) {
+    return args.at(i);
+}
+
 INS::Instruction INS::genIns(InsOp op, int ln, int col, std::initializer_list<sakValue> paras) {
     return Instruction(op, ln, col, paras);
 }
