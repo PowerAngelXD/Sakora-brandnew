@@ -5,8 +5,8 @@
 #include "../../Backend/ins.h"
 
 class Generator {
-    std::vector<INS::Instruction> insSet;
 public:
+    std::vector<INS::Instruction> insSet;
 
     void generate(AST::PrimExprNode node);
     void generate(AST::MulExprNode node);
