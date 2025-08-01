@@ -27,6 +27,13 @@ void sakoraConsole::sakConsole::run() {
             auto ast = p.parseWholeExpr();
 
             std::cout<<ast->toString()<<std::endl;
+
+            Generator gen;
+            gen.generate(*ast);
+            
+            sakVM vm(gen.insSet);
+
+            vm.run();
         }
     }
     catch (...) {

@@ -5,6 +5,8 @@
 #include <vector>
 #include "../Lexer/lexer.h"
 #include "../Parser/parser.h"
+#include "../Generator/generator.h"
+#include "../../Backend/vm/vm.h"
 
 namespace sakoraConsole {
     static std::string version = "ALPHA 0.1";
