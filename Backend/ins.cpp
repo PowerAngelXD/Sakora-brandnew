@@ -1,7 +1,7 @@
 #include "ins.h"
 
 
-INS::Instruction::Instruction(InsOp op, int ln, int col, std::initializer_list<std::any> paras)
+INS::Instruction::Instruction(InsOp op, int ln, int col, std::initializer_list<sakValue> paras)
     : instruction(op), line(ln), column(col), args(paras) {}
 
 INS::Instruction::Instruction(InsOp op, int ln, int col)
@@ -19,6 +19,6 @@ const INS::InsOp& INS::Instruction::getOp() {
     return instruction;
 }
 
-INS::Instruction INS::genIns(InsOp op, int ln, int col, std::initializer_list<std::any> paras) {
+INS::Instruction INS::genIns(InsOp op, int ln, int col, std::initializer_list<sakValue> paras) {
     return Instruction(op, ln, col, paras);
 }
