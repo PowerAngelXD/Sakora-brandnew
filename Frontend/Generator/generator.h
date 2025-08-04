@@ -11,6 +11,7 @@ public:
     void generate(AST::PrimExprNode node);
     void generate(AST::MulExprNode node);
     void generate(AST::AddExprNode node);
+    void generate(AST::BoolExprNode node);
     void generate(AST::WholeExprNode node);
 };
 

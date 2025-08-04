@@ -36,9 +36,18 @@ namespace AST {
         std::string toString() override;
     };
 
+    class BoolExprNode : public Node {
+    public:
+        std::vector<std::shared_ptr<AddExprNode>> adds;
+        std::vector<std::shared_ptr<Lexer::Token>> ops;
+
+        std::string toString() override;
+    };
+
     class WholeExprNode : public Node {
     public:
         std::shared_ptr<AddExprNode> addExpr = nullptr;
+        std::shared_ptr<BoolExprNode> boolExpr = nullptr;
 
         std::string toString() override;
     };

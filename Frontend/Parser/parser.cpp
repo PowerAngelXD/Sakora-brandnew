@@ -4,9 +4,9 @@ Parser::Parser(Lexer::TokenSequence s) {
     seq = s;
 }
 
-Lexer::Token Parser::peek()
+Lexer::Token Parser::peek(int offset)
 {
-    return seq.at(index);
+    return seq.at(index + offset);
 }
 
 Lexer::Token Parser::eat() {
@@ -27,8 +27,21 @@ bool Parser::isMulExpr() {
     return isAddExpr();
 }
 
+bool Parser::isBoolExpr() {
+    if (peek().content == "true" || peek().content == "false") return true;
+    if (isAddExpr()) {
+        if (peek(1).content == "and" || peek(1).content == "or") return true;
+        else return false;
+    }
+    else return false;
+}
+
+bool Parser::isWholeExpr() {
+    return isAddExpr() || isBoolExpr();
+}
+
 std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
-    if(!isPrimExpr()) {
+    if (!isPrimExpr()) {
         throw ParserError::WrongMatchError(peek().content, "Literal Or Expression", peek().line, peek().column);
     }
 
@@ -46,7 +59,7 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
 }
 
 std::shared_ptr<AST::MulExprNode> Parser::parseMulExpr() {
-    if(!isMulExpr()) {
+    if (!isMulExpr()) {
         throw ParserError::WrongMatchError(peek().content, "Literal Or Expression", peek().line, peek().column);
     }
 
@@ -61,7 +74,7 @@ std::shared_ptr<AST::MulExprNode> Parser::parseMulExpr() {
 }
 
 std::shared_ptr<AST::AddExprNode> Parser::parseAddExpr() {
-    if(!isMulExpr()) {
+    if (!isMulExpr()) {
         throw ParserError::WrongMatchError(peek().content, "Literal Or Expression", peek().line, peek().column);
     }
 
@@ -75,10 +88,26 @@ std::shared_ptr<AST::AddExprNode> Parser::parseAddExpr() {
     return node;
 }
 
+std::shared_ptr<AST::BoolExprNode> Parser::parseBoolExpr() {
+    if (!isBoolExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Boolean Operator", peek().line, peek().column);
+    }
+
+    auto node = std::make_shared<AST::BoolExprNode>();
+    node->adds.emplace_back(parseAddExpr());
+    while ((peek().content == "and" || peek().content == "or") && peek().type == Lexer::Keyword) {
+        node->ops.emplace_back(std::make_shared<Lexer::Token>(eat()));
+        node->adds.emplace_back(parseAddExpr());
+    }
+
+    return node;
+}
+
 std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
     auto node = std::make_shared<AST::WholeExprNode>();
     
-    node->addExpr = parseAddExpr();
+    if (isBoolExpr()) node->boolExpr = parseBoolExpr();
+    else node->addExpr = parseAddExpr();
 
     return node;
 }

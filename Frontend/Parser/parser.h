@@ -11,7 +11,7 @@ public:
     Parser(Lexer::TokenSequence s);
 
     // 仅读取当前index下的token，不进行index+1操作
-    Lexer::Token peek();
+    Lexer::Token peek(int offset = 0);
     // 读取当前index下token之后，index+1
     Lexer::Token eat();
 
@@ -19,12 +19,14 @@ public:
     bool isPrimExpr();
     bool isAddExpr();
     bool isMulExpr();
+    bool isBoolExpr();
     bool isWholeExpr();
 
     // parser
     std::shared_ptr<AST::PrimExprNode> parsePrimExpr();
     std::shared_ptr<AST::MulExprNode> parseMulExpr();
     std::shared_ptr<AST::AddExprNode> parseAddExpr();
+    std::shared_ptr<AST::BoolExprNode> parseBoolExpr();
     std::shared_ptr<AST::WholeExprNode> parseWholeExpr();
 };
 
