@@ -69,7 +69,7 @@ sakValue sakValue::createFloatVal(std::string s, int ln, int col) {
 sakValue sakValue::createStringVal(std::string s, int ln, int col) {
     return sakValue(sakType::sakString(std::move(s)), ln, col);
 }
-sakValue sakValue::genBoolVal(std::string s, int ln, int col) {
+sakValue sakValue::createBoolVal(std::string s, int ln, int col) {
     return sakValue(sakType::sakBool(s == "true"), ln, col);
 }
 
@@ -193,7 +193,7 @@ sakValue sakValue::operator *(sakValue val) {
 sakValue sakValue::operator /(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Int: 
         if (val.getType() == this->getType()) {
             if ((static_cast<double>(this->getIntVal()) / val.getIntVal()) == std::trunc(static_cast<double>(this->getIntVal()) / val.getIntVal())) {
                 return sakValue(sakType::sakInt(this->getIntVal() / val.getIntVal()), this->defLine, this->defColumn);

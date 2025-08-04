@@ -55,6 +55,7 @@ std::string AST::BoolExprNode::toString() {
 
 std::string AST::WholeExprNode::toString() {
     if (addExpr) return addExpr->toString();
+    else if (boolExpr) return boolExpr->toString();
     return "<WholeExprNode: null>";
 }
 

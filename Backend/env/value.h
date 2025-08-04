@@ -48,7 +48,6 @@ public:
     static sakValue createFloatVal(std::string s, int ln, int col);
     static sakValue createStringVal(std::string s, int ln, int col);
     static sakValue createBoolVal(std::string s, int ln, int col);
-    static sakValue genBoolVal(std::string s, int ln, int col);
 };
 
 #endif

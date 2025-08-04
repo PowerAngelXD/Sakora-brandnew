@@ -35,6 +35,18 @@ void sakVM::__sak_mul() {
 
     __sak_push(lval * rval);
 }
+void sakVM::__sak_lgc_and() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+
+    __sak_push(lval && rval);
+}
+void sakVM::__sak_lgc_or() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+
+    __sak_push(lval || rval);
+}
 //
 
 void sakVM::run() {
@@ -58,6 +70,12 @@ void sakVM::run() {
             break;
         case INS::DIV:
             __sak_div();
+            break;
+        case INS::LGC_AND:
+            __sak_lgc_and();
+            break;
+        case INS::LGC_OR:
+            __sak_lgc_or();
             break;
         default:
             break;

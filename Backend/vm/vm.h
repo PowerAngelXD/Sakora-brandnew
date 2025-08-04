@@ -20,6 +20,8 @@ class sakVM {
     void __sak_sub();
     void __sak_div();
     void __sak_mul();
+    void __sak_lgc_and();
+    void __sak_lgc_or();
 
 public:
     sakVM(std::vector<INS::Instruction> set);

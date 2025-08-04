@@ -16,7 +16,7 @@ Lexer::Token Parser::eat() {
 
 // 目前的表达式仅支持数字计算
 bool Parser::isPrimExpr() {
-    return peek().type == Lexer::Number || peek().type == Lexer::String || peek().content == "(";
+    return peek().type == Lexer::Number || peek().type == Lexer::String || peek().content == "(" || peek().content == "true" || peek().content == "false";
 }
 
 bool Parser::isAddExpr() {

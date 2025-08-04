@@ -16,6 +16,9 @@ void Generator::generate(AST::PrimExprNode node) {
         else if (node.literal->type == Lexer::String) {
             insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createStringVal(node.literal->content, node.literal->line, node.literal->column)}));
         }
+        else if (node.literal->type == Lexer::Keyword && (node.literal->content == "true" || node.literal->content == "false")) {
+            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createBoolVal(node.literal->content, node.literal->line, node.literal->column)}));
+        }
     }
 }
 
@@ -61,5 +64,8 @@ void Generator::generate(AST::BoolExprNode node) {
 void Generator::generate(AST::WholeExprNode node) {
     if (node.addExpr) {
         generate(*node.addExpr);
+    }
+    else if (node.boolExpr) {
+        generate(*node.boolExpr);
     }
 }
