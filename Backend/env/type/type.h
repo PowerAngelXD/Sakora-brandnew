@@ -5,6 +5,7 @@
 #include "sak_int.h"
 #include "sak_string.h"
 #include "sak_float.h"
+#include "sak_bool.h"
 
 namespace sakType {
     enum Type {

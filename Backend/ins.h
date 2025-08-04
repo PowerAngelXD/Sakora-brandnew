@@ -8,7 +8,7 @@
 #include "env/value.h"
 
 namespace INS {
-    enum InsOp {NULL_CMD, PUSH, POP, ADD, SUB, MUL, DIV};
+    enum InsOp {NULL_CMD, PUSH, POP, ADD, SUB, MUL, DIV, LGC_AND, LGC_OR};
 
     class Instruction {
         InsOp instruction;
