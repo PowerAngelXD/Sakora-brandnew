@@ -48,10 +48,35 @@ void Generator::generate(AST::AddExprNode node) {
     }
 }
 
-void Generator::generate(AST::BoolExprNode node) {
+void Generator::generate(AST::LogicExprNode node) {
     generate(*node.adds.at(0));
     for(std::size_t i = 0; i < node.ops.size(); i ++) {
         generate(*node.adds.at(i + 1));
+        if (node.ops.at(i)->content == "==") {
+            insSet.emplace_back(INS::genIns(INS::LGC_EQU, node.ops.at(i)->line, node.ops.at(i)->column, {}));
+        }
+        else if (node.ops.at(i)->content == "!=") {
+            insSet.emplace_back(INS::genIns(INS::LGC_NOT_EQU, node.ops.at(i)->line, node.ops.at(i)->column, {}));
+        }
+        else if (node.ops.at(i)->content == ">=") {
+            insSet.emplace_back(INS::genIns(INS::LGC_MREQU_THAN, node.ops.at(i)->line, node.ops.at(i)->column, {}));
+        }
+        else if (node.ops.at(i)->content == "<=") {
+            insSet.emplace_back(INS::genIns(INS::LGC_LSEQU_THAN, node.ops.at(i)->line, node.ops.at(i)->column, {}));
+        }
+        else if (node.ops.at(i)->content == ">") {
+            insSet.emplace_back(INS::genIns(INS::LGC_MR_THAN, node.ops.at(i)->line, node.ops.at(i)->column, {}));
+        }
+        else if (node.ops.at(i)->content == "<") {
+            insSet.emplace_back(INS::genIns(INS::LGC_LS_THAN, node.ops.at(i)->line, node.ops.at(i)->column, {}));
+        }
+    }
+}
+
+void Generator::generate(AST::BoolExprNode node) {
+    generate(*node.lgcs.at(0));
+    for(std::size_t i = 0; i < node.ops.size(); i ++) {
+        generate(*node.lgcs.at(i + 1));
         if (node.ops.at(i)->content == "and") {
             insSet.emplace_back(INS::genIns(INS::LGC_AND, node.ops.at(i)->line, node.ops.at(i)->column, {}));
         }

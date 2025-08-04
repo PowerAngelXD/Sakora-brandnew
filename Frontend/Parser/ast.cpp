@@ -40,14 +40,27 @@ std::string AST::AddExprNode::toString() {
     return oss.str();
 }
 
-std::string AST::BoolExprNode::toString() {
+std::string AST::LogicExprNode::toString() {
     std::ostringstream oss;
-    oss << "<BoolExprNode: ";
+    oss << "<LogicExprNode: ";
     for (size_t i = 0; i < adds.size(); ++i) {
         if (i > 0 && i-1 < ops.size() && ops[i-1]) {
             oss << " " << ops[i-1]->content << " ";
         }
         if (adds[i]) oss << adds[i]->toString();
+    }
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::BoolExprNode::toString() {
+    std::ostringstream oss;
+    oss << "<BoolExprNode: ";
+    for (size_t i = 0; i < lgcs.size(); ++i) {
+        if (i > 0 && i-1 < ops.size() && ops[i-1]) {
+            oss << " " << ops[i-1]->content << " ";
+        }
+        if (lgcs[i]) oss << lgcs[i]->toString();
     }
     oss << ">";
     return oss.str();

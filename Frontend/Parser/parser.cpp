@@ -27,13 +27,17 @@ bool Parser::isMulExpr() {
     return isAddExpr();
 }
 
-bool Parser::isBoolExpr() {
+bool Parser::isLogicExpr() {
     if (peek().content == "true" || peek().content == "false") return true;
     if (isAddExpr()) {
-        if (peek(1).content == "and" || peek(1).content == "or") return true;
+        if (peek(1).content == "==" || peek(1).content == "!=" || peek(1).content == ">=" || peek(1).content == "<=" || peek(1).content == ">" || peek(1).content == "<") return true;
         else return false;
     }
     else return false;
+}
+
+bool Parser::isBoolExpr() {
+    return isLogicExpr();
 }
 
 bool Parser::isWholeExpr() {
@@ -88,16 +92,31 @@ std::shared_ptr<AST::AddExprNode> Parser::parseAddExpr() {
     return node;
 }
 
+std::shared_ptr<AST::LogicExprNode> Parser::parseLogicExpr() {
+    if (!isLogicExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Logic Operator", peek().line, peek().column);
+    }
+
+    auto node = std::make_shared<AST::LogicExprNode>();
+    node->adds.emplace_back(parseAddExpr());
+    while ((peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") && peek().type == Lexer::Keyword) {
+        node->ops.emplace_back(std::make_shared<Lexer::Token>(eat()));
+        node->adds.emplace_back(parseAddExpr());
+    }
+
+    return node;
+}
+
 std::shared_ptr<AST::BoolExprNode> Parser::parseBoolExpr() {
     if (!isBoolExpr()) {
         throw ParserError::WrongMatchError(peek().content, "Boolean Operator", peek().line, peek().column);
     }
 
     auto node = std::make_shared<AST::BoolExprNode>();
-    node->adds.emplace_back(parseAddExpr());
+    node->lgcs.emplace_back(parseLogicExpr());
     while ((peek().content == "and" || peek().content == "or") && peek().type == Lexer::Keyword) {
         node->ops.emplace_back(std::make_shared<Lexer::Token>(eat()));
-        node->adds.emplace_back(parseAddExpr());
+        node->lgcs.emplace_back(parseLogicExpr());
     }
 
     return node;

@@ -19,6 +19,7 @@ public:
     bool isPrimExpr();
     bool isAddExpr();
     bool isMulExpr();
+    bool isLogicExpr();
     bool isBoolExpr();
     bool isWholeExpr();
 
@@ -27,7 +28,9 @@ public:
     std::shared_ptr<AST::MulExprNode> parseMulExpr();
     std::shared_ptr<AST::AddExprNode> parseAddExpr();
     std::shared_ptr<AST::BoolExprNode> parseBoolExpr();
+    std::shared_ptr<AST::LogicExprNode> parseLogicExpr();
     std::shared_ptr<AST::WholeExprNode> parseWholeExpr();
+    
 };
 
 #endif
