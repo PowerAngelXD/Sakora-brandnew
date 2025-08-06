@@ -47,6 +47,36 @@ void sakVM::__sak_lgc_or() {
 
     __sak_push(lval || rval);
 }
+void sakVM::__sak_lgc_mr_than() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+    __sak_push(lval > rval);
+}
+void sakVM::__sak_lgc_ls_than() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+    __sak_push(lval < rval);
+}
+void sakVM::__sak_lgc_mrequ_than() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+    __sak_push(lval >= rval);
+}
+void sakVM::__sak_lgc_lsequ_than() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+    __sak_push(lval <= rval);
+}
+void sakVM::__sak_lgc_equ_than() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+    __sak_push(lval == rval);
+}
+void sakVM::__sak_lgc_not_equ_than() {
+    auto rval = __sak_pop();
+    auto lval = __sak_pop();
+    __sak_push(lval != rval);
+}
 //
 
 void sakVM::run() {
@@ -76,6 +106,24 @@ void sakVM::run() {
             break;
         case INS::LGC_OR:
             __sak_lgc_or();
+            break;
+        case INS::LGC_MR_THAN:
+            __sak_lgc_mr_than();
+            break;
+        case INS::LGC_LS_THAN:
+            __sak_lgc_ls_than();
+            break;
+        case INS::LGC_MREQU_THAN:
+            __sak_lgc_mrequ_than();
+            break;
+        case INS::LGC_LSEQU_THAN:
+            __sak_lgc_lsequ_than();
+            break;
+        case INS::LGC_EQU:
+            __sak_lgc_equ_than();
+            break;
+        case INS::LGC_NOT_EQU:
+            __sak_lgc_not_equ_than();
             break;
         default:
             break;

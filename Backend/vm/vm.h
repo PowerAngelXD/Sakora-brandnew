@@ -22,6 +22,12 @@ class sakVM {
     void __sak_mul();
     void __sak_lgc_and();
     void __sak_lgc_or();
+    void __sak_lgc_mr_than();
+    void __sak_lgc_ls_than();
+    void __sak_lgc_mrequ_than();
+    void __sak_lgc_lsequ_than();
+    void __sak_lgc_equ_than();
+    void __sak_lgc_not_equ_than();
 
 public:
     sakVM(std::vector<INS::Instruction> set);

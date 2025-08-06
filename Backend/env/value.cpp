@@ -251,6 +251,196 @@ sakValue sakValue::operator ||(sakValue val) {
         throw VMError::NotMatchedTypeError("or", val.defLine, val.defColumn);
     }
 }
+sakValue sakValue::operator >(sakValue val) {
+    switch (this->getType())
+    {
+    case sakType::Int:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getIntVal() > val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Float) {
+            return sakValue(sakType::sakBool(this->getIntVal() > val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'>'", val.defLine, val.defColumn);
+        }
+    case sakType::Float:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getFloatVal() > val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Int) {
+            return sakValue(sakType::sakBool(this->getFloatVal() > val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'>'", val.defLine, val.defColumn);
+        }
+    default:
+        throw VMError::NotMatchedTypeError("'>'", val.defLine, val.defColumn);
+    }
+}
+sakValue sakValue::operator >=(sakValue val) {
+    switch (this->getType())
+    {
+    case sakType::Int:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getIntVal() >= val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Float) {
+            return sakValue(sakType::sakBool(this->getIntVal() >= val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
+        }
+    case sakType::Float:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getFloatVal() >= val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Int) {
+            return sakValue(sakType::sakBool(this->getFloatVal() >= val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
+        }
+    default:
+        throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
+    }
+}
+sakValue sakValue::operator <(sakValue val) {
+    switch (this->getType())
+    {
+    case sakType::Int:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getIntVal() < val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Float) {
+            return sakValue(sakType::sakBool(this->getIntVal() < val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'<'", val.defLine, val.defColumn);
+        }
+    case sakType::Float:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getFloatVal() < val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Int) {
+            return sakValue(sakType::sakBool(this->getFloatVal() < val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'<'", val.defLine, val.defColumn);
+        }
+    default:
+        throw VMError::NotMatchedTypeError("'<'", val.defLine, val.defColumn);
+    }
+}
+sakValue sakValue::operator <=(sakValue val) {
+    switch (this->getType())
+    {
+    case sakType::Int:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getIntVal() <= val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Float) {
+            return sakValue(sakType::sakBool(this->getIntVal() <= val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
+        }
+    case sakType::Float:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getFloatVal() <= val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Int) {
+            return sakValue(sakType::sakBool(this->getFloatVal() <= val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
+        }
+    default:
+        throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
+    }
+}
+sakValue sakValue::operator ==(sakValue val) {
+    switch (this->getType())
+    {
+    case sakType::String:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getStrVal() == val.getStrVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+        }
+    case sakType::Boolean:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getBoolVal() == val.getBoolVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+        }
+    case sakType::Int:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getIntVal() == val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Float) {
+            return sakValue(sakType::sakBool(this->getIntVal() == val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+        }
+    case sakType::Float:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getFloatVal() == val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Int) {
+            return sakValue(sakType::sakBool(this->getFloatVal() == val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+        }
+    default:
+        throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+    }
+}
+sakValue sakValue::operator !=(sakValue val) {
+    switch (this->getType())
+    {
+    case sakType::String:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getStrVal() != val.getStrVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+        }
+    case sakType::Boolean:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getBoolVal() != val.getBoolVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+        }
+    case sakType::Int:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getIntVal() != val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Float) {
+            return sakValue(sakType::sakBool(this->getIntVal() != val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+        }
+    case sakType::Float:
+        if (val.getType() == this->getType()) {
+            return sakValue(sakType::sakBool(this->getFloatVal() != val.getFloatVal()), this->defLine, this->defColumn);
+        }
+        else if (val.getType() == sakType::Int) {
+            return sakValue(sakType::sakBool(this->getFloatVal() != val.getIntVal()), this->defLine, this->defColumn);
+        }
+        else {
+            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+        }
+    default:
+        throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+    }
+}
 
 void sakValue::printValue() {
     switch (getType()) {

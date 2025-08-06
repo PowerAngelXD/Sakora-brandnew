@@ -26,7 +26,6 @@ public:
     sakValue(sakType::sakBool bv, int ln, int col);
 
     // 功能函数
-    void setDefPosition();
     sakType::Type getType();
     const int& getIntVal();
     const std::string& getStrVal();
@@ -41,6 +40,12 @@ public:
     sakValue operator /(sakValue val);
     sakValue operator &&(sakValue val);
     sakValue operator ||(sakValue val);
+    sakValue operator >(sakValue val);
+    sakValue operator >=(sakValue val);
+    sakValue operator <(sakValue val);
+    sakValue operator <=(sakValue val);
+    sakValue operator ==(sakValue val);
+    sakValue operator !=(sakValue val);
 
 
     // 专门给generator使用的静态方法
