@@ -99,7 +99,7 @@ std::shared_ptr<AST::LogicExprNode> Parser::parseLogicExpr() {
 
     auto node = std::make_shared<AST::LogicExprNode>();
     node->adds.emplace_back(parseAddExpr());
-    while ((peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") && peek().type == Lexer::Keyword) {
+    while ((peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") && peek().type == Lexer::Symbol) {
         node->ops.emplace_back(std::make_shared<Lexer::Token>(eat()));
         node->adds.emplace_back(parseAddExpr());
     }
