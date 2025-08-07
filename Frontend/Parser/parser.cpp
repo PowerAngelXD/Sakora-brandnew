@@ -30,6 +30,10 @@ bool Parser::isMulExpr() {
 bool Parser::isLogicExpr() {
     if (peek().content == "true" || peek().content == "false") return true;
     if (isAddExpr()) {
+        if (peek().content == "(" && (
+            peek(2).content == "==" || peek(2).content == "!=" || peek(2).content == ">=" || peek(2).content == "<=" || peek(2).content == ">" || peek(2).content == "<"
+            )) return true;
+
         if (peek(1).content == "==" || peek(1).content == "!=" || peek(1).content == ">=" || peek(1).content == "<=" || peek(1).content == ">" || peek(1).content == "<") return true;
         else return false;
     }
