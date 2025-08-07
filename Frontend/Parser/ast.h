@@ -14,6 +14,8 @@ namespace AST {
 
     class PrimExprNode : public Node {
     public:
+        std::shared_ptr<Lexer::Token> prefixOp = nullptr;
+
         std::shared_ptr<Lexer::Token> literal = nullptr;
         std::shared_ptr<WholeExprNode> wholeExpr = nullptr;
 

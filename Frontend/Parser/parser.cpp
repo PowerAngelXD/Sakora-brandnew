@@ -16,7 +16,7 @@ Lexer::Token Parser::eat() {
 
 // 目前的表达式仅支持数字计算
 bool Parser::isPrimExpr() {
-    return peek().type == Lexer::Number || peek().type == Lexer::String || peek().content == "(" || peek().content == "true" || peek().content == "false";
+    return peek().content == "!" || peek().content == "-" || peek().type == Lexer::Number || peek().type == Lexer::String || peek().content == "(" || peek().content == "true" || peek().content == "false";
 }
 
 bool Parser::isAddExpr() {
@@ -28,7 +28,7 @@ bool Parser::isMulExpr() {
 }
 
 bool Parser::isLogicExpr() {
-    if (peek().content == "true" || peek().content == "false") return true;
+    if (peek().content == "true" || peek().content == "false" || peek().content == "!") return true;
     if (isAddExpr()) {
         if (peek().content == "(" && (
             peek(2).content == "==" || peek(2).content == "!=" || peek(2).content == ">=" || peek(2).content == "<=" || peek(2).content == ">" || peek(2).content == "<"
@@ -54,6 +54,10 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
     }
 
     auto node = std::make_shared<AST::PrimExprNode>();
+    if (peek().content == "!" || peek().content == "-") {
+        node->prefixOp = std::make_shared<Lexer::Token>(eat());
+    }
+
     if (peek().content == "(") {
         eat();
         node->wholeExpr = parseWholeExpr();

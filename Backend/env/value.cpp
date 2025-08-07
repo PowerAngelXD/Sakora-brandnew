@@ -441,6 +441,14 @@ sakValue sakValue::operator !=(sakValue val) {
         throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
     }
 }
+sakValue sakValue::operator !() {
+    if (this->getType() == sakType::Boolean) {
+        return sakValue(sakType::sakBool(!this->getBoolVal()), this->defLine, this->defColumn);
+    }
+    else {
+        throw VMError::NotMatchedTypeError("'!'", this->defLine, this->defColumn);
+    }
+}
 
 void sakValue::printValue() {
     switch (getType()) {

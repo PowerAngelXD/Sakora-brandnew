@@ -28,6 +28,7 @@ class sakVM {
     void __sak_lgc_lsequ_than();
     void __sak_lgc_equ_than();
     void __sak_lgc_not_equ_than();
+    void __sak_lgc_not();
 
 public:
     sakVM(std::vector<INS::Instruction> set);

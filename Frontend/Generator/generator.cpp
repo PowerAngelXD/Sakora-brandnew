@@ -1,6 +1,10 @@
 #include "generator.h"
 
 void Generator::generate(AST::PrimExprNode node) {
+    if (node.prefixOp && node.prefixOp->content == "-") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createIntVal("0", node.literal->line, node.literal->column)}));
+    }
+
     if(node.wholeExpr) {
         generate(*node.wholeExpr);
     }
@@ -19,6 +23,13 @@ void Generator::generate(AST::PrimExprNode node) {
         else if (node.literal->type == Lexer::Keyword && (node.literal->content == "true" || node.literal->content == "false")) {
             insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createBoolVal(node.literal->content, node.literal->line, node.literal->column)}));
         }
+    }
+
+    if (node.prefixOp && node.prefixOp->content == "-") {
+        insSet.emplace_back(INS::genIns(INS::SUB, node.literal->line, node.literal->column, {}));
+    }
+    else if (node.prefixOp && node.prefixOp->content == "!") {
+        insSet.emplace_back(INS::genIns(INS::LGC_NOT, node.prefixOp->line, node.prefixOp->column, {}));
     }
 }
 

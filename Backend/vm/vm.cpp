@@ -77,6 +77,10 @@ void sakVM::__sak_lgc_not_equ_than() {
     auto lval = __sak_pop();
     __sak_push(lval != rval);
 }
+void sakVM::__sak_lgc_not() {
+    auto val = __sak_pop();
+    __sak_push(!val);
+}
 //
 
 void sakVM::run() {
@@ -124,6 +128,9 @@ void sakVM::run() {
             break;
         case INS::LGC_NOT_EQU:
             __sak_lgc_not_equ_than();
+            break;
+        case INS::LGC_NOT:
+            __sak_lgc_not();
             break;
         default:
             break;

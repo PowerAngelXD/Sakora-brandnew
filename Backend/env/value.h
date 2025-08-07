@@ -46,6 +46,7 @@ public:
     sakValue operator <=(sakValue val);
     sakValue operator ==(sakValue val);
     sakValue operator !=(sakValue val);
+    sakValue operator !();
 
 
     // 专门给generator使用的静态方法

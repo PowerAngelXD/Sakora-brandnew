@@ -6,10 +6,16 @@ std::string AST::Node::toString() {
 }
 
 std::string AST::PrimExprNode::toString() {
+    std::string prefix;
+    if (prefixOp) {
+        if (prefixOp->content == "-") prefix = "-";
+        else if (prefixOp->content == "!") prefix = "!";
+    }
+
     if (literal) {
-        return literal->content;
+        return prefix + literal->content;
     } else if (wholeExpr) {
-        return "(" + wholeExpr->toString() + ")";
+        return prefix + "(" + wholeExpr->toString() + ")";
     }
     return "<PrimExprNode: null>";
 }
