@@ -6,6 +6,7 @@
 primExpr -> value | '(' wholeExpr ')'
 mulExpr -> primExpr ('*'|'/' primExpr)*
 addExpr -> mulExpr ('+'|'-' mulExpr)*
-boolExpr -> addExpr ('and'|'or' addExpr)*
-wholeExpr -> addExpr 
+logicExpr -> addExpr '!='|'=='|'>='|'<='|'>'|'<' addExpr
+boolExpr -> logicExpr ('and'|'or' addExpr)*
+wholeExpr -> addExpr | boolExpr
 ```
