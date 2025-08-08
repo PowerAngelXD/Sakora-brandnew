@@ -10,6 +10,8 @@ sakValue::sakValue(int&& v, int ln, int col) : value(sakType::sakInt(v)), defLin
 sakValue::sakValue(std::string&& v, int ln, int col) : value(sakType::sakString(v)), defLine(ln), defColumn(col) {}
 sakValue::sakValue(double&& v, int ln, int col) : value(sakType::sakFloat(v)), defLine(ln), defColumn(col) {}
 sakValue::sakValue(bool&& v, int ln, int col) : value(sakType::sakBool(v)), defLine(ln), defColumn(col) {}
+sakValue::sakValue(sakType::Type&& v, int ln, int col) : value(sakType::sakTid(v)), defLine(ln), defColumn(col) {}
+sakValue::sakValue(sakType::sakTid tv, int ln, int col) : value(tv), defLine(ln), defColumn(col) {}
 sakValue::sakValue(sakType::sakFloat fv, int ln, int col) : value(fv), defLine(ln), defColumn(col) {}
 sakValue::sakValue(sakType::sakInt iv, int ln, int col) : value(iv), defLine(ln), defColumn(col) {}
 sakValue::sakValue(sakType::sakString sv, int ln, int col) : value(sv), defLine(ln), defColumn(col) {}
@@ -59,6 +61,10 @@ const bool& sakValue::getBoolVal() {
     return std::get<sakType::sakBool>(value).getVal();
 }
 
+const sakType::Type& sakValue::getTidVal() {
+    return std::get<sakType::sakTid>(value).getVal();
+}
+
 
 sakValue sakValue::createIntVal(std::string s, int ln, int col) {
     return sakValue(sakType::sakInt(atoi(s.c_str())), ln, col);
@@ -76,27 +82,27 @@ sakValue sakValue::createBoolVal(std::string s, int ln, int col) {
 sakValue sakValue::operator +(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakInt(this->getIntVal() + val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakFloat(static_cast<double>(this->getIntVal()) + val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedOperatorError("+", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakFloat(this->getFloatVal() + val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakFloat(static_cast<int>(this->getFloatVal()) + val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedOperatorError("+", val.defLine, val.defColumn);
         }
-    case sakType::String:
+    case sakType::Type::String:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakString(this->getStrVal() + val.getStrVal()), this->defLine, this->defColumn);
         }
@@ -111,21 +117,21 @@ sakValue sakValue::operator +(sakValue val) {
 sakValue sakValue::operator -(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakInt(this->getIntVal() - val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakFloat(static_cast<double>(this->getIntVal()) - val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedOperatorError("-", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakFloat(this->getFloatVal() - val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakFloat(static_cast<int>(this->getFloatVal()) - val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -139,14 +145,14 @@ sakValue sakValue::operator -(sakValue val) {
 sakValue sakValue::operator *(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakInt(this->getIntVal() * val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakFloat(static_cast<double>(this->getIntVal()) * val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::String) {
+        else if (val.getType() == sakType::Type::String) {
             auto times = this->getIntVal();
             auto result = val.getStrVal();
             auto bit = val.getStrVal();
@@ -160,18 +166,18 @@ sakValue sakValue::operator *(sakValue val) {
         else {
             throw VMError::NotMatchedOperatorError("*", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakFloat(this->getFloatVal() * val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakFloat(static_cast<int>(this->getFloatVal()) * val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedOperatorError("*", val.defLine, val.defColumn);
         }
-    case sakType::String:
-        if (val.getType() == sakType::Int) {
+    case sakType::Type::String:
+        if (val.getType() == sakType::Type::Int) {
             auto times = val.getIntVal();
             auto result = this->getStrVal();
             auto bit = this->getStrVal();
@@ -193,7 +199,7 @@ sakValue sakValue::operator *(sakValue val) {
 sakValue sakValue::operator /(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int: 
+    case sakType::Type::Int: 
         if (val.getType() == this->getType()) {
             if ((static_cast<double>(this->getIntVal()) / val.getIntVal()) == std::trunc(static_cast<double>(this->getIntVal()) / val.getIntVal())) {
                 return sakValue(sakType::sakInt(this->getIntVal() / val.getIntVal()), this->defLine, this->defColumn);
@@ -202,17 +208,17 @@ sakValue sakValue::operator /(sakValue val) {
                 return sakValue(sakType::sakFloat(static_cast<double>(this->getIntVal()) / val.getIntVal()), this->defLine, this->defColumn);
             }
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakFloat((this->getIntVal()) / val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedOperatorError("/", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakFloat(this->getFloatVal() / val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakFloat(this->getFloatVal() / val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -226,7 +232,7 @@ sakValue sakValue::operator /(sakValue val) {
 sakValue sakValue::operator &&(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Boolean:
+    case sakType::Type::Boolean:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getBoolVal() && val.getBoolVal()), this->defLine, this->defColumn);
         }
@@ -240,7 +246,7 @@ sakValue sakValue::operator &&(sakValue val) {
 sakValue sakValue::operator ||(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Boolean:
+    case sakType::Type::Boolean:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getBoolVal() || val.getBoolVal()), this->defLine, this->defColumn);
         }
@@ -254,21 +260,21 @@ sakValue sakValue::operator ||(sakValue val) {
 sakValue sakValue::operator >(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getIntVal() > val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakBool(this->getIntVal() > val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'>'", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getFloatVal() > val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakBool(this->getFloatVal() > val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -281,21 +287,21 @@ sakValue sakValue::operator >(sakValue val) {
 sakValue sakValue::operator >=(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getIntVal() >= val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakBool(this->getIntVal() >= val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getFloatVal() >= val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakBool(this->getFloatVal() >= val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -308,21 +314,21 @@ sakValue sakValue::operator >=(sakValue val) {
 sakValue sakValue::operator <(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getIntVal() < val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakBool(this->getIntVal() < val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'<'", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getFloatVal() < val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakBool(this->getFloatVal() < val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -335,21 +341,21 @@ sakValue sakValue::operator <(sakValue val) {
 sakValue sakValue::operator <=(sakValue val) {
     switch (this->getType())
     {
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getIntVal() <= val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakBool(this->getIntVal() <= val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getFloatVal() <= val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakBool(this->getFloatVal() <= val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -362,35 +368,35 @@ sakValue sakValue::operator <=(sakValue val) {
 sakValue sakValue::operator ==(sakValue val) {
     switch (this->getType())
     {
-    case sakType::String:
+    case sakType::Type::String:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getStrVal() == val.getStrVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
         }
-    case sakType::Boolean:
+    case sakType::Type::Boolean:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getBoolVal() == val.getBoolVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
         }
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getIntVal() == val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakBool(this->getIntVal() == val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getFloatVal() == val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakBool(this->getFloatVal() == val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -403,35 +409,35 @@ sakValue sakValue::operator ==(sakValue val) {
 sakValue sakValue::operator !=(sakValue val) {
     switch (this->getType())
     {
-    case sakType::String:
+    case sakType::Type::String:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getStrVal() != val.getStrVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
         }
-    case sakType::Boolean:
+    case sakType::Type::Boolean:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getBoolVal() != val.getBoolVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
         }
-    case sakType::Int:
+    case sakType::Type::Int:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getIntVal() != val.getIntVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Float) {
+        else if (val.getType() == sakType::Type::Float) {
             return sakValue(sakType::sakBool(this->getIntVal() != val.getFloatVal()), this->defLine, this->defColumn);
         }
         else {
             throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
         }
-    case sakType::Float:
+    case sakType::Type::Float:
         if (val.getType() == this->getType()) {
             return sakValue(sakType::sakBool(this->getFloatVal() != val.getFloatVal()), this->defLine, this->defColumn);
         }
-        else if (val.getType() == sakType::Int) {
+        else if (val.getType() == sakType::Type::Int) {
             return sakValue(sakType::sakBool(this->getFloatVal() != val.getIntVal()), this->defLine, this->defColumn);
         }
         else {
@@ -442,7 +448,7 @@ sakValue sakValue::operator !=(sakValue val) {
     }
 }
 sakValue sakValue::operator !() {
-    if (this->getType() == sakType::Boolean) {
+    if (this->getType() == sakType::Type::Boolean) {
         return sakValue(sakType::sakBool(!this->getBoolVal()), this->defLine, this->defColumn);
     }
     else {
@@ -452,18 +458,42 @@ sakValue sakValue::operator !() {
 
 void sakValue::printValue() {
     switch (getType()) {
-    case sakType::Int:
+    case sakType::Type::Int:
         std::cout << getIntVal() << std::endl;
         break;
-    case sakType::Float:
+    case sakType::Type::Float:
         std::cout << getFloatVal() << std::endl;
         break;
-    case sakType::String:
+    case sakType::Type::String:
         std::cout << getStrVal() << std::endl;
         break;
-    case sakType::Boolean:
+    case sakType::Type::Boolean:
         std::cout << (getBoolVal() ? "true" : "false") << std::endl;
         break;
+    case sakType::Type::Tid: {
+        std::string content;
+        switch (getTidVal())
+        {
+        case sakType::Type::Boolean:
+            content = "<Boolean>";
+            break;
+        case sakType::Type::String:
+            content = "<String>";
+            break;
+        case sakType::Type::Int:
+            content = "<Int>";
+            break;
+        case sakType::Type::Float:
+            content = "<Float>";
+            break;
+        case sakType::Type::Tid:
+            content = "<TypeId>";
+            break;
+        default:
+            break;
+        }
+        std::cout << content << std::endl;
+    }
     default:
         std::cout << "<Unknown Value>" << std::endl;
         break;

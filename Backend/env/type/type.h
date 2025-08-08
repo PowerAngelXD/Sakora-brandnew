@@ -6,11 +6,6 @@
 #include "sak_string.h"
 #include "sak_float.h"
 #include "sak_bool.h"
-
-namespace sakType {
-    enum Type {
-        Int, String, Float, Boolean
-    };
-}
+#include "sak_tid.h"
 
 #endif
