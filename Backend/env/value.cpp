@@ -493,6 +493,7 @@ void sakValue::printValue() {
             break;
         }
         std::cout << content << std::endl;
+        break;
     }
     default:
         std::cout << "<Unknown Value>" << std::endl;
