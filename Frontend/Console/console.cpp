@@ -5,8 +5,8 @@ sakoraConsole::sakConsole::sakConsole(std::string name) : instanceName(name), cu
 
 void sakoraConsole::sakConsole::run() {
     std::cout << "Sakora REPL\nYou can type 'help' to get the help of this repl" << std::endl;
-    try {
-        while (true) {
+    while (true) {
+        try {
             std::string lineContent;
 
             std::cout << ">> ";
@@ -24,7 +24,7 @@ void sakoraConsole::sakConsole::run() {
             }
 
             Parser p(sequence);
-            auto ast = p.parseTypeExpr();
+            auto ast = p.parseWholeExpr();
 
             std::cout<<ast->toString()<<std::endl;
 
@@ -35,8 +35,8 @@ void sakoraConsole::sakConsole::run() {
 
             vm.run();
         }
-    }
-    catch (...) {
-
+        catch (SakoraError& e) {
+            e.print();
+        }
     }
 }
