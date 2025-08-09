@@ -78,3 +78,34 @@ std::string AST::WholeExprNode::toString() {
     return "<WholeExprNode: null>";
 }
 
+std::string AST::PrimTypeExprNode::toString() {
+    std::ostringstream oss;
+    oss << "<PrimTypeExprNode: ";
+    if (identifier) oss << identifier->content;
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::ArrayTypeExprNode::toString() {
+    std::ostringstream oss;
+    oss << "<ArrayTypeExprNode: ";
+    if (primType) {
+        oss << primType->toString();
+    }
+    for (const auto& info : arrayInfos) {
+        oss << " [";
+        if (info && info->leftArrayModOp) oss << info->leftArrayModOp->content;
+        if (info && info->length) oss << info->length->content;
+        if (info && info->rightArrayModOp) oss << info->rightArrayModOp->content;
+        oss << "]";
+    }
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::TypeExprNode::toString() {
+    if (prim) return prim->toString();
+    if (array) return array->toString();
+    return "<TypeExprNode: null>";
+}
+

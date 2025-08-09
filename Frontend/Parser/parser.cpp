@@ -4,12 +4,12 @@ Parser::Parser(Lexer::TokenSequence s) {
     seq = s;
 }
 
-Lexer::Token Parser::peek(int offset)
+const Lexer::Token& Parser::peek(int offset)
 {
     return seq.at(index + offset);
 }
 
-Lexer::Token Parser::eat() {
+const Lexer::Token& Parser::eat() {
     return seq.at(index ++);
 }
 
@@ -43,6 +43,23 @@ bool Parser::isLogicExpr() {
 bool Parser::isBoolExpr() {
     return isLogicExpr();
 }
+
+bool Parser::isPrimTypeExpr() {
+    return peek().type == Lexer::Keyword || peek().type == Lexer::Identifier;
+}
+
+bool Parser::isArrayTypeExpr() {
+    if (isPrimTypeExpr()) {
+        if (peek(1).content == "[") return true;
+        else return false;
+    }
+    else return false;
+}
+
+bool Parser::isTypeExpr() {
+    return isPrimTypeExpr() || isArrayTypeExpr();
+}
+
 
 bool Parser::isWholeExpr() {
     return isAddExpr() || isBoolExpr();
@@ -129,6 +146,51 @@ std::shared_ptr<AST::BoolExprNode> Parser::parseBoolExpr() {
 
     return node;
 }
+
+std::shared_ptr<AST::PrimTypeExprNode> Parser::parsePrimTypeExpr() {
+    if (!isPrimTypeExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Type Identifier", peek().line, peek().column);
+    }
+
+    auto node = std::make_shared<AST::PrimTypeExprNode>();
+    node->identifier = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
+std::shared_ptr<AST::ArrayTypeExprNode> Parser::parseArrayTypeExpr() {
+    if (!isArrayTypeExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "Type Identifier And ArraySymbol", peek().line, peek().column);
+    }
+    auto node = std::make_shared<AST::ArrayTypeExprNode>();
+
+    node->primType = parsePrimTypeExpr();
+    
+    while (peek().content == "[") {
+        auto info = std::make_shared<AST::ArrayTypeExprNode::ArrayInfoOpNode>();
+        info->leftArrayModOp = std::make_shared<Lexer::Token>(eat());
+        if (peek().type != Lexer::Number) {
+            throw ParserError::WrongMatchError(peek().content, "Number", peek().line, peek().column);
+        }
+        info->length = std::make_shared<Lexer::Token>(eat());
+        if (peek().content != "]") {
+            throw ParserError::WrongMatchError(peek().content, "']'", peek().line, peek().column);
+        }
+        info->rightArrayModOp = std::make_shared<Lexer::Token>(eat());
+    }
+
+    return node;
+}
+
+std::shared_ptr<AST::TypeExprNode> Parser::parseTypeExpr() {
+    auto node = std::make_shared<AST::TypeExprNode>();
+    
+    if (isArrayTypeExpr()) node->array = parseArrayTypeExpr();
+    else node->prim = parsePrimTypeExpr();
+
+    return node;
+}
+
 
 std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
     auto node = std::make_shared<AST::WholeExprNode>();
