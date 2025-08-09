@@ -1,4 +1,5 @@
 #include "generator.h"
+#include <string>
 
 void Generator::generate(AST::PrimExprNode node) {
     if (node.prefixOp && node.prefixOp->content == "-") {
@@ -96,6 +97,64 @@ void Generator::generate(AST::BoolExprNode node) {
         }
     }
 }
+
+void Generator::generate(AST::PrimTypeExprNode node) {
+    if (node.identifier->content == "int") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::Int), node.identifier->line, node.identifier->column)}));
+    }
+    else if (node.identifier->content == "float") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::Float), node.identifier->line, node.identifier->column)}));
+    }
+    else if (node.identifier->content == "string") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::String), node.identifier->line, node.identifier->column)}));
+    }
+    else if (node.identifier->content == "bool") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::Boolean), node.identifier->line, node.identifier->column)}));
+    }
+    else if (node.identifier->content == "tid") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::Tid), node.identifier->line, node.identifier->column)}));
+    }
+    else {
+        // TODO: 对于其他类型的处理
+    }
+}
+
+void Generator::generate(AST::ArrayTypeExprNode node) {
+    sakType::ArrayModifider amr;
+    if (node.primType->identifier->content == "int") {
+        amr.arrayType = sakType::Type::Int;
+    }
+    else if (node.primType->identifier->content == "float") {
+        amr.arrayType = sakType::Type::Float;
+    }
+    else if (node.primType->identifier->content == "string") {
+        amr.arrayType = sakType::Type::String;
+    }   
+    else if (node.primType->identifier->content == "bool") {
+        amr.arrayType = sakType::Type::Boolean;
+    }
+    else if (node.primType->identifier->content == "tid") {
+        amr.arrayType = sakType::Type::Tid;
+    }
+
+    for (auto info : node.arrayInfos) {
+        amr.dimension += 1;
+        amr.lengths.emplace_back(std::stoi(info->length->content.c_str()));
+    }
+    insSet.emplace_back(INS::genIns(INS::PUSH, node.primType->identifier->line, node.primType->identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::EMPTY, amr), node.primType->identifier->line, node.primType->identifier->column)}));
+}
+
+void Generator::generate(AST::TypeExprNode node) {
+    if (node.prim) generate(*node.prim);
+    else if (node.array) generate(*node.array);
+}
+
 
 void Generator::generate(AST::WholeExprNode node) {
     if (node.addExpr) {

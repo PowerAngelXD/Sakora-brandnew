@@ -6,6 +6,9 @@
 #include <memory>
 #include <variant>
 #include <cmath>
+#include <stdexcept>
+#include <iostream>
+#include <sstream>
 
 
 /// @brief sakora的解释器内值类，存放sakora基本数据类型对应的值并提供运算操作
@@ -61,7 +64,6 @@ public:
     static sakValue createFloatVal(std::string s, int ln, int col);
     static sakValue createStringVal(std::string s, int ln, int col);
     static sakValue createBoolVal(std::string s, int ln, int col);
-    static sakValue createTidVal(std::string s, int ln, int col);
 };
 
 #endif

@@ -24,7 +24,7 @@ void sakoraConsole::sakConsole::run() {
             }
 
             Parser p(sequence);
-            auto ast = p.parseWholeExpr();
+            auto ast = p.parseTypeExpr();
 
             std::cout<<ast->toString()<<std::endl;
 

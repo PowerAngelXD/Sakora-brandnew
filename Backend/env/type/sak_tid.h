@@ -2,15 +2,20 @@
 #define SAKORA_SAK_TID_H
 
 #include <memory>
+#include <vector>
 #include "sak_basic.h"
 
 namespace sakType {
+    // 表明Sakora的基本类型
+    // 需要注意的是，EMPTY类型是用来标注一个sakTid不存在mainType的，此时就只需要TypeModifier了
     enum class Type {
-        Int, String, Float, Boolean, Tid, Null
+        Int, String, Float, Boolean, Tid, Null, EMPTY
     };
 
     struct ArrayModifider {
-        int length = 0;    // Array长度
+        Type arrayType = Type::Null; // 数组类型
+
+        std::vector<int> lengths; // 各维度数组的长度
         int dimension = 1; // 数组维度
     };
 
@@ -19,10 +24,12 @@ namespace sakType {
     };
 
     class sakTid : public sakBasicType {
-        Type mainType;           // 主要类型，标识一个tid的主要类型，举个例子，如果有array的修饰符，那么主要类型就是array的元素类型
-                                 // 如果有fn的修饰符，那么主要类型就是函数的返回值类型
+        Type mainType;
+
         TypeModifier modifier;
     public:
+        sakTid()=default;
+
         sakTid(const Type&& v);
         sakTid(const Type& v);
         sakTid(const Type&& v, ArrayModifider am);
@@ -31,6 +38,8 @@ namespace sakType {
         const TypeModifier& getModifier();
         bool setVal(const Type& nv);
         bool setModifier(const ArrayModifider& arrayMod);
+
+        
     };
 }
 

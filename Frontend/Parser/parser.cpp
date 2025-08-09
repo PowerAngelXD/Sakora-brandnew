@@ -177,6 +177,8 @@ std::shared_ptr<AST::ArrayTypeExprNode> Parser::parseArrayTypeExpr() {
             throw ParserError::WrongMatchError(peek().content, "']'", peek().line, peek().column);
         }
         info->rightArrayModOp = std::make_shared<Lexer::Token>(eat());
+
+        node->arrayInfos.emplace_back(info);
     }
 
     return node;

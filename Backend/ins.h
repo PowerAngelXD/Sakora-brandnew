@@ -8,7 +8,11 @@
 #include "env/value.h"
 
 namespace INS {
-    enum InsOp {NULL_CMD, PUSH, POP, ADD, SUB, MUL, DIV, LGC_AND, LGC_OR, LGC_NOT_EQU, LGC_EQU, LGC_MR_THAN, LGC_LS_THAN, LGC_MREQU_THAN, LGC_LSEQU_THAN, LGC_NOT};
+    enum InsOp {NULL_CMD, PUSH, POP, ADD, 
+                SUB, MUL, DIV, LGC_AND, 
+                LGC_OR, LGC_NOT_EQU, LGC_EQU, LGC_MR_THAN, 
+                LGC_LS_THAN, LGC_MREQU_THAN, LGC_LSEQU_THAN, LGC_NOT,
+                };
 
     class Instruction {
         InsOp instruction;

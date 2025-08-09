@@ -3,8 +3,6 @@
 #include "type/sak_string.h"
 #include "type/sak_float.h"
 #include "type/sak_bool.h"
-#include <stdexcept>
-#include <iostream>
 
 sakValue::sakValue(int&& v, int ln, int col) : value(sakType::sakInt(v)), defLine(ln), defColumn(col) {}
 sakValue::sakValue(std::string&& v, int ln, int col) : value(sakType::sakString(v)), defLine(ln), defColumn(col) {}
@@ -29,6 +27,9 @@ sakType::Type sakValue::getType() {
     }
     else if (std::holds_alternative<sakType::sakBool>(value)) {
         return sakType::Type::Boolean;
+    }
+    else if (std::holds_alternative<sakType::sakTid>(value)) {
+        return sakType::Type::Tid;
     }
     throw std::runtime_error("sakValue: unknown type");
 }
@@ -471,28 +472,60 @@ void sakValue::printValue() {
         std::cout << (getBoolVal() ? "true" : "false") << std::endl;
         break;
     case sakType::Type::Tid: {
-        std::string content;
-        switch (getTidVal())
-        {
-        case sakType::Type::Boolean:
-            content = "<Boolean>";
-            break;
-        case sakType::Type::String:
-            content = "<String>";
-            break;
-        case sakType::Type::Int:
-            content = "<Int>";
-            break;
-        case sakType::Type::Float:
-            content = "<Float>";
-            break;
-        case sakType::Type::Tid:
-            content = "<TypeId>";
-            break;
-        default:
-            break;
+        if (std::get<sakType::sakTid>(value).getVal() != sakType::Type::EMPTY) {
+            std::string content;
+            switch (getTidVal())
+            {
+            case sakType::Type::Boolean:
+                content = "<Boolean>";
+                break;
+            case sakType::Type::String:
+                content = "<String>";
+                break;
+            case sakType::Type::Int:
+                content = "<Int>";
+                break;
+            case sakType::Type::Float:
+                content = "<Float>";
+                break;
+            case sakType::Type::Tid:
+                content = "<TypeId>";
+                break;
+            default:
+                break;
+            }
+            std::cout << content << std::endl;
         }
-        std::cout << content << std::endl;
+        else {
+            if (std::get<sakType::sakTid>(value).getModifier().arrayMod) {
+                auto amr = std::get<sakType::sakTid>(value).getModifier().arrayMod;
+                std::ostringstream oss;
+                switch (amr->arrayType)
+                {
+                case sakType::Type::Int:
+                    oss << "<Int>:";
+                    break;
+                case sakType::Type::Float:
+                    oss << "<Float>:";
+                    break;
+                case sakType::Type::String:
+                    oss << "<String>:";
+                    break;
+                case sakType::Type::Boolean:
+                    oss << "<Boolean>:";
+                    break;
+                case sakType::Type::Tid:
+                    oss << "<Tid>:";
+                    break;
+                default:
+                    break;
+                }
+                for (auto info : amr->lengths) {
+                    oss << "[" << info << "]";
+                }
+                std::cout << oss.str() << std::endl;
+            }
+        }
         break;
     }
     default:

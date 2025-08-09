@@ -3,6 +3,7 @@
 
 #include "../Lexer/lexer.h"
 #include <memory>
+#include <sstream>
 
 namespace AST {
     class Node {

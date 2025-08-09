@@ -1,5 +1,4 @@
 #include "ast.h"
-#include <sstream>
 
 std::string AST::Node::toString() {
     return "<AST::Node>";
