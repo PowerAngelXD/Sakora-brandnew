@@ -86,10 +86,21 @@ namespace AST {
         std::string toString() override;
     };
 
+    class ArrayExprNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> leftArrayModOp = nullptr;
+        std::vector<std::shared_ptr<AddExprNode>> elements;
+        std::vector<std::shared_ptr<Lexer::Token>> dots;
+        std::shared_ptr<Lexer::Token> rightArrayModOp = nullptr;
+
+        std::string toString() override;
+    };
+
     class WholeExprNode : public Node {
     public:
         std::shared_ptr<AddExprNode> addExpr = nullptr;
         std::shared_ptr<BoolExprNode> boolExpr = nullptr;
+        std::shared_ptr<ArrayExprNode> arrayExpr = nullptr;
 
         std::string toString() override;
     };

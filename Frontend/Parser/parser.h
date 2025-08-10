@@ -24,6 +24,7 @@ public:
     bool isPrimTypeExpr();
     bool isArrayTypeExpr();
     bool isTypeExpr();
+    bool isArrayExpr();
     bool isWholeExpr();
 
     // parser
@@ -35,6 +36,7 @@ public:
     std::shared_ptr<AST::PrimTypeExprNode> parsePrimTypeExpr();
     std::shared_ptr<AST::ArrayTypeExprNode> parseArrayTypeExpr();
     std::shared_ptr<AST::TypeExprNode> parseTypeExpr();
+    std::shared_ptr<AST::ArrayExprNode> parseArrayExpr();
     std::shared_ptr<AST::WholeExprNode> parseWholeExpr();
     
 };

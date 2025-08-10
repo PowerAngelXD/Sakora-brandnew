@@ -16,7 +16,10 @@ const Lexer::Token& Parser::eat() {
 
 // 目前的表达式仅支持数字计算
 bool Parser::isPrimExpr() {
-    return peek().content == "!" || peek().content == "-" || peek().type == Lexer::Number || peek().type == Lexer::String || peek().content == "(" || peek().content == "true" || peek().content == "false";
+    return peek().content == "!" || peek().content == "[" 
+            || peek().content == "-" || peek().type == Lexer::Number 
+            || peek().type == Lexer::String || peek().content == "(" 
+            || peek().content == "true" || peek().content == "false";
 }
 
 bool Parser::isAddExpr() {
@@ -60,6 +63,10 @@ bool Parser::isTypeExpr() {
     return isPrimTypeExpr() || isArrayTypeExpr();
 }
 
+bool Parser::isArrayExpr() {
+    return peek().content == "[";
+}
+
 
 bool Parser::isWholeExpr() {
     return isAddExpr() || isBoolExpr();
@@ -79,6 +86,10 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
         eat();
         node->wholeExpr = parseWholeExpr();
         eat();
+        return node;
+    }
+    else if (peek().content == "[") {
+        node->wholeExpr = parseWholeExpr();
         return node;
     }
     else {
@@ -193,11 +204,40 @@ std::shared_ptr<AST::TypeExprNode> Parser::parseTypeExpr() {
     return node;
 }
 
+std::shared_ptr<AST::ArrayExprNode> Parser::parseArrayExpr() {
+    if (!isArrayExpr()) {
+        throw ParserError::WrongMatchError(peek().content, "'['", peek().line, peek().column);
+    }
+
+    auto node = std::make_shared<AST::ArrayExprNode>();
+
+    node->leftArrayModOp = std::make_shared<Lexer::Token>(eat());
+
+    // [1,2,3,4]
+    while (isAddExpr()) {
+        node->elements.emplace_back(parseAddExpr());
+        if (peek().content != ",") {
+            if (peek().content == "]") break;
+            else 
+                throw ParserError::WrongMatchError(peek().content, "','", peek().line, peek().column);
+        }
+        node->dots.emplace_back(std::make_shared<Lexer::Token>(eat()));
+    }
+
+    if (peek().content != "]") {
+        throw ParserError::WrongMatchError(peek().content, "']'", peek().line, peek().column);
+    }
+    node->rightArrayModOp = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
 
 std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
     auto node = std::make_shared<AST::WholeExprNode>();
     
     if (isBoolExpr()) node->boolExpr = parseBoolExpr();
+    else if(isArrayExpr()) node->arrayExpr = parseArrayExpr();
     else node->addExpr = parseAddExpr();
 
     return node;

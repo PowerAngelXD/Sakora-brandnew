@@ -155,6 +155,14 @@ void Generator::generate(AST::TypeExprNode node) {
     else if (node.array) generate(*node.array);
 }
 
+void Generator::generate(AST::ArrayExprNode node) {
+    for (auto element : node.elements) {
+        generate(*element);
+    }
+    insSet.emplace_back(INS::genIns(INS::MAKE_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, {}));
+    insSet.emplace_back(INS::genIns(INS::CHK_CONST_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, {}));
+}
+
 
 void Generator::generate(AST::WholeExprNode node) {
     if (node.addExpr) {

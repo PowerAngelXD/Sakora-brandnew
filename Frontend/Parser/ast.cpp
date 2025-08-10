@@ -71,9 +71,23 @@ std::string AST::BoolExprNode::toString() {
     return oss.str();
 }
 
+std::string AST::ArrayExprNode::toString() {
+    std::ostringstream oss;
+    oss << "<ArrayExprNode: ";
+    if (leftArrayModOp) oss << leftArrayModOp->content;
+    for (size_t i = 0; i < elements.size(); ++i) {
+        if (i > 0) oss << ", ";
+        oss << elements[i]->toString();
+    }
+    if (rightArrayModOp) oss << rightArrayModOp->content;
+    oss << ">";
+    return oss.str();
+}
+
 std::string AST::WholeExprNode::toString() {
     if (addExpr) return addExpr->toString();
-    else if (boolExpr) return boolExpr->toString();
+    if (boolExpr) return boolExpr->toString();
+    if (arrayExpr) return arrayExpr->toString();
     return "<WholeExprNode: null>";
 }
 
