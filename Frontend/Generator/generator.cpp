@@ -159,7 +159,8 @@ void Generator::generate(AST::ArrayExprNode node) {
     for (auto element : node.elements) {
         generate(*element);
     }
-    insSet.emplace_back(INS::genIns(INS::MAKE_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, {}));
+    insSet.emplace_back(INS::genIns(INS::MAKE_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, 
+                        {sakValue::createIntVal(std::to_string(node.elements.size()), node.leftArrayModOp->line, node.leftArrayModOp->column)}));
     insSet.emplace_back(INS::genIns(INS::CHK_CONST_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, {}));
 }
 
@@ -170,5 +171,8 @@ void Generator::generate(AST::WholeExprNode node) {
     }
     else if (node.boolExpr) {
         generate(*node.boolExpr);
+    }
+    else if (node.arrayExpr) {
+        generate(*node.arrayExpr);
     }
 }

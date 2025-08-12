@@ -11,18 +11,26 @@
 #include <sstream>
 
 
+struct sakStruct;
+using structPtr = std::shared_ptr<sakStruct>;
+
+enum class StructType {
+    Array, List
+};
+
 /// @brief sakora的解释器内值类，存放sakora基本数据类型对应的值并提供运算操作
 class sakValue {
     std::variant<sakType::sakInt, 
                 sakType::sakString, 
                 sakType::sakFloat, 
                 sakType::sakBool,
-                sakType::sakTid> value;
+                sakType::sakTid,
+                structPtr> value;
 
     int defLine;
     int defColumn;
 public:
-    // 构造函数
+    // 值类型构造函数
     sakValue(int&& v, int ln, int col);
     sakValue(std::string&& v, int ln, int col);
     sakValue(double&& v, int ln, int col);
@@ -34,6 +42,9 @@ public:
     sakValue(sakType::sakBool bv, int ln, int col);
     sakValue(sakType::sakTid tv, int ln, int col);
 
+    // 结构类构造函数
+    sakValue(structPtr svs);
+
     // 功能函数
     sakType::Type getType();
     const int& getIntVal();
@@ -42,6 +53,9 @@ public:
     const bool& getBoolVal();
     const sakType::Type& getTidVal();
     void printValue();
+    void printValueLn();
+
+    sakStruct& getStruct();
 
     // 运算符
     sakValue operator +(sakValue val);
@@ -64,6 +78,16 @@ public:
     static sakValue createFloatVal(std::string s, int ln, int col);
     static sakValue createStringVal(std::string s, int ln, int col);
     static sakValue createBoolVal(std::string s, int ln, int col);
+};
+
+class sakStruct {
+    StructType type;
+public:
+    std::vector<sakValue> arrayStruct;
+
+    sakStruct(std::vector<sakValue> arrStruct);
+
+    bool isArray();
 };
 
 #endif

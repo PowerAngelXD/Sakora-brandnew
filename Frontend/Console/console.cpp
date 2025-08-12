@@ -1,5 +1,6 @@
 #include "console.h"
 
+
 sakoraConsole::sakConsole::sakConsole() : instanceName("default"), cursor(0) {}
 sakoraConsole::sakConsole::sakConsole(std::string name) : instanceName(name), cursor(0) {}
 
@@ -28,12 +29,12 @@ void sakoraConsole::sakConsole::run() {
 
             std::cout<<ast->toString()<<std::endl;
 
-            // Generator gen;
-            // gen.generate(*ast);
+            Generator gen;
+            gen.generate(*ast);
             
-            // sakVM vm(gen.insSet);
+            sakVM vm(gen.insSet);
 
-            // vm.run();
+            vm.run();
         }
         catch (SakoraError& e) {
             e.print();

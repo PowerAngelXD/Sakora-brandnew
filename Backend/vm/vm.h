@@ -5,6 +5,7 @@
 #include "../env/value.h"
 
 #include <stack>
+#include <algorithm>
 
 // Sakora的解释器系统
 class sakVM {
@@ -29,6 +30,8 @@ class sakVM {
     void __sak_lgc_equ_than();
     void __sak_lgc_not_equ_than();
     void __sak_lgc_not();
+    void __sak_make_array(sakValue val);
+    void __sak_chk_const_array();
 
 public:
     sakVM(std::vector<INS::Instruction> set);

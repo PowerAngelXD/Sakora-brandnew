@@ -81,6 +81,21 @@ void sakVM::__sak_lgc_not() {
     auto val = __sak_pop();
     __sak_push(!val);
 }
+void sakVM::__sak_make_array(sakValue val) {
+    auto length = val.getIntVal();
+
+    std::vector<sakValue> array;
+    for (int i = 0; i < length; i ++) {
+        array.emplace_back(__sak_pop());
+    }
+    std::reverse(array.begin(), array.end());
+
+    sakStruct arrayStruct = { array };
+    __sak_push(sakValue(std::make_shared<sakStruct>(arrayStruct)));
+}
+void sakVM::__sak_chk_const_array() {
+    
+}
 //
 
 void sakVM::run() {
@@ -132,13 +147,16 @@ void sakVM::run() {
         case INS::LGC_NOT:
             __sak_lgc_not();
             break;
+        case INS::MAKE_ARR:
+            __sak_make_array(code.getParas());
+            break;
         default:
             break;
         }
     }
     // for debug:
     std::cout << "[result]: ";
-    getTop().printValue();
+    getTop().printValueLn();
 }
  
 sakValue& sakVM::getTop() {

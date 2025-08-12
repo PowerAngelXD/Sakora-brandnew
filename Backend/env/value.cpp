@@ -15,6 +15,8 @@ sakValue::sakValue(sakType::sakInt iv, int ln, int col) : value(iv), defLine(ln)
 sakValue::sakValue(sakType::sakString sv, int ln, int col) : value(sv), defLine(ln), defColumn(col) {}
 sakValue::sakValue(sakType::sakBool bv, int ln, int col) : value(bv), defLine(ln), defColumn(col) {}
 
+sakValue::sakValue(structPtr svs) : value(svs) {}
+
 sakType::Type sakValue::getType() {
     if (std::holds_alternative<sakType::sakInt>(value)) {
         return sakType::Type::Int;
@@ -31,7 +33,7 @@ sakType::Type sakValue::getType() {
     else if (std::holds_alternative<sakType::sakTid>(value)) {
         return sakType::Type::Tid;
     }
-    throw std::runtime_error("sakValue: unknown type");
+    else return sakType::Type::EMPTY;
 }
 
 const int& sakValue::getIntVal() {
@@ -64,6 +66,10 @@ const bool& sakValue::getBoolVal() {
 
 const sakType::Type& sakValue::getTidVal() {
     return std::get<sakType::sakTid>(value).getVal();
+}
+
+sakStruct& sakValue::getStruct() {
+    return *std::get<structPtr>(value);
 }
 
 
@@ -459,78 +465,196 @@ sakValue sakValue::operator !() {
 
 void sakValue::printValue() {
     switch (getType()) {
-    case sakType::Type::Int:
-        std::cout << getIntVal() << std::endl;
-        break;
-    case sakType::Type::Float:
-        std::cout << getFloatVal() << std::endl;
-        break;
-    case sakType::Type::String:
-        std::cout << getStrVal() << std::endl;
-        break;
-    case sakType::Type::Boolean:
-        std::cout << (getBoolVal() ? "true" : "false") << std::endl;
-        break;
-    case sakType::Type::Tid: {
-        if (std::get<sakType::sakTid>(value).getVal() != sakType::Type::EMPTY) {
-            std::string content;
-            switch (getTidVal())
-            {
-            case sakType::Type::Boolean:
-                content = "<Boolean>";
-                break;
-            case sakType::Type::String:
-                content = "<String>";
-                break;
-            case sakType::Type::Int:
-                content = "<Int>";
-                break;
-            case sakType::Type::Float:
-                content = "<Float>";
-                break;
-            case sakType::Type::Tid:
-                content = "<TypeId>";
-                break;
-            default:
-                break;
-            }
-            std::cout << content << std::endl;
-        }
-        else {
-            if (std::get<sakType::sakTid>(value).getModifier().arrayMod) {
-                auto amr = std::get<sakType::sakTid>(value).getModifier().arrayMod;
-                std::ostringstream oss;
-                switch (amr->arrayType)
+        case sakType::Type::Int:
+            std::cout << getIntVal();
+            break;
+        case sakType::Type::Float:
+            std::cout << getFloatVal();
+            break;
+        case sakType::Type::String:
+            std::cout << getStrVal();
+            break;
+        case sakType::Type::Boolean:
+            std::cout << (getBoolVal() ? "true" : "false");
+            break;
+        case sakType::Type::Tid: {
+            if (std::get<sakType::sakTid>(value).getVal() != sakType::Type::EMPTY) {
+                std::string content;
+                switch (getTidVal())
                 {
-                case sakType::Type::Int:
-                    oss << "<Int>:";
-                    break;
-                case sakType::Type::Float:
-                    oss << "<Float>:";
+                case sakType::Type::Boolean:
+                    content = "<Boolean>";
                     break;
                 case sakType::Type::String:
-                    oss << "<String>:";
+                    content = "<String>";
                     break;
-                case sakType::Type::Boolean:
-                    oss << "<Boolean>:";
+                case sakType::Type::Int:
+                    content = "<Int>";
+                    break;
+                case sakType::Type::Float:
+                    content = "<Float>";
                     break;
                 case sakType::Type::Tid:
-                    oss << "<Tid>:";
+                    content = "<TypeId>";
                     break;
                 default:
                     break;
                 }
-                for (auto info : amr->lengths) {
-                    oss << "[" << info << "]";
-                }
-                std::cout << oss.str() << std::endl;
+                std::cout << content;
             }
+            else {
+                if (std::get<sakType::sakTid>(value).getModifier().arrayMod) {
+                    auto amr = std::get<sakType::sakTid>(value).getModifier().arrayMod;
+                    std::ostringstream oss;
+                    switch (amr->arrayType)
+                    {
+                    case sakType::Type::Int:
+                        oss << "<Int>:";
+                        break;
+                    case sakType::Type::Float:
+                        oss << "<Float>:";
+                        break;
+                    case sakType::Type::String:
+                        oss << "<String>:";
+                        break;
+                    case sakType::Type::Boolean:
+                        oss << "<Boolean>:";
+                        break;
+                    case sakType::Type::Tid:
+                        oss << "<Tid>:";
+                        break;
+                    default:
+                        break;
+                    }
+                    for (auto info : amr->lengths) {
+                        oss << "[" << info << "]";
+                    }
+                    std::cout << oss.str();
+                }
+            }
+            break;
         }
-        break;
+        default: {
+            if (!std::holds_alternative<sakType::sakInt>(value) &&
+                !std::holds_alternative<sakType::sakFloat>(value) &&
+                !std::holds_alternative<sakType::sakBool>(value) &&
+                !std::holds_alternative<sakType::sakTid>(value) &&
+                !std::holds_alternative<sakType::sakString>(value)) {
+                    // 是struct，以struct的形式打印
+                    auto s = getStruct();
+                    if (s.isArray()) {
+                        std::cout << "[";
+                        for (auto element : s.arrayStruct) {
+                            element.printValue();
+                            std::cout << " ";
+                        }
+                        std::cout << "]";
+                    }
+                }
+        }
     }
-    default:
-        std::cout << "<Unknown Value>" << std::endl;
-        break;
+
+
+}
+
+void sakValue::printValueLn() {
+    switch (getType()) {
+        case sakType::Type::Int:
+            std::cout << getIntVal() << std::endl;
+            break;
+        case sakType::Type::Float:
+            std::cout << getFloatVal() << std::endl;
+            break;
+        case sakType::Type::String:
+            std::cout << getStrVal() << std::endl;
+            break;
+        case sakType::Type::Boolean:
+            std::cout << (getBoolVal() ? "true" : "false") << std::endl;
+            break;
+        case sakType::Type::Tid: {
+            if (std::get<sakType::sakTid>(value).getVal() != sakType::Type::EMPTY) {
+                std::string content;
+                switch (getTidVal())
+                {
+                case sakType::Type::Boolean:
+                    content = "<Boolean>";
+                    break;
+                case sakType::Type::String:
+                    content = "<String>";
+                    break;
+                case sakType::Type::Int:
+                    content = "<Int>";
+                    break;
+                case sakType::Type::Float:
+                    content = "<Float>";
+                    break;
+                case sakType::Type::Tid:
+                    content = "<TypeId>";
+                    break;
+                default:
+                    break;
+                }
+                std::cout << content << std::endl;
+            }
+            else {
+                if (std::get<sakType::sakTid>(value).getModifier().arrayMod) {
+                    auto amr = std::get<sakType::sakTid>(value).getModifier().arrayMod;
+                    std::ostringstream oss;
+                    switch (amr->arrayType)
+                    {
+                    case sakType::Type::Int:
+                        oss << "<Int>:";
+                        break;
+                    case sakType::Type::Float:
+                        oss << "<Float>:";
+                        break;
+                    case sakType::Type::String:
+                        oss << "<String>:";
+                        break;
+                    case sakType::Type::Boolean:
+                        oss << "<Boolean>:";
+                        break;
+                    case sakType::Type::Tid:
+                        oss << "<Tid>:";
+                        break;
+                    default:
+                        break;
+                    }
+                    for (auto info : amr->lengths) {
+                        oss << "[" << info << "]";
+                    }
+                    std::cout << oss.str() << std::endl;
+                }
+            }
+            break;
+        }
+        default: {
+            if (!std::holds_alternative<sakType::sakInt>(value) &&
+                !std::holds_alternative<sakType::sakFloat>(value) &&
+                !std::holds_alternative<sakType::sakBool>(value) &&
+                !std::holds_alternative<sakType::sakTid>(value) &&
+                !std::holds_alternative<sakType::sakString>(value)) {
+                    // 是struct，以struct的形式打印
+                    auto s = getStruct();
+                    if (s.isArray()) {
+                        std::cout << "[";
+                        for (auto element : s.arrayStruct) {
+                            element.printValue();
+                            std::cout << " ";
+                        }
+                        std::cout << "]" << std::endl;
+                    }
+                }
+        }
     }
 }
 
+
+
+// sakStruct
+
+sakStruct::sakStruct(std::vector<sakValue> arrStruct) : type(StructType::Array), arrayStruct(arrStruct) {}
+
+bool sakStruct::isArray() {
+    return type == StructType::Array;
+}
