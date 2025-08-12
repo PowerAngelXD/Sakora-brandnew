@@ -33,12 +33,40 @@ bool Parser::isMulExpr() {
 bool Parser::isLogicExpr() {
     if (peek().content == "true" || peek().content == "false" || peek().content == "!") return true;
     if (isAddExpr()) {
-        if (peek().content == "(" && (
-            peek(2).content == "==" || peek(2).content == "!=" || peek(2).content == ">=" || peek(2).content == "<=" || peek(2).content == ">" || peek(2).content == "<"
-            )) return true;
-
-        if (peek(1).content == "==" || peek(1).content == "!=" || peek(1).content == ">=" || peek(1).content == "<=" || peek(1).content == ">" || peek(1).content == "<") return true;
-        else return false;
+        auto pos = index;
+        parseAddExpr();
+        if (peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") {
+            index = pos;
+            return true;
+        }
+        else {
+            index = pos;
+            return false;
+        }
+    }
+    else if (isArrayExpr()) {
+        auto pos = index;
+        parseArrayExpr();
+        if (peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") {
+            index = pos;
+            return true;
+        }
+        else {
+            index = pos;
+            return false;
+        }
+    }
+    else if (isTypeExpr()) {
+        auto pos = index;
+        parseTypeExpr();
+        if (peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") {
+            index = pos;
+            return true;
+        }
+        else {
+            index = pos;
+            return false;
+        }
     }
     else return false;
 }
@@ -236,8 +264,9 @@ std::shared_ptr<AST::ArrayExprNode> Parser::parseArrayExpr() {
 std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
     auto node = std::make_shared<AST::WholeExprNode>();
     
-    if (isBoolExpr()) node->boolExpr = parseBoolExpr();
-    else if(isArrayExpr()) node->arrayExpr = parseArrayExpr();
+    if (isArrayExpr()) node->arrayExpr = parseArrayExpr();
+    else if (isBoolExpr()) node->boolExpr = parseBoolExpr();
+    else if (isTypeExpr()) node->typeExpr = parseTypeExpr();
     else node->addExpr = parseAddExpr();
 
     return node;
