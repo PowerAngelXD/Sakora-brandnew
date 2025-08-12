@@ -544,9 +544,11 @@ void sakValue::printValue() {
                     auto s = getStruct();
                     if (s.isArray()) {
                         std::cout << "[";
-                        for (auto element : s.arrayStruct) {
-                            element.printValue();
-                            std::cout << " ";
+                        for (std::size_t i = 0; i < s.arrayStruct.size(); i ++) {
+                            s.arrayStruct.at(i).printValue();
+                            if (i != s.arrayStruct.size() - 1) {
+                                std::cout << ", ";
+                            }
                         }
                         std::cout << "]";
                     }
@@ -638,9 +640,11 @@ void sakValue::printValueLn() {
                     auto s = getStruct();
                     if (s.isArray()) {
                         std::cout << "[";
-                        for (auto element : s.arrayStruct) {
-                            element.printValue();
-                            std::cout << " ";
+                        for (std::size_t i = 0; i < s.arrayStruct.size(); i ++) {
+                            s.arrayStruct.at(i).printValue();
+                            if (i != s.arrayStruct.size() - 1) {
+                                std::cout << ", ";
+                            }
                         }
                         std::cout << "]" << std::endl;
                     }
