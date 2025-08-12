@@ -8,5 +8,6 @@ mulExpr -> primExpr ('*'|'/' primExpr)*
 addExpr -> mulExpr ('+'|'-' mulExpr)*
 logicExpr -> addExpr '!='|'=='|'>='|'<='|'>'|'<' addExpr
 boolExpr -> logicExpr ('and'|'or' addExpr)*
-wholeExpr -> addExpr | boolExpr
+arrayExpr -> '[' addExpr (',' addExpr)* ']'
+wholeExpr -> addExpr | boolExpr | arrayExpr
 ```

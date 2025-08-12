@@ -169,6 +169,9 @@ void Generator::generate(AST::WholeExprNode node) {
     if (node.addExpr) {
         generate(*node.addExpr);
     }
+    else if (node.typeExpr) {
+        generate(*node.typeExpr);
+    }
     else if (node.boolExpr) {
         generate(*node.boolExpr);
     }

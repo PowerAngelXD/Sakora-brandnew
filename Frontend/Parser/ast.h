@@ -11,6 +11,9 @@ namespace AST {
         virtual std::string toString();
     };
 
+
+    // Expression
+
     class WholeExprNode;
     class TypeExprNode;
 
@@ -101,8 +104,26 @@ namespace AST {
         std::shared_ptr<AddExprNode> addExpr = nullptr;
         std::shared_ptr<BoolExprNode> boolExpr = nullptr;
         std::shared_ptr<ArrayExprNode> arrayExpr = nullptr;
+        std::shared_ptr<TypeExprNode> typeExpr = nullptr;
 
         std::string toString() override;
+    };
+
+
+    // Statement
+
+    class LetStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> letMark = nullptr;
+        std::shared_ptr<Lexer::Token> identifier = nullptr;
+
+        // Optional
+        std::shared_ptr<Lexer::Token> typeModOp = nullptr;
+        std::shared_ptr<TypeExprNode> type = nullptr;
+        //
+
+        std::shared_ptr<Lexer::Token> assignOp = nullptr;
+        std::shared_ptr<WholeExprNode> expr = nullptr;
     };
 }
 
