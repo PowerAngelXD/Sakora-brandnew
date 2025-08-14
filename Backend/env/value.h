@@ -55,6 +55,7 @@ public:
     void printValue();
     void printValueLn();
 
+    bool isStruct();
     sakStruct& getStruct();
 
     // 运算符
@@ -88,6 +89,8 @@ public:
     sakStruct(std::vector<sakValue> arrStruct);
 
     bool isArray();
+
+    static bool isArrEqual(std::vector<sakValue> arr1, std::vector<sakValue> arr2);
 };
 
 #endif

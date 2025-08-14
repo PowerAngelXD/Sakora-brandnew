@@ -68,6 +68,14 @@ const sakType::Type& sakValue::getTidVal() {
     return std::get<sakType::sakTid>(value).getVal();
 }
 
+bool sakValue::isStruct() {
+    return !std::holds_alternative<sakType::sakInt>(value) &&
+            !std::holds_alternative<sakType::sakFloat>(value) &&
+            !std::holds_alternative<sakType::sakBool>(value) &&
+            !std::holds_alternative<sakType::sakTid>(value) &&
+            !std::holds_alternative<sakType::sakString>(value);
+}
+
 sakStruct& sakValue::getStruct() {
     return *std::get<structPtr>(value);
 }
@@ -409,8 +417,15 @@ sakValue sakValue::operator ==(sakValue val) {
         else {
             throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
         }
-    default:
-        throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+    default: 
+        if (this->getType() == sakType::Type::EMPTY) {
+            if ((this->isStruct() && this->getStruct().isArray()) &&
+                (val.isStruct() && val.getStruct().isArray())) {
+                    return sakValue(sakType::sakBool(sakStruct::isArrEqual(this->getStruct().arrayStruct, val.getStruct().arrayStruct)), this->defLine, this->defColumn);
+                }
+            else throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
+        }
+        else throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
     }
 }
 sakValue sakValue::operator !=(sakValue val) {
@@ -451,7 +466,14 @@ sakValue sakValue::operator !=(sakValue val) {
             throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
         }
     default:
-        throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+        if (this->getType() == sakType::Type::EMPTY) {
+            if ((this->isStruct() && this->getStruct().isArray()) &&
+                (val.isStruct() && val.getStruct().isArray())) {
+                    return sakValue(sakType::sakBool(!sakStruct::isArrEqual(this->getStruct().arrayStruct, val.getStruct().arrayStruct)), this->defLine, this->defColumn);
+                }
+            else throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
+        }
+        else throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
     }
 }
 sakValue sakValue::operator !() {
@@ -661,4 +683,12 @@ sakStruct::sakStruct(std::vector<sakValue> arrStruct) : type(StructType::Array),
 
 bool sakStruct::isArray() {
     return type == StructType::Array;
+}
+
+bool sakStruct::isArrEqual(std::vector<sakValue> arr1, std::vector<sakValue> arr2) {
+    if (arr1.size() != arr1.size()) return false;
+    for (std::size_t i = 0; i < arr1.size(); i ++) {
+        if ((arr1.at(i) != arr2.at(i)).getBoolVal()) return false;
+    }
+    return true;
 }
