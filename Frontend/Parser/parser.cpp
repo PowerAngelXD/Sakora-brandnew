@@ -13,10 +13,8 @@ const Lexer::Token& Parser::eat() {
     return seq.at(index ++);
 }
 
-
-// 目前的表达式仅支持数字计算
 bool Parser::isPrimExpr() {
-    return peek().content == "!" || peek().content == "[" 
+    return peek().content == "!" || isArrayExpr() 
             || peek().content == "-" || peek().type == Lexer::Number 
             || peek().type == Lexer::String || peek().content == "(" 
             || peek().content == "true" || peek().content == "false";
@@ -32,9 +30,9 @@ bool Parser::isMulExpr() {
 
 bool Parser::isLogicExpr() {
     if (peek().content == "true" || peek().content == "false" || peek().content == "!") return true;
-    if (isAddExpr()) {
+    if (isArrayExpr()) {
         auto pos = index;
-        parseAddExpr();
+        parseArrayExpr();
         if (peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") {
             index = pos;
             return true;
@@ -44,9 +42,9 @@ bool Parser::isLogicExpr() {
             return false;
         }
     }
-    else if (isArrayExpr()) {
+    else if (isAddExpr()) {
         auto pos = index;
-        parseArrayExpr();
+        parseAddExpr();
         if (peek().content == "==" || peek().content == "!=" || peek().content == ">=" || peek().content == "<=" || peek().content == ">" || peek().content == "<") {
             index = pos;
             return true;
@@ -117,7 +115,7 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
         return node;
     }
     else if (peek().content == "[") {
-        node->wholeExpr = parseWholeExpr();
+        node->arrayExpr = parseArrayExpr();
         return node;
     }
     else {
@@ -263,9 +261,8 @@ std::shared_ptr<AST::ArrayExprNode> Parser::parseArrayExpr() {
 
 std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
     auto node = std::make_shared<AST::WholeExprNode>();
-    
-    if (isArrayExpr()) node->arrayExpr = parseArrayExpr();
-    else if (isBoolExpr()) node->boolExpr = parseBoolExpr();
+
+    if (isBoolExpr()) node->boolExpr = parseBoolExpr();
     else if (isTypeExpr()) node->typeExpr = parseTypeExpr();
     else node->addExpr = parseAddExpr();
 

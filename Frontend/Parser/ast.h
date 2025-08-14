@@ -16,12 +16,14 @@ namespace AST {
 
     class WholeExprNode;
     class TypeExprNode;
+    class ArrayExprNode;
 
     class PrimExprNode : public Node {
     public:
         std::shared_ptr<Lexer::Token> prefixOp = nullptr;
 
         std::shared_ptr<Lexer::Token> literal = nullptr;
+        std::shared_ptr<ArrayExprNode> arrayExpr = nullptr;
         std::shared_ptr<WholeExprNode> wholeExpr = nullptr;
 
         std::string toString() override;
@@ -103,7 +105,6 @@ namespace AST {
     public:
         std::shared_ptr<AddExprNode> addExpr = nullptr;
         std::shared_ptr<BoolExprNode> boolExpr = nullptr;
-        std::shared_ptr<ArrayExprNode> arrayExpr = nullptr;
         std::shared_ptr<TypeExprNode> typeExpr = nullptr;
 
         std::string toString() override;
@@ -124,6 +125,10 @@ namespace AST {
 
         std::shared_ptr<Lexer::Token> assignOp = nullptr;
         std::shared_ptr<WholeExprNode> expr = nullptr;
+
+        std::shared_ptr<Lexer::Token> stmtEndOp = nullptr;
+
+        std::string toString() override;
     };
 }
 

@@ -15,6 +15,8 @@ std::string AST::PrimExprNode::toString() {
         return prefix + literal->content;
     } else if (wholeExpr) {
         return prefix + "(" + wholeExpr->toString() + ")";
+    } else if (arrayExpr) {
+        return prefix + "(" + arrayExpr->toString() + ")";
     }
     return "<PrimExprNode: null>";
 }
@@ -87,7 +89,6 @@ std::string AST::ArrayExprNode::toString() {
 std::string AST::WholeExprNode::toString() {
     if (addExpr) return addExpr->toString();
     else if (boolExpr) return boolExpr->toString();
-    else if (arrayExpr) return arrayExpr->toString();
     else if (typeExpr) return typeExpr->toString();
     return "<WholeExprNode: null>";
 }

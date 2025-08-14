@@ -9,6 +9,9 @@ void Generator::generate(AST::PrimExprNode node) {
     if(node.wholeExpr) {
         generate(*node.wholeExpr);
     }
+    else if (node.arrayExpr) {
+        generate(*node.arrayExpr);
+    }
     else {
         if (node.literal->type == Lexer::Number) {
             if (node.literal->content.find('.') != std::string::npos) {
@@ -174,8 +177,5 @@ void Generator::generate(AST::WholeExprNode node) {
     }
     else if (node.boolExpr) {
         generate(*node.boolExpr);
-    }
-    else if (node.arrayExpr) {
-        generate(*node.arrayExpr);
     }
 }
