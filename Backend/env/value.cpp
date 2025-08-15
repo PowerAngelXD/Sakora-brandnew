@@ -692,3 +692,71 @@ bool sakStruct::isArrEqual(std::vector<sakValue> arr1, std::vector<sakValue> arr
     }
     return true;
 }
+
+// Public Function
+
+sakValue sakValue::inferType(sakValue val) {
+    if (!val.isStruct()) {
+        return sakValue(sakType::sakTid(val.getType()), val.defLine, val.defColumn);
+    }
+    else {
+        auto stct = val.getStruct();
+        auto array = stct.arrayStruct;
+        sakType::ArrayModifider amdr;
+        if (!array.at(0).isStruct()) {
+            amdr.lengths.emplace_back(static_cast<int>(array.size()));
+            amdr.dimension = 1;
+            amdr.arrayType = array.at(0).getType();
+
+            return sakValue(sakType::sakTid(sakType::Type::EMPTY, amdr), val.defLine, val.defColumn);
+        }
+        else {
+            amdr.dimension = inferDimension(array);
+            amdr.lengths.emplace_back(static_cast<int>(array.size()));
+            for (auto e : inferLengths(array)) {
+                amdr.lengths.emplace_back(e);
+            }
+            amdr.arrayType = inferFinalType(array);
+
+            return sakValue(sakType::sakTid(sakType::Type::EMPTY, amdr), val.defLine, val.defColumn);
+        }
+    }
+}
+
+// Private Function
+
+int sakValue::inferDimension(std::vector<sakValue> arr, int initd) {
+    int d = initd;
+
+    auto temp_a = arr.at(0);
+    if (temp_a.isStruct()) {
+        d ++;
+        return inferDimension(temp_a.getStruct().arrayStruct, d);
+    }
+    else {
+        return d;
+    }
+}
+
+std::vector<int> sakValue::inferLengths(std::vector<sakValue> arr, std::vector<int> initd) {
+    std::vector<int> d = initd;
+
+    auto temp_a = arr.at(0);
+    if (temp_a.isStruct()) {
+        d.emplace_back(static_cast<int>(temp_a.getStruct().arrayStruct.size()));
+        return inferLengths(temp_a.getStruct().arrayStruct, d);
+    }
+    else {
+        return d;
+    }
+}
+
+sakType::Type sakValue::inferFinalType(std::vector<sakValue> arr) {
+    auto temp_a = arr.at(0);
+    if (temp_a.isStruct()) {
+        return inferFinalType(temp_a.getStruct().arrayStruct);
+    }
+    else {
+        return temp_a.getType();
+    }
+}

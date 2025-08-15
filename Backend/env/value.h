@@ -79,6 +79,12 @@ public:
     static sakValue createFloatVal(std::string s, int ln, int col);
     static sakValue createStringVal(std::string s, int ln, int col);
     static sakValue createBoolVal(std::string s, int ln, int col);
+
+    // 工具类静态方法
+    static int inferDimension(std::vector<sakValue> arr, int initd = 1);
+    static std::vector<int> inferLengths(std::vector<sakValue> arr, std::vector<int> initd = {});
+    static sakValue inferType(sakValue val);
+    static sakType::Type inferFinalType(std::vector<sakValue> arr);
 };
 
 class sakStruct {
