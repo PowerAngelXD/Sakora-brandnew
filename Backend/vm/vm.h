@@ -31,7 +31,8 @@ class sakVM {
     void __sak_lgc_not_equ_than();
     void __sak_lgc_not();
     void __sak_make_array(sakValue val);
-    void __sak_chk_const_array();
+    void __sak_arr_tidy_check();
+    void __sak_arr_tidy_check(std::vector<sakValue> arr);
 
 public:
     sakVM(std::vector<INS::Instruction> set);

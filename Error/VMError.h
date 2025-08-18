@@ -15,6 +15,12 @@ namespace VMError {
         NotMatchedTypeError(std::string s, int ln, int col);
         void print() override;
     };
+
+    class NotTidyArrayError : public SakoraError {
+    public:
+        NotTidyArrayError(std::string s, int ln, int col);
+        void print() override;
+    };
 }
 
 #endif

@@ -93,8 +93,30 @@ void sakVM::__sak_make_array(sakValue val) {
     sakStruct arrayStruct = { array };
     __sak_push(sakValue(std::make_shared<sakStruct>(arrayStruct)));
 }
-void sakVM::__sak_chk_const_array() {
-    
+void sakVM::__sak_arr_tidy_check() {
+    auto arr = __sak_pop();
+    __sak_arr_tidy_check(arr.getStruct().arrayStruct);
+
+    __sak_push(arr);
+}
+void sakVM::__sak_arr_tidy_check(std::vector<sakValue> arr) {
+    if (arr.at(0).isStruct()) {
+        auto i_size = arr.at(0).getStruct().arrayStruct.size();
+        for (auto sub_arr : arr) {
+            if (sub_arr.getStruct().arrayStruct.size() != i_size) 
+                throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
+            else if (!sub_arr.isStruct())
+                throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
+            
+            __sak_arr_tidy_check(sub_arr.getStruct().arrayStruct);
+        }
+    }
+    else {
+        for (std::size_t i = 1; i < arr.size(); i ++) {
+            if (arr.at(i).isStruct())
+                throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
+        }
+    }
 }
 //
 
@@ -147,8 +169,11 @@ void sakVM::run() {
         case INS::LGC_NOT:
             __sak_lgc_not();
             break;
-        case INS::MAKE_ARR:
+        case INS::ARR_MAKE:
             __sak_make_array(code.getParas());
+            break;
+        case INS::ARR_TIDY_CHK:
+            __sak_arr_tidy_check();
             break;
         default:
             break;
@@ -156,7 +181,10 @@ void sakVM::run() {
     }
     // for debug:
     std::cout << "[result]: ";
-    getTop().printValueLn();
+    auto result = getTop();
+    result.printValueLn();
+    auto type = result.inferType();
+    type.printValueLn();
 }
  
 sakValue& sakVM::getTop() {

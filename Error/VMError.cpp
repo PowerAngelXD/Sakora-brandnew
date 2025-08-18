@@ -3,20 +3,26 @@
 
 #define VM_ERROR_HEAD std::cout << "[VMError] at line " << line << ", column " << column << ":\n"
 
-namespace VMError {
-    NotMatchedOperatorError::NotMatchedOperatorError(std::string s, int ln, int col)
-        : SakoraError(std::move(s), ln, col) {}
+VMError::NotMatchedOperatorError::NotMatchedOperatorError(std::string s, int ln, int col)
+    : SakoraError(std::move(s), ln, col) {}
 
-    void NotMatchedOperatorError::print() {
-        VM_ERROR_HEAD;
-        std::cout << "NotMatchedOperatorError: Operator not matched. Target operator: '" << src << "'" << std::endl;
-    }
+void VMError::NotMatchedOperatorError::print() {
+    VM_ERROR_HEAD;
+    std::cout << "NotMatchedOperatorError: Operator not matched. Target operator: '" << src << "'" << std::endl;
+}
 
-    NotMatchedTypeError::NotMatchedTypeError(std::string s, int ln, int col)
-        : SakoraError(std::move(s), ln, col) {}
+VMError::NotMatchedTypeError::NotMatchedTypeError(std::string s, int ln, int col)
+    : SakoraError(std::move(s), ln, col) {}
 
-    void NotMatchedTypeError::print() {
-        VM_ERROR_HEAD;
-        std::cout << "NotMatchedTypeError: Type not matched. Target operator: '" << src << "'" << std::endl;
-    }
+void VMError::NotMatchedTypeError::print() {
+    VM_ERROR_HEAD;
+    std::cout << "NotMatchedTypeError: Type not matched. Target operator: '" << src << "'" << std::endl;
+}
+
+VMError::NotTidyArrayError::NotTidyArrayError(std::string s, int ln, int col)
+: SakoraError(std::move(s), ln, col) {}
+
+void VMError::NotTidyArrayError::print() {
+    VM_ERROR_HEAD;
+    std::cout << "NotTidyArrayError: The target array is not tidy." << std::endl;
 }
