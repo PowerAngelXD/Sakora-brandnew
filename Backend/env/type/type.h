@@ -7,5 +7,6 @@
 #include "sak_float.h"
 #include "sak_bool.h"
 #include "sak_tid.h"
+#include "sak_char.h"
 
 #endif

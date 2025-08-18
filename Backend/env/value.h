@@ -25,17 +25,20 @@ class sakValue {
                 sakType::sakFloat, 
                 sakType::sakBool,
                 sakType::sakTid,
+                sakType::sakChar,
                 structPtr> value;
-
+public:
     int defLine;
     int defColumn;
-public:
+
     // 值类型构造函数
     sakValue(int&& v, int ln, int col);
     sakValue(std::string&& v, int ln, int col);
     sakValue(double&& v, int ln, int col);
     sakValue(bool&& v, int ln, int col);
+    sakValue(char&& v, int ln, int col);
     sakValue(sakType::Type&& v, int ln, int col);
+    sakValue(sakType::sakChar cv, int ln, int col);
     sakValue(sakType::sakInt iv, int ln, int col);
     sakValue(sakType::sakFloat fv, int ln, int col);
     sakValue(sakType::sakString sv, int ln, int col);
@@ -52,6 +55,7 @@ public:
     const double& getFloatVal();
     const bool& getBoolVal();
     const sakType::Type& getTidVal();
+    const char& getCharVal();
     void printValue();
     void printValueLn();
 
@@ -79,12 +83,13 @@ public:
     static sakValue createFloatVal(std::string s, int ln, int col);
     static sakValue createStringVal(std::string s, int ln, int col);
     static sakValue createBoolVal(std::string s, int ln, int col);
+    static sakValue createCharVal(std::string s, int ln, int col);
 
-    // 工具类静态方法
-    static int inferDimension(std::vector<sakValue> arr, int initd = 1);
-    static std::vector<int> inferLengths(std::vector<sakValue> arr, std::vector<int> initd = {});
-    static sakValue inferType(sakValue val);
-    static sakType::Type inferFinalType(std::vector<sakValue> arr);
+    // 类型推导
+    int inferDimension(std::vector<sakValue> arr, int initd = 1);
+    std::vector<int> inferLengths(std::vector<sakValue> arr, std::vector<int> initd = {});
+    sakValue inferType();
+    sakType::Type inferFinalType(std::vector<sakValue> arr);
 };
 
 class sakStruct {

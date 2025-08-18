@@ -9,7 +9,7 @@ namespace sakType {
     // 表明Sakora的基本类型
     // 需要注意的是，EMPTY类型是用来标注一个sakTid不存在mainType的，此时就只需要TypeModifier了
     enum class Type {
-        Int, String, Float, Boolean, Tid, Null, EMPTY
+        Int, String, Float, Boolean, Tid, Char, Null, EMPTY
     };
 
     struct ArrayModifider {
