@@ -6,8 +6,9 @@
 #include "../../Error/LexerError.h"
 
 namespace Lexer {
-    enum TokenType { Identifier, Symbol, Number, Keyword, String, EndFlag };
-    static std::vector<std::string> KeywordTable = {"let", "if", "else", "and", "or", "int", "float", "char", "true", "false"};
+    enum TokenType { Identifier, Symbol, Number, Keyword, String, Char, EndFlag };
+    static std::vector<std::string> KeywordTable = {"let", "if", "else", "and", "or", "int", "float", "char", "true", "false",
+                                                    "typeof", "mutable", "match", "while", "for"};
 
     struct Token {
         TokenType type;

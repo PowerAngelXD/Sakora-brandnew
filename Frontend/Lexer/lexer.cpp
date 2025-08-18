@@ -1,31 +1,7 @@
 #include "lexer.h"
 
 void Lexer::Token::print() {
-    std::cout << "<";
-    switch (type)
-    {
-    case Lexer::Identifier:
-        std::cout << "Identifier";
-        break;
-    case Lexer::Symbol:
-        std::cout << "Symbol";
-        break;
-    case Lexer::Number:
-        std::cout << "Number";
-        break;
-    case Lexer::Keyword: 
-        std::cout << "Keyword";    
-        break;
-    case Lexer::String:
-        std::cout << "String";
-        break;
-    case Lexer::EndFlag:
-        std::cout << "END";
-
-    default:
-        break;
-    }
-    std::cout << ", " << content << ">" << std::endl;
+    std::cout << this->toString() << std::endl;
 }
 
 std::string Lexer::Token::toString() {
@@ -46,6 +22,9 @@ std::string Lexer::Token::toString() {
         break;
     case Lexer::String:
         typeStr = "String";
+        break;
+    case Lexer::Char:
+        typeStr = "Char";
         break;
     case Lexer::EndFlag:
         typeStr = "EndFlag";
@@ -116,18 +95,88 @@ Lexer::TokenSequence Lexer::LexerInstance::startLexer(std::string raw) {
 
             sequence.emplace_back(Lexer::Number, out, ln, col);
         }
+        else if (current == '\'') {
+            std::string out;
+            next();
+            if (raw.at(i) == '\\') {
+                switch (raw.at(i + 1))
+                {
+                case 'n':
+                    out.push_back('\n');
+                    break;
+                case 't':
+                    out.push_back('\t');
+                    break;
+                case 'b':
+                    out.push_back('\b');
+                    break;
+                case '0':
+                    out.push_back('\0');
+                    break;
+                case '"':
+                    out.push_back('"');
+                    break;
+                case '\\':
+                    out.push_back('\\');
+                    break;
+                default:
+                    break;
+                }
+                next();
+                next();
+            }
+            else {
+                out.push_back(raw.at(i));
+                next();
+            }
+            
+            if (raw.at(i) != '\'') {
+                throw LexerError::MoreCharacterError("MoreCharacterError", ln, col);
+            }
+            else next();
+
+            sequence.emplace_back(Lexer::Char, out, ln, col);
+        }
         else if (current == '"') {
             std::string out;
             next();
             bool flag = false;
             while (raw.at(i) != '"') {
                 if (raw.at(i) == '\0' || raw.at(i) == '\n')
-                    throw LexerError::NotCloseStringError("NotCloseStringErro", ln, col);
+                    throw LexerError::NotCloseStringError("NotCloseStringError", ln, col);
+                else if (raw.at(i) == '\\') {
+                    switch (raw.at(i + 1))
+                    {
+                    case 'n':
+                        out.push_back('\n');
+                        break;
+                    case 't':
+                        out.push_back('\t');
+                        break;
+                    case 'b':
+                        out.push_back('\b');
+                        break;
+                    case '0':
+                        out.push_back('\0');
+                        break;
+                    case '"':
+                        out.push_back('"');
+                        break;
+                    case '\\':
+                        out.push_back('\\');
+                        break;
+                    default:
+                        break;
+                    }
+                    next();
+                    next();
+                }
                 else if (flag && raw.at(i) == '"')
                     break;
-
-                out.push_back(raw.at(i));
-                next();
+                else {
+                    out.push_back(raw.at(i));
+                    next();
+                }
                 
                 flag = true;
             }

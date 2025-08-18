@@ -24,6 +24,9 @@ void Generator::generate(AST::PrimExprNode node) {
         else if (node.literal->type == Lexer::String) {
             insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createStringVal(node.literal->content, node.literal->line, node.literal->column)}));
         }
+        else if (node.literal->type == Lexer::Char) {
+            insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createCharVal(node.literal->content, node.literal->line, node.literal->column)}));
+        }
         else if (node.literal->type == Lexer::Keyword && (node.literal->content == "true" || node.literal->content == "false")) {
             insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createBoolVal(node.literal->content, node.literal->line, node.literal->column)}));
         }
@@ -162,9 +165,9 @@ void Generator::generate(AST::ArrayExprNode node) {
     for (auto element : node.elements) {
         generate(*element);
     }
-    insSet.emplace_back(INS::genIns(INS::MAKE_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, 
+    insSet.emplace_back(INS::genIns(INS::ARR_MAKE, node.leftArrayModOp->line, node.leftArrayModOp->column, 
                         {sakValue::createIntVal(std::to_string(node.elements.size()), node.leftArrayModOp->line, node.leftArrayModOp->column)}));
-    insSet.emplace_back(INS::genIns(INS::CHK_CONST_ARR, node.leftArrayModOp->line, node.leftArrayModOp->column, {}));
+    insSet.emplace_back(INS::genIns(INS::ARR_TIDY_CHK, node.leftArrayModOp->line, node.leftArrayModOp->column, {}));
 }
 
 

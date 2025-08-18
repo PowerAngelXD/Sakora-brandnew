@@ -15,3 +15,11 @@ void LexerError::NotCloseStringError::print() {
     LEXER_ERROR_HEAD
     std::cout << "NotCloseStringError: \nThe quotation marks of the string are not closed."<<std::endl;
 }
+
+LexerError::MoreCharacterError::MoreCharacterError(std::string s, int ln, int col)
+    : SakoraError(s, ln, col) {}
+
+void LexerError::MoreCharacterError::print() {
+    LEXER_ERROR_HEAD
+    std::cout << "Too many characters." << std::endl;
+}

@@ -16,7 +16,7 @@ const Lexer::Token& Parser::eat() {
 bool Parser::isPrimExpr() {
     return peek().content == "!" || isArrayExpr() 
             || peek().content == "-" || peek().type == Lexer::Number 
-            || peek().type == Lexer::String || peek().content == "(" 
+            || peek().type == Lexer::String || peek().type == Lexer::Char || peek().content == "(" 
             || peek().content == "true" || peek().content == "false";
 }
 

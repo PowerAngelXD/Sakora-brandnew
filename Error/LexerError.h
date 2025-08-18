@@ -15,6 +15,12 @@ namespace LexerError {
         NotCloseStringError(std::string s, int ln, int col);
         void print() override;
     };
+
+    class MoreCharacterError : public SakoraError {
+    public:
+        MoreCharacterError(std::string s, int ln, int col);
+        void print() override;
+    };
 }
 
 #endif
