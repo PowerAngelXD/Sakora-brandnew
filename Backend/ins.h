@@ -12,7 +12,8 @@ namespace INS {
                 SUB, MUL, DIV, LGC_AND, 
                 LGC_OR, LGC_NOT_EQU, LGC_EQU, LGC_MR_THAN, 
                 LGC_LS_THAN, LGC_MREQU_THAN, LGC_LSEQU_THAN, LGC_NOT,
-                MAKE_ARR, CHK_CONST_ARR
+                ARR_MAKE, ARR_TIDY_CHK, 
+                DECLARE, ASSIGN, GET
                 };
 
     class Instruction {
