@@ -100,7 +100,9 @@ std::string INS::Instruction::toString() {
             break;
         case INS::GET:
             oss << "GET " << this->args.at(0).toString();
-            break;      
+            break;    
+        case INS::FROM:
+            oss << "FROM " << this->args.at(0).toString();
         default:
             break;
     }

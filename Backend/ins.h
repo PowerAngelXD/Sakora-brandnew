@@ -14,7 +14,7 @@ namespace INS {
                 LGC_OR, LGC_NOT_EQU, LGC_EQU, LGC_MR_THAN, 
                 LGC_LS_THAN, LGC_MREQU_THAN, LGC_LSEQU_THAN, LGC_NOT,
                 ARR_MAKE, ARR_TIDY_CHK, 
-                DECLARE, ASSIGN, GET
+                DECLARE, ASSIGN, GET, FROM
                 };
 
     class Instruction {
