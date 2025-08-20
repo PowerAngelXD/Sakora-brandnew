@@ -6,6 +6,9 @@ sakoraConsole::sakConsole::sakConsole(std::string name) : instanceName(name), cu
 
 void sakoraConsole::sakConsole::run() {
     std::cout << "Sakora REPL\nYou can type 'help' to get the help of this repl" << std::endl;
+
+    sakVM vm;
+
     while (true) {
         try {
             std::string lineContent;
@@ -20,21 +23,54 @@ void sakoraConsole::sakConsole::run() {
             Lexer::LexerInstance lexer;
             Lexer::TokenSequence sequence = lexer.startLexer(lineContent);
 
-            for(auto &token : sequence) {
-                token.print();
-            }
+            // for(auto &token : sequence) {
+            //     token.print();
+            // }
 
             Parser p(sequence);
-            auto ast = p.parseWholeExpr();
 
-            std::cout<<ast->toString()<<std::endl;
+            if (p.isLetStmt()) {
+                auto ast = p.parseLetStmt();
+                std::cout<<ast->toString()<<std::endl;
 
-            Generator gen;
-            gen.generate(*ast);
+                Generator gen;
+                gen.generate(*ast);
             
-            sakVM vm(gen.insSet);
+                for (auto &ins : gen.insSet) {
+                    ins.print();
+                }
 
-            vm.run();
+                vm.loadCodes(gen.insSet);
+                vm.run();
+            }
+            else if (p.isAssignStmt()) {
+                auto ast = p.parseAssignStmt();
+                std::cout<<ast->toString()<<std::endl;
+
+                Generator gen;
+                gen.generate(*ast);
+            
+                for (auto &ins : gen.insSet) {
+                    ins.print();
+                }
+
+                vm.loadCodes(gen.insSet);
+                vm.run();
+            }
+            else {
+                auto ast = p.parseWholeExpr();
+                std::cout<<ast->toString()<<std::endl;
+
+                Generator gen;
+                gen.generate(*ast);
+            
+                for (auto &ins : gen.insSet) {
+                    ins.print();
+                }
+
+                vm.loadCodes(gen.insSet);
+                vm.run();
+            }
         }
         catch (SakoraError& e) {
             e.print();
