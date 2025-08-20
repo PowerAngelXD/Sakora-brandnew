@@ -389,7 +389,7 @@ sakValue sakValue::operator ==(sakValue val) {
         if (this->getType() == sakType::Type::EMPTY) {
             if ((this->isStruct() && this->getStruct().isArray()) &&
                 (val.isStruct() && val.getStruct().isArray())) {
-                    return sakValue(sakType::sakBool(sakStruct::isArrEqual(this->getStruct().arrayStruct, val.getStruct().arrayStruct)), this->defLine, this->defColumn);
+                    return sakValue(sakType::sakBool(sakStruct::isArrEqual(this->getStruct().getArray(), val.getStruct().getArray())), this->defLine, this->defColumn);
                 }
             else throw VMError::NotMatchedTypeError("'=='", val.defLine, val.defColumn);
         }
@@ -418,13 +418,13 @@ std::string sakValue::toString() {
             oss << getFloatVal();
             break;
         case sakType::Type::String:
-            oss << getStrVal();
+            oss << "\"" << getStrVal() << "\"";
             break;
         case sakType::Type::Boolean:
             oss << (getBoolVal() ? "true" : "false");
             break;
         case sakType::Type::Char:
-            oss << getCharVal();
+            oss << '\'' << getCharVal() << '\'';
             break;
         case sakType::Type::Tid: {
             if (std::get<sakType::sakTid>(value).getVal() != sakType::Type::EMPTY) {
@@ -493,9 +493,9 @@ std::string sakValue::toString() {
                     auto s = getStruct();
                     if (s.isArray()) {
                         oss << "[";
-                        for (std::size_t i = 0; i < s.arrayStruct.size(); i ++) {
-                            s.arrayStruct.at(i).printValue();
-                            if (i != s.arrayStruct.size() - 1) {
+                        for (std::size_t i = 0; i < s.getArray().size(); i ++) {
+                            oss << s.getArray().at(i).toString();
+                            if (i != s.getArray().size() - 1) {
                                 oss << ", ";
                             }
                         }
@@ -525,6 +525,15 @@ bool sakStruct::isArray() {
     return type == StructType::Array;
 }
 
+std::vector<sakValue> sakStruct::getArray() {
+    return arrayStruct;
+}
+sakValue sakStruct::arrayAt(int index) {
+    if (index > static_cast<int>(arrayStruct.size()) - 1)
+        throw VMError::ArrayOutOfRangeError("ArrayOutOfRangeError", this->arrayStruct.at(0).defLine, this->arrayStruct.at(0).defColumn);
+    else return arrayStruct.at(index);
+}
+
 bool sakStruct::isArrEqual(std::vector<sakValue> arr1, std::vector<sakValue> arr2) {
     if (arr1.size() != arr1.size()) return false;
     for (std::size_t i = 0; i < arr1.size(); i ++) {
@@ -541,7 +550,7 @@ sakValue sakValue::inferType() {
     }
     else {
         auto stct = this->getStruct();
-        auto array = stct.arrayStruct;
+        auto array = stct.getArray();
         sakType::ArrayModifider amdr;
         if (!array.at(0).isStruct()) {
             amdr.lengths.emplace_back(static_cast<int>(array.size()));
@@ -569,7 +578,7 @@ int sakValue::inferDimension(std::vector<sakValue> arr, int initd) {
     auto temp_a = arr.at(0);
     if (temp_a.isStruct()) {
         d ++;
-        return inferDimension(temp_a.getStruct().arrayStruct, d);
+        return inferDimension(temp_a.getStruct().getArray(), d);
     }
     else {
         return d;
@@ -581,8 +590,8 @@ std::vector<int> sakValue::inferLengths(std::vector<sakValue> arr, std::vector<i
 
     auto temp_a = arr.at(0);
     if (temp_a.isStruct()) {
-        d.emplace_back(static_cast<int>(temp_a.getStruct().arrayStruct.size()));
-        return inferLengths(temp_a.getStruct().arrayStruct, d);
+        d.emplace_back(static_cast<int>(temp_a.getStruct().getArray().size()));
+        return inferLengths(temp_a.getStruct().getArray(), d);
     }
     else {
         return d;
@@ -592,7 +601,7 @@ std::vector<int> sakValue::inferLengths(std::vector<sakValue> arr, std::vector<i
 sakType::Type sakValue::inferFinalType(std::vector<sakValue> arr) {
     auto temp_a = arr.at(0);
     if (temp_a.isStruct()) {
-        return inferFinalType(temp_a.getStruct().arrayStruct);
+        return inferFinalType(temp_a.getStruct().getArray());
     }
     else {
         return temp_a.getType();

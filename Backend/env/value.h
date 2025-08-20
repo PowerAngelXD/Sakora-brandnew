@@ -95,13 +95,14 @@ public:
 
 class sakStruct {
     StructType type;
-public:
     std::vector<sakValue> arrayStruct;
+public:
 
     sakStruct(std::vector<sakValue> arrStruct);
 
     bool isArray();
-
+    std::vector<sakValue> getArray();
+    sakValue arrayAt(int index);
     static bool isArrEqual(std::vector<sakValue> arr1, std::vector<sakValue> arr2);
 };
 
