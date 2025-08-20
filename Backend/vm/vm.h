@@ -37,6 +37,7 @@ class sakVM {
     void __sak_declare(std::vector<sakValue> args);
     void __sak_assign(sakValue name);
     void __sak_get(sakValue name);
+    void __sak_from(sakValue from_type);
 
 public:
     sakVM();

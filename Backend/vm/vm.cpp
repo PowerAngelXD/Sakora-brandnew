@@ -96,20 +96,20 @@ void sakVM::__sak_make_array(sakValue val) {
 }
 void sakVM::__sak_arr_tidy_check() {
     auto arr = __sak_pop();
-    __sak_arr_tidy_check(arr.getStruct().arrayStruct);
+    __sak_arr_tidy_check(arr.getStruct().getArray());
 
     __sak_push(arr);
 }
 void sakVM::__sak_arr_tidy_check(std::vector<sakValue> arr) {
     if (arr.at(0).isStruct()) {
-        auto i_size = arr.at(0).getStruct().arrayStruct.size();
+        auto i_size = arr.at(0).getStruct().getArray().size();
         for (auto sub_arr : arr) {
-            if (sub_arr.getStruct().arrayStruct.size() != i_size) 
+            if (sub_arr.getStruct().getArray().size() != i_size) 
                 throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
             else if (!sub_arr.isStruct())
                 throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
             
-            __sak_arr_tidy_check(sub_arr.getStruct().arrayStruct);
+            __sak_arr_tidy_check(sub_arr.getStruct().getArray());
         }
     }
     else {
@@ -139,6 +139,13 @@ void sakVM::__sak_get(sakValue name) {
     auto val = global.getId(name.getStrVal(), name.defLine, name.defColumn).getVal();
 
     __sak_push(val);
+}
+void sakVM::__sak_from(sakValue from_type) {
+    if (from_type.getStrVal() == "[Index]") {
+        auto index = __sak_pop();
+        auto array = __sak_pop();
+        __sak_push(array.getStruct().arrayAt(index.getIntVal()));
+    }
 }
 void sakVM::__sak_assign(sakValue name) {
     auto value = __sak_pop();
@@ -213,6 +220,9 @@ void sakVM::run() {
             break;
         case INS::GET:
             __sak_get(code.getPara());
+            break;
+        case INS::FROM:
+            __sak_from(code.getPara());
             break;
         default:
             break;
