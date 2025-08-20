@@ -22,9 +22,14 @@ std::string AST::AtomIdentifierNode::toString() {
     std::ostringstream oss;
     oss << "<AtomIdentifierNode: ";
     if (iden) oss << iden->toString();
-    if (left) oss << left->content;
-    if (index) oss << index->toString();
-    if (right) oss << right->content;
+    
+    for (size_t i = 0; i < getIndexOps.size(); ++i) {
+        if (i > 0 && i-1 < getIndexOps.size() && getIndexOps[i-1]) {
+            oss << " " << getIndexOps[i-1]->index->toString() << " ";
+        }
+        if (getIndexOps[i]) oss << getIndexOps[i]->index->toString();
+    }
+
     oss << ">";
     return oss.str();
 }

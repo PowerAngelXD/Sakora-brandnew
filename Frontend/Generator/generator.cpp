@@ -1,6 +1,20 @@
 #include "generator.h"
 #include <string>
 
+void Generator::generate(AST::AtomIdentifierNode node) {
+    auto id = node.iden->iden;
+
+    insSet.emplace_back(INS::genIns(INS::GET, id->line, id->column, {sakValue::createStringVal(id->content, id->line, id->column)}));
+
+    if (!node.getIndexOps.empty()) {
+        for (auto indexOp : node.getIndexOps) {
+            generate(*indexOp->index);
+
+            insSet.emplace_back(INS::genIns(INS::FROM, indexOp->left->line, indexOp->left->column, {sakValue::createStringVal("[Index]", indexOp->left->line, indexOp->left->column)}));
+        }
+    }
+}
+
 void Generator::generate(AST::PrimExprNode node) {
     if (node.prefixOp && node.prefixOp->content == "-") {
         insSet.emplace_back(INS::genIns(INS::PUSH, node.literal->line, node.literal->column, {sakValue::createIntVal("0", node.literal->line, node.literal->column)}));
@@ -15,9 +29,7 @@ void Generator::generate(AST::PrimExprNode node) {
     else if (node.iden) {
         if (node.iden->idens.at(0)->iden->iden) {
             // TODO: 没有函数，结构体之前先这样简单处理一下，之后要做完整的generate函数
-            auto id = node.iden->idens.at(0)->iden->iden;
-
-            insSet.emplace_back(INS::genIns(INS::GET, id->line, id->column, {sakValue::createStringVal(id->content, id->line, id->column)}));
+            generate(*node.iden->idens.at(0));
         }
     }
     else {
@@ -133,6 +145,10 @@ void Generator::generate(AST::PrimTypeExprNode node) {
         insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
                         {sakValue(sakType::sakTid(sakType::Type::Tid), node.identifier->line, node.identifier->column)}));
     }
+    else if (node.identifier->content == "char") {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.identifier->line, node.identifier->column, 
+                        {sakValue(sakType::sakTid(sakType::Type::Char), node.identifier->line, node.identifier->column)}));
+    }
     else {
         // TODO: 对于其他类型的处理
     }
@@ -215,4 +231,9 @@ void Generator::generate(AST::LetStmtNode node) {
 void Generator::generate(AST::AssignStmtNode node) {
     generate(*node.expr);
     insSet.emplace_back(INS::genIns(INS::ASSIGN, node.assignOp->line, node.assignOp->column, {sakValue::createStringVal(node.iden->content, node.assignOp->line, node.assignOp->column)}));
+}
+
+void Generator::generate(AST::StmtNode node) {
+    if (node.assignStmt) generate(*node.assignStmt);
+    else if (node.letStmt) generate(*node.letStmt);
 }

@@ -183,18 +183,21 @@ std::shared_ptr<AST::AtomIdentifierNode> Parser::parseAtomIdentifier() {
 
     node->iden = parseCallingExpr();
 
-    if (peek().content == "[") {
-        node->left = std::make_shared<Lexer::Token>(eat());
+    while (peek().content == "[") {
+        auto indexOp = std::make_shared<AST::AtomIdentifierNode::getIndexOp>();
+        indexOp->left = std::make_shared<Lexer::Token>(eat());
 
         if (!isAddExpr()) 
             throw ParserError::WrongMatchError(peek().content, "An add expression as index", peek().line, peek().column);  
 
-        node->index = parseAddExpr();
+        indexOp->index = parseAddExpr();
         
         if (peek().content != "]")
             throw ParserError::WrongMatchError(peek().content, "']'", peek().line, peek().column);  
 
-        node->right = std::make_shared<Lexer::Token>(eat());
+        indexOp->right = std::make_shared<Lexer::Token>(eat());
+
+        node->getIndexOps.emplace_back(indexOp);
     }
 
     return node;
@@ -442,5 +445,27 @@ std::shared_ptr<AST::AssignStmtNode> Parser::parseAssignStmt() {
     node->stmtEndOp = std::make_shared<Lexer::Token>(eat());
 
     return node;
+}
+
+
+bool Parser::isStmt() {
+    return isLetStmt() || isAssignStmt();
+}
+
+std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
+    auto stmt = std::make_shared<AST::StmtNode>();
+
+    if (isLetStmt()) stmt->letStmt = parseLetStmt();
+    else if (isAssignStmt()) stmt->assignStmt = parseAssignStmt();
+
+    return stmt;
+}
+
+std::vector<std::shared_ptr<AST::StmtNode>> Parser::parse() {
+    std::vector<std::shared_ptr<AST::StmtNode>> stmts;
+    while (isStmt()) {
+        stmts.emplace_back(parseStmt());
+    }
+    return stmts;
 }
 

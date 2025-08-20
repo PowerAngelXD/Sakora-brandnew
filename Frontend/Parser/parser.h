@@ -56,6 +56,12 @@ public:
     std::shared_ptr<AST::LetStmtNode> parseLetStmt();
     std::shared_ptr<AST::AssignStmtNode> parseAssignStmt();
     
+
+    // Final Parser
+    bool isStmt();
+
+    std::shared_ptr<AST::StmtNode> parseStmt();
+    std::vector<std::shared_ptr<AST::StmtNode>> parse();
 };
 
 #endif

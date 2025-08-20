@@ -36,9 +36,13 @@ namespace AST {
     public:
         std::shared_ptr<CallingExprNode> iden = nullptr;
         
-        std::shared_ptr<Lexer::Token> left = nullptr;
-        std::shared_ptr<AddExprNode> index;
-        std::shared_ptr<Lexer::Token> right = nullptr;
+        struct getIndexOp {
+            std::shared_ptr<Lexer::Token> left = nullptr;
+            std::shared_ptr<AddExprNode> index;
+            std::shared_ptr<Lexer::Token> right = nullptr;
+        };
+
+        std::vector<std::shared_ptr<getIndexOp>> getIndexOps;
 
         std::string toString() override;
     };
@@ -175,6 +179,29 @@ namespace AST {
 
         std::string toString() override;
     };
+
+    // Stage1
+
+    class WhileStmtNode : public Node {};
+
+    class IfStmtNode : public Node {};
+
+    class ElseIfStmtNode : public Node {};
+
+    class ElseStmtNode : public Node {};
+
+    class MatchStmtNode : public Node {};
+
+    class RepeatStmtNode : public Node {};
+
+    class FuncDefineStmtNode : public Node {};
+
+    class ExprStmtNode : public Node {};
+
+    // Stage2
+    class StructDefineStmtNode : public Node {};
+
+    class ImplStmtNode : public Node {};
 
     class StmtNode : public Node {
     public:
