@@ -1,6 +1,7 @@
 #include "vm.h"
 
-sakVM::sakVM(std::vector<INS::Instruction> set) : insSet(set), s_index(0) {}
+sakVM::sakVM() : insSet({}), global("__global__", {}), s_index(0) {}
+sakVM::sakVM(std::vector<INS::Instruction> set) : insSet(set), global("__global__", {}), s_index(0) {}
 
 // code
 void sakVM::__sak_push(sakValue val) {
@@ -118,14 +119,43 @@ void sakVM::__sak_arr_tidy_check(std::vector<sakValue> arr) {
         }
     }
 }
+void sakVM::__sak_declare(std::vector<sakValue> args) {
+    if (args.size() == 2) {
+        auto type = __sak_pop();
+        auto value = __sak_pop();
+
+        auto identifier = sakId(args.at(0).getStrVal(), type.getTidVal(), value);
+        global.addId(identifier); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+    }
+    else {
+        // 没有类型标注的情况
+        auto value = __sak_pop();
+
+        auto identifier = sakId(args.at(0).getStrVal(), value);
+        global.addId(identifier); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+    }
+}
+void sakVM::__sak_get(sakValue name) {
+    auto val = global.getId(name.getStrVal(), name.defLine, name.defColumn).getVal();
+
+    __sak_push(val);
+}
+void sakVM::__sak_assign(sakValue name) {
+    auto value = __sak_pop();
+    global.getId(name.getStrVal(), name.defLine, name.defColumn).writeVal(value);
+}
 //
+
+void sakVM::loadCodes(std::vector<INS::Instruction> set) {
+    this->insSet = set;
+}
 
 void sakVM::run() {
     for (auto code: insSet) {
         switch (code.getOp())
         {
         case INS::PUSH:
-            __sak_push(code.getParas());
+            __sak_push(code.getPara());
             break;
         case INS::POP:
             __sak_pop();
@@ -170,10 +200,19 @@ void sakVM::run() {
             __sak_lgc_not();
             break;
         case INS::ARR_MAKE:
-            __sak_make_array(code.getParas());
+            __sak_make_array(code.getPara());
             break;
         case INS::ARR_TIDY_CHK:
             __sak_arr_tidy_check();
+            break;
+        case INS::DECLARE:
+            __sak_declare(code.getParas());
+            break;
+        case INS::ASSIGN:
+            __sak_assign(code.getPara());
+            break;
+        case INS::GET:
+            __sak_get(code.getPara());
             break;
         default:
             break;
@@ -181,10 +220,15 @@ void sakVM::run() {
     }
     // for debug:
     std::cout << "[result]: ";
-    auto result = getTop();
-    result.printValueLn();
-    auto type = result.inferType();
-    type.printValueLn();
+    if (runtime.empty()) {
+        std::cout << "no result" << std::endl;
+    }
+    else {
+        auto result = getTop();
+        result.printValueLn();
+        auto type = result.inferType();
+        type.printValueLn();
+    }
 }
  
 sakValue& sakVM::getTop() {
