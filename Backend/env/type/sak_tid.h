@@ -34,12 +34,13 @@ namespace sakType {
         sakTid(const Type& v);
         sakTid(const Type&& v, ArrayModifider am);
         sakTid(const Type& v, ArrayModifider am);
-        const Type& getVal();
+        Type getVal();
         const TypeModifier& getModifier();
         bool setVal(const Type& nv);
         bool setModifier(const ArrayModifider& arrayMod);
 
-        
+        bool operator ==(sakTid tid);
+        bool operator !=(sakTid tid);
     };
 }
 
