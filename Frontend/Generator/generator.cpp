@@ -12,6 +12,14 @@ void Generator::generate(AST::PrimExprNode node) {
     else if (node.arrayExpr) {
         generate(*node.arrayExpr);
     }
+    else if (node.iden) {
+        if (node.iden->idens.at(0)->iden->iden) {
+            // TODO: 没有函数，结构体之前先这样简单处理一下，之后要做完整的generate函数
+            auto id = node.iden->idens.at(0)->iden->iden;
+
+            insSet.emplace_back(INS::genIns(INS::GET, id->line, id->column, {sakValue::createStringVal(id->content, id->line, id->column)}));
+        }
+    }
     else {
         if (node.literal->type == Lexer::Number) {
             if (node.literal->content.find('.') != std::string::npos) {
@@ -181,4 +189,30 @@ void Generator::generate(AST::WholeExprNode node) {
     else if (node.boolExpr) {
         generate(*node.boolExpr);
     }
+}
+
+
+
+
+void Generator::generate(AST::LetStmtNode node) {
+    generate(*node.expr);
+    // 判断有没有类型约束说明
+    if (node.typeModOp) {
+        generate(*node.type);
+        insSet.emplace_back(INS::genIns(INS::DECLARE, 
+                                        node.letMark->line, 
+                                        node.letMark->column, 
+                                        {sakValue::createStringVal(node.identifier->content, node.identifier->line, node.identifier->column), 
+                                        sakValue::createStringVal("[HasTypeModifier]", node.typeModOp->line, node.typeModOp->column)}));
+    }
+    else {
+        insSet.emplace_back(INS::genIns(INS::DECLARE, 
+                                        node.letMark->line, 
+                                        node.letMark->column, 
+                                        {sakValue::createStringVal(node.identifier->content, node.identifier->line, node.identifier->column)}));
+    }
+}
+void Generator::generate(AST::AssignStmtNode node) {
+    generate(*node.expr);
+    insSet.emplace_back(INS::genIns(INS::ASSIGN, node.assignOp->line, node.assignOp->column, {sakValue::createStringVal(node.iden->content, node.assignOp->line, node.assignOp->column)}));
 }

@@ -18,6 +18,9 @@ public:
     void generate(AST::TypeExprNode node);
     void generate(AST::ArrayExprNode node);
     void generate(AST::WholeExprNode node);
+
+    void generate(AST::LetStmtNode node);
+    void generate(AST::AssignStmtNode node);
 };
 
 #endif
