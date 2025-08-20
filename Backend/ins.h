@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <any>
+#include <sstream>
 
 #include "env/value.h"
 
@@ -27,7 +28,11 @@ namespace INS {
         const int& getLine();
         const int& getColumn();
         const InsOp& getOp();
-        const sakValue& getParas(std::size_t i = 0);
+        const sakValue& getPara(std::size_t i = 0);
+        std::vector<sakValue> getParas();
+
+        std::string toString();
+        void print();
     };
 
     Instruction genIns(InsOp op, int ln, int col, std::initializer_list<sakValue> paras);
