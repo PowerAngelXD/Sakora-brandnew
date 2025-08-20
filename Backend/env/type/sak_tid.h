@@ -16,7 +16,7 @@ namespace sakType {
         Type arrayType = Type::Null; // 数组类型
 
         std::vector<int> lengths; // 各维度数组的长度
-        int dimension = 1; // 数组维度
+        int dimension = 0; // 数组维度
     };
 
     struct TypeModifier {
