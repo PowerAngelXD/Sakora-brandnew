@@ -15,14 +15,48 @@ namespace AST {
     // Expression
 
     class WholeExprNode;
+    class AddExprNode;
     class TypeExprNode;
     class ArrayExprNode;
+    class IdentifierExprNode;
+
+    class CallingExprNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> iden = nullptr;
+        
+        std::shared_ptr<Lexer::Token> left = nullptr;
+        std::vector<std::shared_ptr<WholeExprNode>> args;
+        std::vector<std::shared_ptr<Lexer::Token>> dots;
+        std::shared_ptr<Lexer::Token> right = nullptr;
+
+        std::string toString() override;
+    };
+
+    class AtomIdentifierNode : public Node {
+    public:
+        std::shared_ptr<CallingExprNode> iden = nullptr;
+        
+        std::shared_ptr<Lexer::Token> left = nullptr;
+        std::shared_ptr<AddExprNode> index;
+        std::shared_ptr<Lexer::Token> right = nullptr;
+
+        std::string toString() override;
+    };
+
+    class IdentifierExprNode : public Node {
+    public:
+        std::vector<std::shared_ptr<AtomIdentifierNode>> idens;
+        std::vector<std::shared_ptr<Lexer::Token>> getOps;
+
+        std::string toString() override;
+    };
 
     class PrimExprNode : public Node {
     public:
         std::shared_ptr<Lexer::Token> prefixOp = nullptr;
 
         std::shared_ptr<Lexer::Token> literal = nullptr;
+        std::shared_ptr<IdentifierExprNode> iden = nullptr;
         std::shared_ptr<ArrayExprNode> arrayExpr = nullptr;
         std::shared_ptr<WholeExprNode> wholeExpr = nullptr;
 
@@ -127,6 +161,25 @@ namespace AST {
         std::shared_ptr<WholeExprNode> expr = nullptr;
 
         std::shared_ptr<Lexer::Token> stmtEndOp = nullptr;
+
+        std::string toString() override;
+    };
+
+    class AssignStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> iden = nullptr;
+        std::shared_ptr<Lexer::Token> assignOp = nullptr;
+        std::shared_ptr<WholeExprNode> expr = nullptr;
+
+        std::shared_ptr<Lexer::Token> stmtEndOp = nullptr;
+
+        std::string toString() override;
+    };
+
+    class StmtNode : public Node {
+    public:
+        std::shared_ptr<LetStmtNode> letStmt = nullptr;
+        std::shared_ptr<AssignStmtNode> assignStmt = nullptr;
 
         std::string toString() override;
     };

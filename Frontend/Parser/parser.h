@@ -15,7 +15,11 @@ public:
     // 读取当前index下token之后，index+1
     const Lexer::Token& eat();
 
+    // Expression
     // checker
+    bool isCallingExpr();
+    bool isAtomIdentifier();
+    bool isIdentifierExpr();
     bool isPrimExpr();
     bool isAddExpr();
     bool isMulExpr();
@@ -28,6 +32,9 @@ public:
     bool isWholeExpr();
 
     // parser
+    std::shared_ptr<AST::CallingExprNode> parseCallingExpr();
+    std::shared_ptr<AST::AtomIdentifierNode> parseAtomIdentifier();
+    std::shared_ptr<AST::IdentifierExprNode> parseIdentifierExpr();
     std::shared_ptr<AST::PrimExprNode> parsePrimExpr();
     std::shared_ptr<AST::MulExprNode> parseMulExpr();
     std::shared_ptr<AST::AddExprNode> parseAddExpr();
@@ -38,6 +45,16 @@ public:
     std::shared_ptr<AST::TypeExprNode> parseTypeExpr();
     std::shared_ptr<AST::ArrayExprNode> parseArrayExpr();
     std::shared_ptr<AST::WholeExprNode> parseWholeExpr();
+
+
+    // Statement
+    // checker
+    bool isLetStmt();
+    bool isAssignStmt();
+
+    // parser
+    std::shared_ptr<AST::LetStmtNode> parseLetStmt();
+    std::shared_ptr<AST::AssignStmtNode> parseAssignStmt();
     
 };
 

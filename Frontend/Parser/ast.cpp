@@ -4,6 +4,44 @@ std::string AST::Node::toString() {
     return "<AST::Node>";
 }
 
+std::string AST::CallingExprNode::toString() {
+    std::ostringstream oss;
+    oss << "<CallingExprNode: ";
+    if (iden) oss << iden->content;
+    if (left) oss << left->content;
+    for (size_t i = 0; i < args.size(); ++i) {
+        if (i > 0) oss << ", ";
+        if (args[i]) oss << args[i]->toString();
+    }
+    if (right) oss << right->content;
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::AtomIdentifierNode::toString() {
+    std::ostringstream oss;
+    oss << "<AtomIdentifierNode: ";
+    if (iden) oss << iden->toString();
+    if (left) oss << left->content;
+    if (index) oss << index->toString();
+    if (right) oss << right->content;
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::IdentifierExprNode::toString() {
+    std::ostringstream oss;
+    oss << "<IdentifierExprNode: ";
+    for (size_t i = 0; i < idens.size(); ++i) {
+        if (i > 0 && i-1 < getOps.size() && getOps[i-1]) {
+            oss << getOps[i-1]->content;
+        }
+        if (idens[i]) oss << idens[i]->toString();
+    }
+    oss << ">";
+    return oss.str();
+}
+
 std::string AST::PrimExprNode::toString() {
     std::string prefix;
     if (prefixOp) {
@@ -17,6 +55,8 @@ std::string AST::PrimExprNode::toString() {
         return prefix + "(" + wholeExpr->toString() + ")";
     } else if (arrayExpr) {
         return prefix + "(" + arrayExpr->toString() + ")";
+    } else if (iden) {
+        return prefix + "(" + iden->toString() + ")";
     }
     return "<PrimExprNode: null>";
 }
@@ -122,5 +162,38 @@ std::string AST::TypeExprNode::toString() {
     if (prim) return prim->toString();
     if (array) return array->toString();
     return "<TypeExprNode: null>";
+}
+
+
+
+// STMT
+
+std::string AST::LetStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "<LetStmtNode: ";
+    oss << letMark->content << " ";
+    oss << identifier->content << " ";
+    if (typeModOp) oss << typeModOp->content << " ";
+    if (typeModOp) oss << type->toString() << " ";
+    oss << assignOp->content << " ";
+    oss << expr->toString() << " ";
+    oss << stmtEndOp->content;
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::AssignStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "<AssignStmtNode: ";
+    oss << iden->toString() << " ";
+    oss << assignOp->content << " ";
+    oss << expr->toString();
+    oss << ">";
+    return oss.str();
+}
+
+std::string AST::StmtNode::toString() {
+    if (letStmt) return letStmt->toString();
+    else return assignStmt->toString();
 }
 

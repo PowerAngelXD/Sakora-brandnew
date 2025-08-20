@@ -13,11 +13,26 @@ const Lexer::Token& Parser::eat() {
     return seq.at(index ++);
 }
 
+
+// Expression
+
+
+
 bool Parser::isPrimExpr() {
     return peek().content == "!" || isArrayExpr() 
-            || peek().content == "-" || peek().type == Lexer::Number 
+            || peek().content == "-" || peek().type == Lexer::Number || peek().type == Lexer::Identifier
             || peek().type == Lexer::String || peek().type == Lexer::Char || peek().content == "(" 
             || peek().content == "true" || peek().content == "false";
+}
+
+bool Parser::isCallingExpr() {
+    return peek().type == Lexer::Identifier || (peek().type == Lexer::Identifier && peek(1).content == "(");
+}
+bool Parser::isIdentifierExpr() {
+    return isAtomIdentifier();
+}
+bool Parser::isAtomIdentifier() {
+    return isCallingExpr();
 }
 
 bool Parser::isAddExpr() {
@@ -118,10 +133,91 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
         node->arrayExpr = parseArrayExpr();
         return node;
     }
+    else if (isIdentifierExpr()) {
+        node->iden = parseIdentifierExpr();
+        return node;
+    }
     else {
         node->literal = std::make_shared<Lexer::Token>(eat());
         return node;
     }
+}
+
+std::shared_ptr<AST::CallingExprNode> Parser::parseCallingExpr() {
+    if(!isCallingExpr())
+        throw ParserError::WrongMatchError(peek().content, "identifier", peek().line, peek().column);
+    
+    auto node = std::make_shared<AST::CallingExprNode>();
+
+    node->iden = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().content == "(") {
+        node->left = std::make_shared<Lexer::Token>(eat());
+
+        if (isWholeExpr()) {
+            // 函数存在参数，开始解析参数列表
+            node->args.emplace_back(parseWholeExpr());
+            while (peek().content == ",") {
+                node->dots.emplace_back(std::make_shared<Lexer::Token>(eat()));
+                if (!isWholeExpr())
+                    throw ParserError::WrongMatchError(peek().content, "An expression", peek().line, peek().column);
+                    
+                node->args.emplace_back(parseWholeExpr());
+            }
+        }
+
+        if (peek().content != ")")
+            throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);  
+        
+        node->right = std::make_shared<Lexer::Token>(eat());
+    }
+
+    return node;
+}
+
+std::shared_ptr<AST::AtomIdentifierNode> Parser::parseAtomIdentifier() {
+    if (!isAtomIdentifier())
+        throw ParserError::WrongMatchError(peek().content, "Identifier", peek().line, peek().column);  
+    
+    auto node = std::make_shared<AST::AtomIdentifierNode>();
+
+    node->iden = parseCallingExpr();
+
+    if (peek().content == "[") {
+        node->left = std::make_shared<Lexer::Token>(eat());
+
+        if (!isAddExpr()) 
+            throw ParserError::WrongMatchError(peek().content, "An add expression as index", peek().line, peek().column);  
+
+        node->index = parseAddExpr();
+        
+        if (peek().content != "]")
+            throw ParserError::WrongMatchError(peek().content, "']'", peek().line, peek().column);  
+
+        node->right = std::make_shared<Lexer::Token>(eat());
+    }
+
+    return node;
+}
+
+std::shared_ptr<AST::IdentifierExprNode> Parser::parseIdentifierExpr() {
+    if (!isIdentifierExpr())
+        throw ParserError::WrongMatchError(peek().content, "Identifier", peek().line, peek().column);  
+    
+    auto node = std::make_shared<AST::IdentifierExprNode>();
+
+    node->idens.emplace_back(parseAtomIdentifier());
+
+    while (peek().content == ".") {
+        node->getOps.emplace_back(std::make_shared<Lexer::Token>(eat()));
+
+        if (!isIdentifierExpr())
+            throw ParserError::WrongMatchError(peek().content, "Identifier", peek().line, peek().column);  
+        
+        node->idens.emplace_back(parseAtomIdentifier());
+    }
+
+    return node;
 }
 
 std::shared_ptr<AST::MulExprNode> Parser::parseMulExpr() {
@@ -263,10 +359,88 @@ std::shared_ptr<AST::WholeExprNode> Parser::parseWholeExpr() {
     auto node = std::make_shared<AST::WholeExprNode>();
 
     if (isBoolExpr()) node->boolExpr = parseBoolExpr();
-    else if (isTypeExpr()) node->typeExpr = parseTypeExpr();
+    //else if (isTypeExpr()) node->typeExpr = parseTypeExpr();
     else node->addExpr = parseAddExpr();
 
     return node;
 }
 
+
+// Statement
+
+
+bool Parser::isLetStmt() {
+    return peek().content == "let";
+}
+
+bool Parser::isAssignStmt() {
+    if (isPrimExpr()) {
+        auto pos = index;
+        parsePrimExpr();
+        if (peek().content == "=") {
+            index = pos;
+            return true;
+        }
+        else {
+            index = pos;
+            return false;
+        }
+    }
+    return false;
+}
+
+// TODO: 之后出现IdentifierExpr的时候需要对下面两个stmt进行修改
+std::shared_ptr<AST::LetStmtNode> Parser::parseLetStmt() {
+    if (!isLetStmt())
+        throw ParserError::WrongMatchError(peek().content, "\"let\"", peek().line, peek().column);
+
+    auto node = std::make_shared<AST::LetStmtNode>();
+    node->letMark = std::make_shared<Lexer::Token>(eat());
+
+    if (!peek().type == Lexer::Identifier) 
+        throw ParserError::WrongMatchError(peek().content, "Identifier", peek().line, peek().column);
+    node->identifier = std::make_shared<Lexer::Token>(eat());
+
+    // 存在类型标注符
+    if (peek().content == ":") {
+        node->typeModOp = std::make_shared<Lexer::Token>(eat());
+        if (!isTypeExpr())
+            throw ParserError::WrongMatchError(peek().content, "TypeExpression", peek().line, peek().column);
+        
+        node->type = parseTypeExpr();
+    }
+
+    if (peek().content != "=") 
+        throw ParserError::WrongMatchError(peek().content, "TypeExpression", peek().line, peek().column);
+    node->assignOp = std::make_shared<Lexer::Token>(eat());
+
+    if (!isWholeExpr()) 
+        throw ParserError::WrongMatchError(peek().content, "Value or Expression", peek().line, peek().column);
+    node->expr = parseWholeExpr();
+
+    if (peek().content != ";") 
+        throw ParserError::WrongMatchError(peek().content, "';'", peek().line, peek().column);
+    node->stmtEndOp = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
+std::shared_ptr<AST::AssignStmtNode> Parser::parseAssignStmt() {
+    if (!isAssignStmt())
+        throw ParserError::WrongMatchError(peek().content, "Assign Statement", peek().line, peek().column);
+    
+    auto node = std::make_shared<AST::AssignStmtNode>();
+    node->iden = std::make_shared<Lexer::Token>(eat());
+    node->assignOp = std::make_shared<Lexer::Token>(eat());
+
+    if (!isWholeExpr()) 
+        throw ParserError::WrongMatchError(peek().content, "Value or Expression", peek().line, peek().column);
+    node->expr = parseWholeExpr();
+
+    if (peek().content != ";") 
+        throw ParserError::WrongMatchError(peek().content, "';'", peek().line, peek().column);
+    node->stmtEndOp = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
 
