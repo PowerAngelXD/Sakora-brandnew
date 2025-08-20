@@ -29,35 +29,7 @@ void sakoraConsole::sakConsole::run() {
 
             Parser p(sequence);
 
-            if (p.isLetStmt()) {
-                auto ast = p.parseLetStmt();
-                std::cout<<ast->toString()<<std::endl;
-
-                Generator gen;
-                gen.generate(*ast);
-            
-                for (auto &ins : gen.insSet) {
-                    ins.print();
-                }
-
-                vm.loadCodes(gen.insSet);
-                vm.run();
-            }
-            else if (p.isAssignStmt()) {
-                auto ast = p.parseAssignStmt();
-                std::cout<<ast->toString()<<std::endl;
-
-                Generator gen;
-                gen.generate(*ast);
-            
-                for (auto &ins : gen.insSet) {
-                    ins.print();
-                }
-
-                vm.loadCodes(gen.insSet);
-                vm.run();
-            }
-            else {
+            if (p.isWholeExpr()) {
                 auto ast = p.parseWholeExpr();
                 std::cout<<ast->toString()<<std::endl;
 
@@ -70,6 +42,21 @@ void sakoraConsole::sakConsole::run() {
 
                 vm.loadCodes(gen.insSet);
                 vm.run();
+            }
+            else if (p.isStmt()) {
+                auto asts = p.parse();
+                
+                Generator gen;
+                for (auto ast : asts) {
+                    std::cout<<ast->toString()<<std::endl;
+                    gen.generate(*ast);
+            
+                    for (auto &ins : gen.insSet) {
+                        ins.print();
+                    }
+                }
+                vm.loadCodes(gen.insSet);
+                    vm.run();
             }
         }
         catch (SakoraError& e) {
