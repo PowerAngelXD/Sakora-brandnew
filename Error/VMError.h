@@ -42,6 +42,13 @@ namespace VMError {
         UnknownIdentifierError(std::string s, int ln, int col);
         void print() override;
     };
+
+    class ArrayOutOfRangeError : public SakoraError {
+        std::string given;
+    public:
+        ArrayOutOfRangeError(std::string s, int ln, int col);
+        void print() override;
+    };
 }
 
 #endif

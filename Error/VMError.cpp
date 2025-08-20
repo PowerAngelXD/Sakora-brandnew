@@ -48,3 +48,10 @@ void VMError::UnknownIdentifierError::print() {
     VM_ERROR_HEAD;
     std::cout << "AlreadyIdentifierError: The identifier: \"" << src << "\" is not exist in current scope." <<std::endl;
 }
+
+VMError::ArrayOutOfRangeError::ArrayOutOfRangeError(std::string s, int ln, int col) 
+    : SakoraError(std::move(s), ln, col) {}
+void VMError::ArrayOutOfRangeError::print() {
+    VM_ERROR_HEAD;
+    std::cout << "ArrayOutOfRangeError: Occured out of range when accessing array elements." <<std::endl;
+}
