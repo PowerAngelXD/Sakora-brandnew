@@ -76,8 +76,8 @@ const bool& sakValue::getBoolVal() {
     return std::get<sakType::sakBool>(value).getVal();
 }
 
-const sakType::Type& sakValue::getTidVal() {
-    return std::get<sakType::sakTid>(value).getVal();
+sakType::sakTid sakValue::getTidVal() {
+    return std::get<sakType::sakTid>(value);
 }
 
 bool sakValue::isStruct() {
@@ -316,31 +316,7 @@ sakValue sakValue::operator >(sakValue val) {
     }
 }
 sakValue sakValue::operator >=(sakValue val) {
-    switch (this->getType())
-    {
-    case sakType::Type::Int:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getIntVal() >= val.getIntVal()), this->defLine, this->defColumn);
-        }
-        else if (val.getType() == sakType::Type::Float) {
-            return sakValue(sakType::sakBool(this->getIntVal() >= val.getFloatVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
-        }
-    case sakType::Type::Float:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getFloatVal() >= val.getFloatVal()), this->defLine, this->defColumn);
-        }
-        else if (val.getType() == sakType::Type::Int) {
-            return sakValue(sakType::sakBool(this->getFloatVal() >= val.getIntVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
-        }
-    default:
-        throw VMError::NotMatchedTypeError("'>='", val.defLine, val.defColumn);
-    }
+    return sakValue(sakType::sakBool(((this->operator>(val)).getBoolVal() && (this->operator==(val)).getBoolVal())), this->defLine, this->defColumn);
 }
 sakValue sakValue::operator <(sakValue val) {
     switch (this->getType())
@@ -370,31 +346,7 @@ sakValue sakValue::operator <(sakValue val) {
     }
 }
 sakValue sakValue::operator <=(sakValue val) {
-    switch (this->getType())
-    {
-    case sakType::Type::Int:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getIntVal() <= val.getIntVal()), this->defLine, this->defColumn);
-        }
-        else if (val.getType() == sakType::Type::Float) {
-            return sakValue(sakType::sakBool(this->getIntVal() <= val.getFloatVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
-        }
-    case sakType::Type::Float:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getFloatVal() <= val.getFloatVal()), this->defLine, this->defColumn);
-        }
-        else if (val.getType() == sakType::Type::Int) {
-            return sakValue(sakType::sakBool(this->getFloatVal() <= val.getIntVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
-        }
-    default:
-        throw VMError::NotMatchedTypeError("'<='", val.defLine, val.defColumn);
-    }
+    return sakValue(sakType::sakBool(((this->operator<(val)).getBoolVal() && (this->operator==(val)).getBoolVal())), this->defLine, this->defColumn);
 }
 sakValue sakValue::operator ==(sakValue val) {
     switch (this->getType())
@@ -445,52 +397,7 @@ sakValue sakValue::operator ==(sakValue val) {
     }
 }
 sakValue sakValue::operator !=(sakValue val) {
-    switch (this->getType())
-    {
-    case sakType::Type::String:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getStrVal() != val.getStrVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
-        }
-    case sakType::Type::Boolean:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getBoolVal() != val.getBoolVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
-        }
-    case sakType::Type::Int:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getIntVal() != val.getIntVal()), this->defLine, this->defColumn);
-        }
-        else if (val.getType() == sakType::Type::Float) {
-            return sakValue(sakType::sakBool(this->getIntVal() != val.getFloatVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
-        }
-    case sakType::Type::Float:
-        if (val.getType() == this->getType()) {
-            return sakValue(sakType::sakBool(this->getFloatVal() != val.getFloatVal()), this->defLine, this->defColumn);
-        }
-        else if (val.getType() == sakType::Type::Int) {
-            return sakValue(sakType::sakBool(this->getFloatVal() != val.getIntVal()), this->defLine, this->defColumn);
-        }
-        else {
-            throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
-        }
-    default:
-        if (this->getType() == sakType::Type::EMPTY) {
-            if ((this->isStruct() && this->getStruct().isArray()) &&
-                (val.isStruct() && val.getStruct().isArray())) {
-                    return sakValue(sakType::sakBool(!sakStruct::isArrEqual(this->getStruct().arrayStruct, val.getStruct().arrayStruct)), this->defLine, this->defColumn);
-                }
-            else throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
-        }
-        else throw VMError::NotMatchedTypeError("'!='", val.defLine, val.defColumn);
-    }
+    return sakValue(sakType::sakBool(!(this->operator==(val)).getBoolVal()), this->defLine, this->defColumn);
 }
 sakValue sakValue::operator !() {
     if (this->getType() == sakType::Type::Boolean) {
@@ -501,27 +408,28 @@ sakValue sakValue::operator !() {
     }
 }
 
-void sakValue::printValue() {
+std::string sakValue::toString() {
+    std::ostringstream oss;
     switch (getType()) {
         case sakType::Type::Int:
-            std::cout << getIntVal();
+            oss << getIntVal();
             break;
         case sakType::Type::Float:
-            std::cout << getFloatVal();
+            oss << getFloatVal();
             break;
         case sakType::Type::String:
-            std::cout << getStrVal();
+            oss << getStrVal();
             break;
         case sakType::Type::Boolean:
-            std::cout << (getBoolVal() ? "true" : "false");
+            oss << (getBoolVal() ? "true" : "false");
             break;
         case sakType::Type::Char:
-            std::cout << getCharVal();
+            oss << getCharVal();
             break;
         case sakType::Type::Tid: {
             if (std::get<sakType::sakTid>(value).getVal() != sakType::Type::EMPTY) {
                 std::string content;
-                switch (getTidVal())
+                switch (this->getTidVal().getVal())
                 {
                 case sakType::Type::Boolean:
                     content = "<Boolean>";
@@ -544,12 +452,11 @@ void sakValue::printValue() {
                 default:
                     break;
                 }
-                std::cout << content;
+                oss << content;
             }
             else {
                 if (std::get<sakType::sakTid>(value).getModifier().arrayMod) {
                     auto amr = std::get<sakType::sakTid>(value).getModifier().arrayMod;
-                    std::ostringstream oss;
                     switch (amr->arrayType)
                     {
                     case sakType::Type::Int:
@@ -576,7 +483,6 @@ void sakValue::printValue() {
                     for (auto info : amr->lengths) {
                         oss << "[" << info << "]";
                     }
-                    std::cout << oss.str();
                 }
             }
             break;
@@ -586,20 +492,22 @@ void sakValue::printValue() {
                     // 是struct，以struct的形式打印
                     auto s = getStruct();
                     if (s.isArray()) {
-                        std::cout << "[";
+                        oss << "[";
                         for (std::size_t i = 0; i < s.arrayStruct.size(); i ++) {
                             s.arrayStruct.at(i).printValue();
                             if (i != s.arrayStruct.size() - 1) {
-                                std::cout << ", ";
+                                oss << ", ";
                             }
                         }
-                        std::cout << "]";
+                        oss << "]";
                     }
                 }
         }
     }
-
-
+    return oss.str();
+}
+void sakValue::printValue() {
+    std::cout << this->toString();
 }
 
 void sakValue::printValueLn() {

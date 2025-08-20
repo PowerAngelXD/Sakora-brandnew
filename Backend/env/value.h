@@ -54,8 +54,9 @@ public:
     const std::string& getStrVal();
     const double& getFloatVal();
     const bool& getBoolVal();
-    const sakType::Type& getTidVal();
+    sakType::sakTid getTidVal();
     const char& getCharVal();
+    std::string toString();
     void printValue();
     void printValueLn();
 
