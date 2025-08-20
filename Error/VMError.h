@@ -21,6 +21,27 @@ namespace VMError {
         NotTidyArrayError(std::string s, int ln, int col);
         void print() override;
     };
+
+    class TypeInconsistentError : public SakoraError {
+        std::string given;
+    public:
+        TypeInconsistentError(std::string exp, std::string gi, int ln, int col);
+        void print() override;
+    };
+
+    class AlreadyIdentifierError : public SakoraError {
+        std::string given;
+    public:
+        AlreadyIdentifierError(std::string s, int ln, int col);
+        void print() override;
+    };
+
+    class UnknownIdentifierError : public SakoraError {
+        std::string given;
+    public:
+        UnknownIdentifierError(std::string s, int ln, int col);
+        void print() override;
+    };
 }
 
 #endif
