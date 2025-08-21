@@ -122,10 +122,17 @@ void sakVM::__sak_arr_tidy_check(std::vector<sakValue> arr) {
 void sakVM::__sak_declare(std::vector<sakValue> args) {
     if (args.size() == 2) {
         auto type = __sak_pop();
-        auto value = __sak_pop();
+        if (!runtime.empty()) {
+            auto value = __sak_pop();
 
-        auto identifier = sakId(args.at(0).getStrVal(), type.getTidVal(), value);
-        global.addId(identifier); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+            auto identifier = sakId(args.at(0).getStrVal(), type.getTidVal(), value);
+            global.addId(identifier); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+        }
+        else {
+            // 仅声明
+            auto identifier = sakId(args.at(0).getStrVal(), type.getTidVal());
+            global.addId(identifier);
+        }
     }
     else {
         // 没有类型标注的情况

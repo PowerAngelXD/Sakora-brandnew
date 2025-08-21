@@ -180,8 +180,8 @@ std::string AST::LetStmtNode::toString() {
     oss << identifier->content << " ";
     if (typeModOp) oss << typeModOp->content << " ";
     if (typeModOp) oss << type->toString() << " ";
-    oss << assignOp->content << " ";
-    oss << expr->toString() << " ";
+    if (assignOp) oss << assignOp->content << " ";
+    if (assignOp) oss << expr->toString() << " ";
     oss << stmtEndOp->content;
     oss << ">";
     return oss.str();

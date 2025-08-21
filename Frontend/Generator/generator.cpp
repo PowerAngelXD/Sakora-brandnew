@@ -211,7 +211,7 @@ void Generator::generate(AST::WholeExprNode node) {
 
 
 void Generator::generate(AST::LetStmtNode node) {
-    generate(*node.expr);
+    if (node.expr) generate(*node.expr);
     // 判断有没有类型约束说明
     if (node.typeModOp) {
         generate(*node.type);

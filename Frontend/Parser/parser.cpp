@@ -413,13 +413,15 @@ std::shared_ptr<AST::LetStmtNode> Parser::parseLetStmt() {
         node->type = parseTypeExpr();
     }
 
-    if (peek().content != "=") 
-        throw ParserError::WrongMatchError(peek().content, "TypeExpression", peek().line, peek().column);
-    node->assignOp = std::make_shared<Lexer::Token>(eat());
+    if (peek().content == "=") {
+         node->assignOp = std::make_shared<Lexer::Token>(eat());
 
-    if (!isWholeExpr()) 
-        throw ParserError::WrongMatchError(peek().content, "Value or Expression", peek().line, peek().column);
-    node->expr = parseWholeExpr();
+        if (!isWholeExpr()) 
+            throw ParserError::WrongMatchError(peek().content, "Value or Expression", peek().line, peek().column);
+        node->expr = parseWholeExpr();
+    }
+    else if (peek().content != "=" && !node->typeModOp)
+        throw ParserError::WrongMatchError(peek().content, "'='", peek().line, peek().column); // 如果没有指定类型不能进行声明，如：let a;
 
     if (peek().content != ";") 
         throw ParserError::WrongMatchError(peek().content, "';'", peek().line, peek().column);
