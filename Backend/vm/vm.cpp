@@ -7,10 +7,22 @@ sakVM::sakVM(std::vector<INS::Instruction> set) : insSet(set), global("__global_
 void sakVM::__sak_push(sakValue val) {
     runtime.push(val);
 }
+void sakVM::__sak_push(Object& obj) {
+    runtime.push(obj);
+}
 sakValue sakVM::__sak_pop() {
     storage.emplace_back(runtime.top());
     runtime.pop();
-    return storage.at(s_index ++);
+    return storage.at(s_index ++).getValue();
+}
+Object& sakVM::__sak_pop_obj() {
+    storage.emplace_back(runtime.top());
+    runtime.pop();
+    return storage.at(s_index ++).getObj();
+}
+void sakVM::__sak_push_obj(sakValue name) {
+    Object& obj = global.getObj(name.getStrVal(), name.defLine, name.defColumn);
+    __sak_push(obj);
 }
 void sakVM::__sak_add() {
     auto rval = __sak_pop();
@@ -105,9 +117,9 @@ void sakVM::__sak_arr_tidy_check(std::vector<sakValue> arr) {
         auto i_size = arr.at(0).getStruct().getArray().size();
         for (auto sub_arr : arr) {
             if (sub_arr.getStruct().getArray().size() != i_size) 
-                throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
+                throw VMError::NotTidyArrayError(arr.at(0).defLine, arr.at(0).defColumn);
             else if (!sub_arr.isStruct())
-                throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
+                throw VMError::NotTidyArrayError(arr.at(0).defLine, arr.at(0).defColumn);
             
             __sak_arr_tidy_check(sub_arr.getStruct().getArray());
         }
@@ -115,37 +127,40 @@ void sakVM::__sak_arr_tidy_check(std::vector<sakValue> arr) {
     else {
         for (std::size_t i = 1; i < arr.size(); i ++) {
             if (arr.at(i).isStruct())
-                throw VMError::NotTidyArrayError("NotTidyArrayError", arr.at(0).defLine, arr.at(0).defColumn);
+                throw VMError::NotTidyArrayError(arr.at(0).defLine, arr.at(0).defColumn);
         }
     }
 }
 void sakVM::__sak_declare(std::vector<sakValue> args) {
     if (args.size() == 2) {
         auto type = __sak_pop();
+        auto objName = args.at(0).getStrVal();
         if (!runtime.empty()) {
             auto value = __sak_pop();
 
-            auto identifier = sakId(args.at(0).getStrVal(), type.getTidVal(), value);
-            global.addId(identifier); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+            auto obj = Object(objName, value, value.defLine, value.defColumn);
+            global.addObj(obj); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
         }
         else {
             // 仅声明
-            auto identifier = sakId(args.at(0).getStrVal(), type.getTidVal());
-            global.addId(identifier);
+            auto obj = Object(objName, type,  type.defLine, type.defColumn);
+            global.addObj(obj); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
         }
     }
     else {
         // 没有类型标注的情况
         auto value = __sak_pop();
 
-        auto identifier = sakId(args.at(0).getStrVal(), value);
-        global.addId(identifier); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+        auto obj = Object(args.at(0).getStrVal(), value, value.defLine, value.defColumn);
+        global.addObj(obj); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
     }
 }
-void sakVM::__sak_get(sakValue name) {
-    auto val = global.getId(name.getStrVal(), name.defLine, name.defColumn).getVal();
-
-    __sak_push(val);
+void sakVM::__sak_get_val(sakValue name) {
+    auto obj = global.getObj(name.getStrVal(), name.defLine, name.defColumn);
+    if (obj.isValueObj() && !obj.getValueObj().isNull()) {
+        auto val = obj.getValueObj().getValue();
+        __sak_push(val);
+    }
 }
 void sakVM::__sak_from(sakValue from_type) {
     if (from_type.getStrVal() == "[Index]") {
@@ -154,9 +169,12 @@ void sakVM::__sak_from(sakValue from_type) {
         __sak_push(array.getStruct().arrayAt(index.getIntVal()));
     }
 }
-void sakVM::__sak_assign(sakValue name) {
+void sakVM::__sak_assign() {
+    auto obj = __sak_pop_obj();
     auto value = __sak_pop();
-    global.getId(name.getStrVal(), name.defLine, name.defColumn).writeVal(value);
+    obj.getValueObj().assign(value);
+
+    global.update(obj);
 }
 //
 
@@ -173,6 +191,9 @@ void sakVM::run() {
             break;
         case INS::POP:
             __sak_pop();
+            break;
+        case INS::PUSH_OBJ:
+            __sak_push_obj(code.getPara());
             break;
         case INS::ADD:
             __sak_add();
@@ -223,10 +244,10 @@ void sakVM::run() {
             __sak_declare(code.getParas());
             break;
         case INS::ASSIGN:
-            __sak_assign(code.getPara());
+            __sak_assign();
             break;
-        case INS::GET:
-            __sak_get(code.getPara());
+        case INS::GET_VAL:
+            __sak_get_val(code.getPara());
             break;
         case INS::FROM:
             __sak_from(code.getPara());
@@ -249,5 +270,5 @@ void sakVM::run() {
 }
  
 sakValue& sakVM::getTop() {
-    return runtime.top();
+    return runtime.top().getValue();
 }
