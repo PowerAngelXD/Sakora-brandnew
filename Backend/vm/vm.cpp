@@ -1,7 +1,7 @@
 #include "vm.h"
 
-sakVM::sakVM() : insSet({}), global("__global__", {}), s_index(0) {}
-sakVM::sakVM(std::vector<INS::Instruction> set) : insSet(set), global("__global__", {}), s_index(0) {}
+sakVM::sakVM() : insSet({}), global("__global__", {}), currentScope(std::make_shared<sakScope>(global)), s_index(0) {}
+sakVM::sakVM(std::vector<INS::Instruction> set) : insSet(set), global("__global__", {}), currentScope(std::make_shared<sakScope>(global)), s_index(0) {}
 
 // code
 void sakVM::__sak_push(sakValue val) {
@@ -21,7 +21,7 @@ Object& sakVM::__sak_pop_obj() {
     return storage.at(s_index ++).getObj();
 }
 void sakVM::__sak_push_obj(sakValue name) {
-    Object& obj = global.getObj(name.getStrVal(), name.defLine, name.defColumn);
+    Object& obj = currentScope->getObj(name.getStrVal(), name.defLine, name.defColumn);
     __sak_push(obj);
 }
 void sakVM::__sak_add() {
@@ -139,12 +139,12 @@ void sakVM::__sak_declare(std::vector<sakValue> args) {
             auto value = __sak_pop();
 
             auto obj = Object(objName, value, value.defLine, value.defColumn);
-            global.addObj(obj); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+            currentScope->addObj(obj);
         }
         else {
             // 仅声明
             auto obj = Object(objName, type,  type.defLine, type.defColumn);
-            global.addObj(obj); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+            currentScope->addObj(obj);
         }
     }
     else {
@@ -152,11 +152,11 @@ void sakVM::__sak_declare(std::vector<sakValue> args) {
         auto value = __sak_pop();
 
         auto obj = Object(args.at(0).getStrVal(), value, value.defLine, value.defColumn);
-        global.addObj(obj); // TODO：后期等到多scope的时候这里应该是在currentScope中添加id
+        currentScope->addObj(obj);
     }
 }
 void sakVM::__sak_get_val(sakValue name) {
-    auto obj = global.getObj(name.getStrVal(), name.defLine, name.defColumn);
+    auto obj = currentScope->getObj(name.getStrVal(), name.defLine, name.defColumn);
     if (obj.isValueObj() && !obj.getValueObj().isNull()) {
         auto val = obj.getValueObj().getValue();
         __sak_push(val);
@@ -174,7 +174,7 @@ void sakVM::__sak_assign() {
     auto value = __sak_pop();
     obj.getValueObj().assign(value);
 
-    global.update(obj);
+    currentScope->update(obj);
 }
 //
 

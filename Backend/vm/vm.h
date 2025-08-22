@@ -15,6 +15,8 @@ class sakVM {
     std::stack<VMVal> runtime;  // 实际运行栈
     sakScope global; // 全局作用域
 
+    std::shared_ptr<sakScope> currentScope;
+
     std::size_t s_index;           // 管理临时储存的index
 
     void __sak_push(sakValue val);
