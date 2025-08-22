@@ -1,36 +1,51 @@
 #include "scope.h"
 
-sakScope::sakScope(std::string name, std::initializer_list<sakId> list) 
-    : ids(list), scopeName(std::move(name)) {
+sakScope::sakScope(std::string name, std::initializer_list<Object> list) 
+    : objs(list), scopeName(std::move(name)) {}
+
+bool sakScope::hasObj(std::string n) {
+    return std::find_if(objs.begin(), objs.end(), 
+                       [&n](Object& obj) { 
+                           return obj.getName() == n; 
+                       }) != objs.end();
 }
 
-bool sakScope::hasId(std::string n) {
-    return std::find_if(ids.begin(), ids.end(), 
-                       [&n](sakId& id) { 
-                           return id.getId() == n; 
-                       }) != ids.end();
-}
-
-sakId& sakScope::getId(std::string n, int ln, int col) {
-    auto it = std::find_if(ids.begin(), ids.end(), 
-                          [&n](sakId& id) { 
-                              return id.getId() == n; 
+Object& sakScope::getObj(std::string n, int ln, int col) {
+    auto it = std::find_if(objs.begin(), objs.end(), 
+                          [&n](Object& obj) { 
+                              return obj.getName() == n; 
                           });
     
-    if (it != ids.end()) {
+    if (it != objs.end()) {
         return *it;
     }
 
     throw VMError::UnknownIdentifierError(n, ln, col);
 }
 
-sakScope& sakScope::addId(sakId id) {
-    if (hasId(id.getId()))
-        throw VMError::AlreadyIdentifierError(id.getId(), id.getVal().defLine, id.getVal().defColumn);
+sakScope& sakScope::addObj(Object obj) {
+    if (hasObj(obj.getName()))
+        throw VMError::AlreadyIdentifierError(obj.getName(), obj.getLine(), obj.getColumn());
 
-    ids.push_back(std::move(id));
+    objs.push_back(std::move(obj));
     return *this;
 }
+
+void sakScope::update(Object obj) {
+    if (!hasObj(obj.getName())) 
+        throw VMError::UnknownIdentifierError(obj.getName(), obj.getLine(), obj.getColumn());
+
+    auto n = obj.getName();
+    auto it = std::find_if(objs.begin(), objs.end(), 
+                          [&n](Object& _obj) { 
+                              return _obj.getName() == n; 
+                          });
+    
+    objs.erase(it);
+    objs.push_back(obj);
+}
+
+
 
 bool sakScope::hasScope(std::string n) {
     return std::find_if(scopes.begin(), scopes.end(), 
@@ -52,7 +67,7 @@ sakScope& sakScope::getScope(std::string n) {
     throw std::runtime_error("Cannot find scope: " + n);
 }
 
-sakScope& sakScope::addScope(std::string n, std::initializer_list<sakId> list) {
+sakScope& sakScope::addScope(std::string n, std::initializer_list<Object> list) {
     auto newScope = std::make_shared<sakScope>(std::move(n), list);
     scopes.push_back(newScope);
     return *newScope;
