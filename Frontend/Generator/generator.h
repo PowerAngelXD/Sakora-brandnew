@@ -8,7 +8,8 @@ class Generator {
 public:
     std::vector<INS::Instruction> insSet;
 
-    void generate(AST::AtomIdentifierNode node);
+    void generate(AST::AtomIdentifierNode node, bool pushObj = false);
+    void generate(AST::IdentifierExprNode node);
     void generate(AST::PrimExprNode node);
     void generate(AST::MulExprNode node);
     void generate(AST::AddExprNode node);

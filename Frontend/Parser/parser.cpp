@@ -110,7 +110,7 @@ bool Parser::isArrayExpr() {
 
 
 bool Parser::isWholeExpr() {
-    return isAddExpr() || isBoolExpr();
+    return (isAddExpr() || isBoolExpr()) && !isAssignStmt();
 }
 
 std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
@@ -377,9 +377,9 @@ bool Parser::isLetStmt() {
 }
 
 bool Parser::isAssignStmt() {
-    if (isPrimExpr()) {
+    if (isIdentifierExpr()) {
         auto pos = index;
-        parsePrimExpr();
+        parseIdentifierExpr();
         if (peek().content == "=") {
             index = pos;
             return true;
@@ -435,7 +435,7 @@ std::shared_ptr<AST::AssignStmtNode> Parser::parseAssignStmt() {
         throw ParserError::WrongMatchError(peek().content, "Assign Statement", peek().line, peek().column);
     
     auto node = std::make_shared<AST::AssignStmtNode>();
-    node->iden = std::make_shared<Lexer::Token>(eat());
+    node->iden = parseIdentifierExpr();
     node->assignOp = std::make_shared<Lexer::Token>(eat());
 
     if (!isWholeExpr()) 

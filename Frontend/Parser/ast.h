@@ -171,7 +171,7 @@ namespace AST {
 
     class AssignStmtNode : public Node {
     public:
-        std::shared_ptr<Lexer::Token> iden = nullptr;
+        std::shared_ptr<IdentifierExprNode> iden = nullptr;
         std::shared_ptr<Lexer::Token> assignOp = nullptr;
         std::shared_ptr<WholeExprNode> expr = nullptr;
 

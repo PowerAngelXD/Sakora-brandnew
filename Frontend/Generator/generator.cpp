@@ -1,10 +1,14 @@
 #include "generator.h"
 #include <string>
 
-void Generator::generate(AST::AtomIdentifierNode node) {
+void Generator::generate(AST::AtomIdentifierNode node, bool pushObj) {
     auto id = node.iden->iden;
 
-    insSet.emplace_back(INS::genIns(INS::GET, id->line, id->column, {sakValue::createStringVal(id->content, id->line, id->column)}));
+    if (!pushObj)
+        insSet.emplace_back(INS::genIns(INS::GET_VAL, id->line, id->column, {sakValue::createStringVal(id->content, id->line, id->column)}));
+    else 
+        insSet.emplace_back(INS::genIns(INS::PUSH_OBJ, id->line, id->column, {sakValue::createStringVal(id->content, id->line, id->column)}));
+
 
     if (!node.getIndexOps.empty()) {
         for (auto indexOp : node.getIndexOps) {
@@ -12,6 +16,14 @@ void Generator::generate(AST::AtomIdentifierNode node) {
 
             insSet.emplace_back(INS::genIns(INS::FROM, indexOp->left->line, indexOp->left->column, {sakValue::createStringVal("[Index]", indexOp->left->line, indexOp->left->column)}));
         }
+    }
+}
+
+void Generator::generate(AST::IdentifierExprNode node) {
+    generate(*node.idens.at(0));
+    for (std::size_t i = 1; i < node.getOps.size(); i ++) {
+        generate(*node.idens.at(i));
+        insSet.emplace_back(INS::genIns(INS::FROM, node.getOps.at(i)->line, node.getOps.at(i)->column, {sakValue::createStringVal("[Member]", node.getOps.at(i)->line,node.getOps.at(i)->column)}));
     }
 }
 
@@ -230,7 +242,8 @@ void Generator::generate(AST::LetStmtNode node) {
 }
 void Generator::generate(AST::AssignStmtNode node) {
     generate(*node.expr);
-    insSet.emplace_back(INS::genIns(INS::ASSIGN, node.assignOp->line, node.assignOp->column, {sakValue::createStringVal(node.iden->content, node.assignOp->line, node.assignOp->column)}));
+    generate(*node.iden->idens.at(0), true);
+    insSet.emplace_back(INS::genIns(INS::ASSIGN, node.assignOp->line, node.assignOp->column, {}));
 }
 
 void Generator::generate(AST::StmtNode node) {
