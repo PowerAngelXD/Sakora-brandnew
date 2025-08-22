@@ -31,6 +31,7 @@ public:
     int defLine;
     int defColumn;
 
+    sakValue()=default;
     // 值类型构造函数
     sakValue(int&& v, int ln, int col);
     sakValue(std::string&& v, int ln, int col);

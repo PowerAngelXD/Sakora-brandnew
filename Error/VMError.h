@@ -18,7 +18,7 @@ namespace VMError {
 
     class NotTidyArrayError : public SakoraError {
     public:
-        NotTidyArrayError(std::string s, int ln, int col);
+        NotTidyArrayError(int ln, int col);
         void print() override;
     };
 
@@ -46,7 +46,14 @@ namespace VMError {
     class ArrayOutOfRangeError : public SakoraError {
         std::string given;
     public:
-        ArrayOutOfRangeError(std::string s, int ln, int col);
+        ArrayOutOfRangeError(int ln, int col);
+        void print() override;
+    };
+
+    class UseNullValueError : public SakoraError {
+        std::string given;
+    public:
+        UseNullValueError(int ln, int col);
         void print() override;
     };
 }

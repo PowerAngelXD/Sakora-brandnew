@@ -530,7 +530,7 @@ std::vector<sakValue> sakStruct::getArray() {
 }
 sakValue sakStruct::arrayAt(int index) {
     if (index > static_cast<int>(arrayStruct.size()) - 1)
-        throw VMError::ArrayOutOfRangeError("ArrayOutOfRangeError", this->arrayStruct.at(0).defLine, this->arrayStruct.at(0).defColumn);
+        throw VMError::ArrayOutOfRangeError(this->arrayStruct.at(0).defLine, this->arrayStruct.at(0).defColumn);
     else return arrayStruct.at(index);
 }
 

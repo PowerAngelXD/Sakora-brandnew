@@ -19,9 +19,8 @@ void VMError::NotMatchedTypeError::print() {
     std::cout << "NotMatchedTypeError: Type not matched. Target operator: '" << src << "'" << std::endl;
 }
 
-VMError::NotTidyArrayError::NotTidyArrayError(std::string s, int ln, int col)
-: SakoraError(std::move(s), ln, col) {}
-
+VMError::NotTidyArrayError::NotTidyArrayError(int ln, int col)
+: SakoraError("NotTidyArrayError", ln, col) {}
 void VMError::NotTidyArrayError::print() {
     VM_ERROR_HEAD;
     std::cout << "NotTidyArrayError: The target array is not tidy." << std::endl;
@@ -49,9 +48,16 @@ void VMError::UnknownIdentifierError::print() {
     std::cout << "AlreadyIdentifierError: The identifier: \"" << src << "\" is not exist in current scope." <<std::endl;
 }
 
-VMError::ArrayOutOfRangeError::ArrayOutOfRangeError(std::string s, int ln, int col) 
-    : SakoraError(std::move(s), ln, col) {}
+VMError::ArrayOutOfRangeError::ArrayOutOfRangeError(int ln, int col) 
+    : SakoraError("ArrayOutOfRangeError", ln, col) {}
 void VMError::ArrayOutOfRangeError::print() {
     VM_ERROR_HEAD;
     std::cout << "ArrayOutOfRangeError: Occured out of range when accessing array elements." <<std::endl;
+}
+
+VMError::UseNullValueError::UseNullValueError(int ln, int col) 
+    : SakoraError("UseNullValueError", ln, col) {}
+void VMError::UseNullValueError::print() {
+    VM_ERROR_HEAD;
+    std::cout << "UseNullValueError: Try to use a null value." <<std::endl;
 }
