@@ -96,13 +96,17 @@ std::string INS::Instruction::toString() {
             }
             break;
         case INS::ASSIGN:
-            oss << "ASSIGN " << this->args.at(0).toString();
+            oss << "ASSIGN ";
             break;
-        case INS::GET:
-            oss << "GET " << this->args.at(0).toString();
+        case INS::GET_VAL:
+            oss << "GET_VAL " << this->args.at(0).toString();
             break;    
         case INS::FROM:
             oss << "FROM " << this->args.at(0).toString();
+            break;
+        case INS::PUSH_OBJ:
+            oss << "PUSH_OBJ " << this->args.at(0).toString();
+            break;
         default:
             break;
     }
