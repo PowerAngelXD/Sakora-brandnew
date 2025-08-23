@@ -16,6 +16,12 @@ namespace ParserError {
         NotCloseRoundBracketsError(std::string s, int ln, int col);
         void print() override;
     };
+
+    class InvalidControlStmtError : public SakoraError {
+    public:
+        InvalidControlStmtError(int ln, int col);
+        void print() override;
+    };
 }
 
 #endif

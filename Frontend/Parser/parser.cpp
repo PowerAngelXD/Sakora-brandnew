@@ -392,7 +392,19 @@ bool Parser::isAssignStmt() {
     return false;
 }
 
-// TODO: 之后出现IdentifierExpr的时候需要对下面两个stmt进行修改
+bool Parser::isIfStmt() {
+    return peek().content == "if";
+}
+
+bool Parser::isElseIfStmt() {
+    return peek().content == "else" && peek(1).content == "if";
+}
+
+bool Parser::isElseStmt() {
+    return peek().content == "else" && peek(1).content == "{";
+}
+
+
 std::shared_ptr<AST::LetStmtNode> Parser::parseLetStmt() {
     if (!isLetStmt())
         throw ParserError::WrongMatchError(peek().content, "\"let\"", peek().line, peek().column);
@@ -449,9 +461,92 @@ std::shared_ptr<AST::AssignStmtNode> Parser::parseAssignStmt() {
     return node;
 }
 
+std::shared_ptr<AST::IfStmtNode> Parser::parseIfStmt() {
+    if (!isIfStmt())
+        throw ParserError::WrongMatchError(peek().content, "\"if\"", peek().line, peek().column);
+
+    auto node = std::make_shared<AST::IfStmtNode>();
+    node->ifMark = std::make_shared<Lexer::Token>(eat());
+
+    if (!isBoolExpr())
+        throw ParserError::WrongMatchError(peek().content, "Bool Expression", peek().line, peek().column);
+    node->condition = parseBoolExpr();
+
+    if (peek().content != "{")
+        throw ParserError::WrongMatchError(peek().content, "'{'", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
+
+    while (isStmt()) {
+        node->body.emplace_back(parseStmt());
+    }
+
+    while (isElseIfStmt()) {
+        node->elseIfs.emplace_back(parseElseIfStmt());
+    }
+
+    if (isElseStmt()) {
+        node->elseStmt = parseElseStmt();
+    }
+
+    if (peek().content != "}")
+        throw ParserError::WrongMatchError(peek().content, "'}'", peek().line, peek().column);
+    node->rightBrace = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
+std::shared_ptr<AST::ElseIfStmtNode> Parser::parseElseIfStmt() {
+    if (!isElseIfStmt())
+        throw ParserError::WrongMatchError(peek().content, "\"else if\"", peek().line, peek().column);
+
+    auto node = std::make_shared<AST::ElseIfStmtNode>();
+    node->elseMark = std::make_shared<Lexer::Token>(eat()); // "else"
+    node->ifMark = std::make_shared<Lexer::Token>(eat()); // "if"
+
+    if (!isBoolExpr())
+        throw ParserError::WrongMatchError(peek().content, "Bool Expression", peek().line, peek().column);
+    node->condition = parseBoolExpr();
+
+    if (peek().content != "{")
+        throw ParserError::WrongMatchError(peek().content, "'{'", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
+
+    while (isStmt()) {
+        node->body.emplace_back(parseStmt());
+    }
+
+    if (peek().content != "}")
+        throw ParserError::WrongMatchError(peek().content, "'}'", peek().line, peek().column);
+    node->rightBrace = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
+std::shared_ptr<AST::ElseStmtNode> Parser::parseElseStmt() {
+    if (!isElseStmt())
+        throw ParserError::WrongMatchError(peek().content, "\"else\"", peek().line, peek().column);
+
+    auto node = std::make_shared<AST::ElseStmtNode>();
+    node->elseMark = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().content != "{")
+        throw ParserError::WrongMatchError(peek().content, "'{'", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
+
+    while (isStmt()) {
+        node->body.emplace_back(parseStmt());
+    }
+
+    if (peek().content != "}")
+        throw ParserError::WrongMatchError(peek().content, "'}'", peek().line, peek().column);
+    node->rightBrace = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
 
 bool Parser::isStmt() {
-    return isLetStmt() || isAssignStmt();
+    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseIfStmt() || isElseStmt();
 }
 
 std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
@@ -459,7 +554,8 @@ std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
 
     if (isLetStmt()) stmt->letStmt = parseLetStmt();
     else if (isAssignStmt()) stmt->assignStmt = parseAssignStmt();
-
+    else if (isIfStmt()) stmt->ifStmt = parseIfStmt();
+    else if (isElseIfStmt() || isElseStmt()) throw ParserError::InvalidControlStmtError(peek().line, peek().column);
     return stmt;
 }
 

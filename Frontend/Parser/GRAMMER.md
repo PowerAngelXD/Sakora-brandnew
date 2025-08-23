@@ -24,4 +24,8 @@ wholeExpr -> addExpr | boolExpr
 ```
 LetStatement -> 'let' identifier (':' typeExpr) '=' wholeExpr ';'
 AssignStatement -> identifierExpr '=' wholeExpr ';'
+IfStatement -> 'if' '('boolExpr')' '{' (Stmt)* '}'
+ElseIfStatement -> 'else' 'if' '('boolExpr')' '{' (Stmt)* '}'
+ElseStatement -> 'else' '{' (Stmt)* '}'
+Stmt -> LetStatement | AssignStatement | IfStatement
 ```
