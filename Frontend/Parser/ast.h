@@ -181,16 +181,52 @@ namespace AST {
     };
 
     // Stage1
+    class IfStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> ifMark = nullptr;
 
-    class WhileStmtNode : public Node {};
+        std::shared_ptr<BoolExprNode> condition = nullptr;
 
-    class IfStmtNode : public Node {};
+        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
 
-    class ElseIfStmtNode : public Node {};
+        std::vector<std::shared_ptr<StmtNode>> body;
 
-    class ElseStmtNode : public Node {};
+        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+
+        std::vector<std::shared_ptr<ElseIfStmtNode>> elseIfs;
+        std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
+
+        std::string toString() override;
+    };
+
+    class ElseIfStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> elseMark = nullptr;
+        std::shared_ptr<Lexer::Token> ifMark = nullptr;
+
+        std::shared_ptr<BoolExprNode> condition = nullptr;
+
+        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
+        std::vector<std::shared_ptr<StmtNode>> body;
+        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+
+        std::string toString() override;
+    };
+
+    class ElseStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> elseMark = nullptr;
+
+        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
+        std::vector<std::shared_ptr<StmtNode>> body;
+        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+
+        std::string toString() override;
+    };
 
     class MatchStmtNode : public Node {};
+
+    class WhileStmtNode : public Node {};
 
     class RepeatStmtNode : public Node {};
 
@@ -207,6 +243,9 @@ namespace AST {
     public:
         std::shared_ptr<LetStmtNode> letStmt = nullptr;
         std::shared_ptr<AssignStmtNode> assignStmt = nullptr;
+        std::shared_ptr<IfStmtNode> ifStmt = nullptr;
+        std::shared_ptr<ElseIfStmtNode> elseIfStmt = nullptr;
+        std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
 
         std::string toString() override;
     };

@@ -197,8 +197,69 @@ std::string AST::AssignStmtNode::toString() {
     return oss.str();
 }
 
+std::string AST::IfStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "IfStmtNode(";
+    if (ifMark) oss << "ifMark: " << ifMark->toString() << ", ";
+    if (condition) oss << "condition: " << condition->toString() << ", ";
+    if (leftBrace) oss << "leftBrace: " << leftBrace->toString() << ", ";
+    oss << "body: [";
+    for (size_t i = 0; i < body.size(); ++i) {
+        if (body[i]) oss << body[i]->toString();
+        if (i + 1 < body.size()) oss << ", ";
+    }
+    oss << "], ";
+    if (rightBrace) oss << "rightBrace: " << rightBrace->toString() << ", ";
+    oss << "elseIfs: [";
+    for (size_t i = 0; i < elseIfs.size(); ++i) {
+        if (elseIfs[i]) oss << elseIfs[i]->toString();
+        if (i + 1 < elseIfs.size()) oss << ", ";
+    }
+    oss << "], ";
+    if (elseStmt) oss << "elseStmt: " << elseStmt->toString();
+    oss << ")";
+    return oss.str();
+}
+
+std::string AST::ElseIfStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "ElseIfStmtNode(";
+    if (elseMark) oss << elseMark->toString() << ", ";
+    if (ifMark) oss << ifMark->toString() << ", ";
+    if (condition) oss << "condition: " << condition->toString() << ", ";
+    if (leftBrace) oss << "leftBrace: " << leftBrace->toString() << ", ";
+    oss << "body: [";
+    for (size_t i = 0; i < body.size(); ++i) {
+        if (body[i]) oss << body[i]->toString();
+        if (i + 1 < body.size()) oss << ", ";
+    }
+    oss << "], ";
+    if (rightBrace) oss << "rightBrace: " << rightBrace->toString();
+    oss << ")";
+    return oss.str();
+}
+
+std::string AST::ElseStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "ElseStmtNode(";
+    if (elseMark) oss << "elseMark: " << elseMark->toString() << ", ";
+    if (leftBrace) oss << "leftBrace: " << leftBrace->toString() << ", ";
+    oss << "body: [";
+    for (size_t i = 0; i < body.size(); ++i) {
+        if (body[i]) oss << body[i]->toString();
+        if (i + 1 < body.size()) oss << ", ";
+    }
+    oss << "], ";
+    if (rightBrace) oss << "rightBrace: " << rightBrace->toString();
+    oss << ")";
+    return oss.str();
+}
+
 std::string AST::StmtNode::toString() {
     if (letStmt) return letStmt->toString();
+    else if (ifStmt) return ifStmt->toString();
+    else if (elseIfStmt) return elseIfStmt->toString();
+    else if (elseStmt) return elseStmt->toString();
     else return assignStmt->toString();
 }
 
