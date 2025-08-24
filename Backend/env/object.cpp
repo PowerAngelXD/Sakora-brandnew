@@ -152,6 +152,10 @@ Object::Object(std::string n, sakValue value, int ln, int col) : object(ValueObj
     this->defColumn = col;
 }
 
+Object::~Object() {
+    object.~variant();
+}
+
 const int& Object::getLine() {
     return defLine;
 }

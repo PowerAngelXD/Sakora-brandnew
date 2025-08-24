@@ -11,6 +11,8 @@ class sakScope {
 public:
     sakScope()=default;
     sakScope(std::string name, std::initializer_list<Object> list);
+    sakScope(std::string name);
+    ~sakScope();
 
     bool hasObj(std::string n);
     Object& getObj(std::string n, int ln, int col);
@@ -20,6 +22,7 @@ public:
     bool hasScope(std::string n);
     sakScope& getScope(std::string n);
     sakScope& addScope(std::string n, std::initializer_list<Object> list);
+    sakScope& createScope(std::string n);
 };
 
 #endif

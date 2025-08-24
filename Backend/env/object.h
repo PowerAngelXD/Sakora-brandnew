@@ -80,6 +80,8 @@ public:
     Object(std::string n, sakType::sakTid tid, int ln, int col);
     Object(std::string n, sakValue value, int ln, int col);
 
+    ~Object();
+
     bool isValueObj();
     bool isFnObj();
     bool isCustomTypeObj();
