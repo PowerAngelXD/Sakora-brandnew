@@ -46,13 +46,15 @@ Lexer::TokenSequence Lexer::LexerInstance::startLexer(std::string raw) {
     char current;
     Lexer::TokenSequence sequence;
 
-    while (i < raw.size() - 1) {
+    while (true) {
         current = raw.at(i);
 
         if (current == '\n') {
             ln = 1;
             col = 1;
+            next();
         }
+        else if (current == '\0') break;
 
         if (isalpha(current)) {
             std::string out;

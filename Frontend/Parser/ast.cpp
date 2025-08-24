@@ -211,9 +211,9 @@ std::string AST::IfStmtNode::toString() {
     oss << "], ";
     if (rightBrace) oss << "rightBrace: " << rightBrace->toString() << ", ";
     oss << "elseIfs: [";
-    for (size_t i = 0; i < elseIfs.size(); ++i) {
-        if (elseIfs[i]) oss << elseIfs[i]->toString();
-        if (i + 1 < elseIfs.size()) oss << ", ";
+    for (size_t i = 0; i < elseIfstmts.size(); ++i) {
+        if (elseIfstmts[i]) oss << elseIfstmts[i]->toString();
+        if (i + 1 < elseIfstmts.size()) oss << ", ";
     }
     oss << "], ";
     if (elseStmt) oss << "elseStmt: " << elseStmt->toString();

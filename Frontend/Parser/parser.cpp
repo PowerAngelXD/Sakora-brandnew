@@ -468,9 +468,15 @@ std::shared_ptr<AST::IfStmtNode> Parser::parseIfStmt() {
     auto node = std::make_shared<AST::IfStmtNode>();
     node->ifMark = std::make_shared<Lexer::Token>(eat());
 
+    if (peek().content != "(")
+        throw ParserError::WrongMatchError(peek().content, "'('", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
     if (!isBoolExpr())
         throw ParserError::WrongMatchError(peek().content, "Bool Expression", peek().line, peek().column);
     node->condition = parseBoolExpr();
+    if (peek().content != ")")
+        throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
 
     if (peek().content != "{")
         throw ParserError::WrongMatchError(peek().content, "'{'", peek().line, peek().column);
@@ -480,17 +486,17 @@ std::shared_ptr<AST::IfStmtNode> Parser::parseIfStmt() {
         node->body.emplace_back(parseStmt());
     }
 
+    if (peek().content != "}")
+        throw ParserError::WrongMatchError(peek().content, "'}'", peek().line, peek().column);
+    node->rightBrace = std::make_shared<Lexer::Token>(eat());
+
     while (isElseIfStmt()) {
-        node->elseIfs.emplace_back(parseElseIfStmt());
+        node->elseIfstmts.emplace_back(parseElseIfStmt());
     }
 
     if (isElseStmt()) {
         node->elseStmt = parseElseStmt();
     }
-
-    if (peek().content != "}")
-        throw ParserError::WrongMatchError(peek().content, "'}'", peek().line, peek().column);
-    node->rightBrace = std::make_shared<Lexer::Token>(eat());
 
     return node;
 }
@@ -503,9 +509,15 @@ std::shared_ptr<AST::ElseIfStmtNode> Parser::parseElseIfStmt() {
     node->elseMark = std::make_shared<Lexer::Token>(eat()); // "else"
     node->ifMark = std::make_shared<Lexer::Token>(eat()); // "if"
 
+    if (peek().content != "(")
+        throw ParserError::WrongMatchError(peek().content, "'('", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
     if (!isBoolExpr())
         throw ParserError::WrongMatchError(peek().content, "Bool Expression", peek().line, peek().column);
     node->condition = parseBoolExpr();
+    if (peek().content != ")")
+        throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);
+    node->leftBrace = std::make_shared<Lexer::Token>(eat());
 
     if (peek().content != "{")
         throw ParserError::WrongMatchError(peek().content, "'{'", peek().line, peek().column);
