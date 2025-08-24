@@ -19,7 +19,7 @@ const INS::InsOp& INS::Instruction::getOp() {
     return instruction;
 }
 
-const sakValue& INS::Instruction::getPara(std::size_t i) {
+sakValue INS::Instruction::getPara(std::size_t i) {
     return args.at(i);
 }
 
@@ -106,6 +106,15 @@ std::string INS::Instruction::toString() {
             break;
         case INS::PUSH_OBJ:
             oss << "PUSH_OBJ " << this->args.at(0).toString();
+            break;
+        case INS::NEW_SCOPE:
+            oss << "NEW_SCOPE " << this->args.at(0).toString();
+            break;
+        case INS::END_SCOPE:
+            oss << "END_SCOPE " << this->args.at(0).toString();
+            break;
+        case INS::JMP:
+            oss << "JMP " << this->args.at(0).toString();
             break;
         default:
             break;

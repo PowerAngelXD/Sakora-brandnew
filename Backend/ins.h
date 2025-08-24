@@ -15,8 +15,8 @@ namespace INS {
                 LGC_LS_THAN, LGC_MREQU_THAN, LGC_LSEQU_THAN, LGC_NOT,
                 ARR_MAKE, ARR_TIDY_CHK, 
                 DECLARE, ASSIGN, GET_VAL, GET_OBJ, FROM, PUSH_OBJ,
+                JMP, NEW_SCOPE, END_SCOPE
                 };
-
     class Instruction {
         InsOp instruction;
         int line, column;
@@ -28,7 +28,7 @@ namespace INS {
         const int& getLine();
         const int& getColumn();
         const InsOp& getOp();
-        const sakValue& getPara(std::size_t i = 0);
+        sakValue getPara(std::size_t i = 0);
         std::vector<sakValue> getParas();
 
         std::string toString();
