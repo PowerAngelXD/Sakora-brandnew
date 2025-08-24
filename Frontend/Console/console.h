@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include <fstream>
 #include "../Lexer/lexer.h"
 #include "../Parser/parser.h"
 #include "../Generator/generator.h"
@@ -18,6 +19,7 @@ namespace sakoraConsole {
         sakConsole();
         sakConsole(std::string name);
 
+        std::vector<std::string> split(std::string raw, char c);
         void run();
     private:
         std::vector<std::string> contentList;
