@@ -1,7 +1,8 @@
 #include "vm.h"
 
-sakVM::sakVM() : insSet({}), global("__global__", {}), currentScope(std::make_shared<sakScope>(global)), s_index(0) {}
-sakVM::sakVM(std::vector<INS::Instruction> set) : insSet(set), global("__global__", {}), currentScope(std::make_shared<sakScope>(global)), s_index(0) {}
+sakVM::sakVM() : insSet({}), global("__global__", {}), prevScope(nullptr), currentScope(std::make_shared<sakScope>(global)), s_index(0), c_index(0) {}
+sakVM::sakVM(std::vector<INS::Instruction> set)
+     : insSet(set), global("__global__", {}), prevScope(nullptr), currentScope(std::make_shared<sakScope>(global)), s_index(0), c_index(0) {}
 
 // code
 void sakVM::__sak_push(sakValue val) {
@@ -156,6 +157,7 @@ void sakVM::__sak_declare(std::vector<sakValue> args) {
     }
 }
 void sakVM::__sak_get_val(sakValue name) {
+    // TODO: SCOPE管理出现重大问题
     auto obj = currentScope->getObj(name.getStrVal(), name.defLine, name.defColumn);
     if (obj.isValueObj() && !obj.getValueObj().isNull()) {
         auto val = obj.getValueObj().getValue();
@@ -176,6 +178,50 @@ void sakVM::__sak_assign() {
 
     currentScope->update(obj);
 }
+void sakVM::__sak_jmp(sakValue jmp_type) {
+    auto type = jmp_type.getStrVal();
+    if (type == "[True-in]") {
+        auto cond = __sak_pop();
+        if (cond.getBoolVal());
+            // 结果为True,进入下面的代码块
+        else {
+            // 结果为False跳过当前代码块
+            int scopeState = 0;
+            while (true) {
+                c_index ++;
+                if (insSet.at(c_index).getOp() == INS::NEW_SCOPE) scopeState ++;
+                else if (insSet.at(c_index).getOp() == INS::END_SCOPE) scopeState --;
+
+                if (scopeState == 0) break;
+            }
+        }
+    }
+    else if (type == "[Finish-out]") {
+        if (runtime.empty()); // 未执行代码块，进行下一个条件判断（如果存在下一个条件判断的话）
+        else {
+            auto value = __sak_pop();
+            while (true) {
+                c_index ++;
+                auto code = insSet.at(c_index);
+                
+                if (code.getPara().getStrVal() == "[Tag=IfGroupEnd]") {
+                    c_index --;
+                    break;
+                }
+            }
+        }
+    }
+}
+void sakVM::__sak_new_scope(sakValue name) {
+    currentScope->createScope(name.getStrVal());
+    prevScope = currentScope;
+    currentScope = std::make_shared<sakScope>(currentScope->getScope(name.getStrVal()));
+}
+void sakVM::__sak_end_scope() {
+    currentScope->~sakScope();
+    currentScope = prevScope;
+    prevScope = nullptr;
+}
 //
 
 void sakVM::loadCodes(std::vector<INS::Instruction> set) {
@@ -183,7 +229,8 @@ void sakVM::loadCodes(std::vector<INS::Instruction> set) {
 }
 
 void sakVM::run() {
-    for (auto code: insSet) {
+    for (;c_index < insSet.size(); c_index ++) {
+        auto code = insSet.at(c_index);
         switch (code.getOp())
         {
         case INS::PUSH:
@@ -251,6 +298,15 @@ void sakVM::run() {
             break;
         case INS::FROM:
             __sak_from(code.getPara());
+            break;
+        case INS::JMP:
+            __sak_jmp(code.getPara());
+            break;
+        case INS::NEW_SCOPE:
+            __sak_new_scope(code.getPara());
+            break;
+        case INS::END_SCOPE:
+            __sak_end_scope();
             break;
         default:
             break;

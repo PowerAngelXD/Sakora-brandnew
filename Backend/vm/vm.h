@@ -15,9 +15,11 @@ class sakVM {
     std::stack<VMVal> runtime;  // 实际运行栈
     sakScope global; // 全局作用域
 
+    std::shared_ptr<sakScope> prevScope;
     std::shared_ptr<sakScope> currentScope;
 
     std::size_t s_index;           // 管理临时储存的index
+    std::size_t c_index;           // 管理代码的index
 
     void __sak_push(sakValue val);
     void __sak_push(Object& obj);
@@ -44,6 +46,9 @@ class sakVM {
     void __sak_assign();
     void __sak_get_val(sakValue name);
     void __sak_from(sakValue from_type);
+    void __sak_jmp(sakValue jmp_type);
+    void __sak_new_scope(sakValue name);
+    void __sak_end_scope();
 
 public:
     sakVM();

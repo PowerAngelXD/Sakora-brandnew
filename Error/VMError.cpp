@@ -45,7 +45,7 @@ VMError::UnknownIdentifierError::UnknownIdentifierError(std::string s, int ln, i
     : SakoraError(std::move(s), ln, col) {}
 void VMError::UnknownIdentifierError::print() {
     VM_ERROR_HEAD;
-    std::cout << "AlreadyIdentifierError: The identifier: \"" << src << "\" is not exist in current scope." <<std::endl;
+    std::cout << "UnknowIdentifierError: The identifier: \"" << src << "\" is not exist in current scope." <<std::endl;
 }
 
 VMError::ArrayOutOfRangeError::ArrayOutOfRangeError(int ln, int col) 
