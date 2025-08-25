@@ -9,9 +9,6 @@ sakScope::~sakScope() {
     for (auto obj : objs) {
         obj.~Object();
     }
-    for (auto scope : scopes) {
-        scope->~sakScope();
-    }
 }
 bool sakScope::hasObj(std::string n) {
     return std::find_if(objs.begin(), objs.end(), 
@@ -41,7 +38,7 @@ sakScope& sakScope::addObj(Object obj) {
     return *this;
 }
 
-void sakScope::update(Object obj) {
+void sakScope::assign(Object obj) {
     if (!hasObj(obj.getName())) 
         throw VMError::UnknownIdentifierError(obj.getName(), obj.getLine(), obj.getColumn());
 
@@ -55,36 +52,59 @@ void sakScope::update(Object obj) {
     objs.push_back(obj);
 }
 
+// Scope Manager
 
-
-bool sakScope::hasScope(std::string n) {
-    return std::find_if(scopes.begin(), scopes.end(), 
-                       [&n](const std::shared_ptr<sakScope>& scope) { 
-                           return scope->scopeName == n; 
-                       }) != scopes.end();
+sakScopeMgr::sakScopeMgr() {
+    this->scopePool.emplace_back("__global__"); // 放入初始的global作用域
+    this->currentScope = std::make_shared<sakScope>(this->scopePool.back());
 }
 
-sakScope& sakScope::getScope(std::string n) {
-    auto it = std::find_if(scopes.begin(), scopes.end(), 
-                          [&n](const std::shared_ptr<sakScope>& scope) { 
-                              return scope->scopeName == n; 
-                          });
-    
-    if (it != scopes.end()) {
-        return **it;
+bool sakScopeMgr::hasObject(std::string n) {
+    if (currentScope->hasObj(n)) return true;
+    else {
+        for (auto scope : this->scopePool) {
+            if (scope.hasObj(n)) return  true;
+        }
+        return false;
     }
-    
-    throw std::runtime_error("Cannot find scope: " + n);
+}
+std::shared_ptr<sakScope> sakScopeMgr::getCurrent() {
+    return this->currentScope;
 }
 
-sakScope& sakScope::addScope(std::string n, std::initializer_list<Object> list) {
-    auto newScope = std::make_shared<sakScope>(std::move(n), list);
-    scopes.push_back(newScope);
-    return *newScope;
+Object sakScopeMgr::getObject(std::string n, int ln, int col) {
+    if (currentScope->hasObj(n)) {
+        return currentScope->getObj(n, ln, col);
+    }
+    else {
+        for (auto& scope : this->scopePool) {
+            if (scope.hasObj(n)) return scope.getObj(n, ln, col);
+        }
+        throw VMError::UnknownIdentifierError(n, ln, col);
+    }
 }
+sakScopeMgr& sakScopeMgr::createObject(Object obj) {
+    currentScope->addObj(obj);
+    this->scopePool.back() = *currentScope;
 
-sakScope& sakScope::createScope(std::string n) {
-    auto newScope = std::make_shared<sakScope>(std::move(n));
-    scopes.push_back(newScope);
-    return *newScope;
+    return *this;
+}
+void sakScopeMgr::assignObject(Object obj) {
+    if (currentScope->hasObj(obj.getName())) {
+        currentScope->assign(obj);
+        this->scopePool.back() = *currentScope;
+    }
+    else {
+        for (auto& scope : this->scopePool) {
+            if (scope.hasObj(obj.getName())) scope.assign(obj);
+        }
+    }
+}
+void sakScopeMgr::createScope(std::string name) {
+    this->scopePool.emplace_back(name);
+    currentScope = std::make_shared<sakScope>(this->scopePool.back());
+}
+void sakScopeMgr::deleteCurrent() {
+    this->scopePool.pop_back();
+    currentScope = std::make_shared<sakScope>(this->scopePool.back());
 }

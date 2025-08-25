@@ -3,10 +3,10 @@
 
 #include "object.h"
 #include <algorithm>
+#include <list>
 
 class sakScope {
     std::vector<Object> objs;
-    std::vector<std::shared_ptr<sakScope>> scopes;
     std::string scopeName;
 public:
     sakScope()=default;
@@ -17,12 +17,25 @@ public:
     bool hasObj(std::string n);
     Object& getObj(std::string n, int ln, int col);
     sakScope& addObj(Object obj);
-    void update(Object obj); // 用来更新现有的Object状态
+    void assign(Object obj); // 用来更新现有的Object状态
+};
 
-    bool hasScope(std::string n);
-    sakScope& getScope(std::string n);
-    sakScope& addScope(std::string n, std::initializer_list<Object> list);
-    sakScope& createScope(std::string n);
+// 管理Scope用的类
+class sakScopeMgr {
+    std::list<sakScope> scopePool; // 储存scope的地方，表示scope的上下级关系
+    std::shared_ptr<sakScope> currentScope = nullptr; // 当前所在scope
+public:
+    sakScopeMgr();
+
+    bool hasObject(std::string n);
+    std::shared_ptr<sakScope> getCurrent();
+
+    Object getObject(std::string n, int ln, int col);
+    sakScopeMgr& createObject(Object obj);
+    void assignObject(Object obj);
+
+    void createScope(std::string name = "[Tag=Default Scope]");
+    void deleteCurrent();
 };
 
 #endif
