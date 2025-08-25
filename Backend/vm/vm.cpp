@@ -225,6 +225,7 @@ void sakVM::loadCodes(std::vector<INS::Instruction> set) {
 
 void sakVM::run() {
     c_index = 0; s_index = 0;
+    storage.clear();
     for (;c_index < insSet.size(); c_index ++) {
         auto code = insSet.at(c_index);
         switch (code.getOp())
@@ -321,6 +322,6 @@ void sakVM::run() {
     }
 }
  
-sakValue& sakVM::getTop() {
+sakValue sakVM::getTop() {
     return runtime.top().getValue();
 }

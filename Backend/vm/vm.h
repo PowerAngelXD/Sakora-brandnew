@@ -52,7 +52,7 @@ public:
     sakVM(std::vector<INS::Instruction> set);
 
     void run();
-    sakValue& getTop();
+    sakValue getTop();
     void loadCodes(std::vector<INS::Instruction> set);
 };
 
