@@ -33,7 +33,7 @@ class sakVM {
     void __sak_lgc_ls_than();
     void __sak_lgc_mrequ_than();
     void __sak_lgc_lsequ_than();
-    void __sak_lgc_equ_than();
+    void __sak_lgc_equ();
     void __sak_lgc_not_equ_than();
     void __sak_lgc_not();
     void __sak_make_array(sakValue val);
