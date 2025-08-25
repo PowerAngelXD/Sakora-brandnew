@@ -34,7 +34,7 @@ bool ValueObject::isNull() {
     return value == nullptr;
 }
 
-const sakValue& ValueObject::getValue() {
+sakValue& ValueObject::getValue() {
     if (this->isNull())
         throw VMError::UseNullValueError(defLine, defColumn);
     

@@ -30,7 +30,7 @@ public:
     ValueObject(std::string name, sakType::sakTid tid, int ln, int col);
 
     bool isNull();
-    const sakValue& getValue();
+    sakValue& getValue();
     ValueObject& assign(sakValue value);
 };
 

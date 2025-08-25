@@ -12,10 +12,10 @@ public:
     VMVal(sakScope sak_scope);
 
     bool isValue();
-    bool isId();
+    bool isObj();
     bool isScope();
 
-    sakValue& getValue();
+    sakValue getValue();
     Object& getObj();
     sakScope& getScope();
 };

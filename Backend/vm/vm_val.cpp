@@ -9,7 +9,7 @@ bool VMVal::isValue() {
     return std::holds_alternative<sakValue>(instance);
 }
 
-bool VMVal::isId() {
+bool VMVal::isObj() {
     return std::holds_alternative<Object>(instance);
 }
 
@@ -17,13 +17,14 @@ bool VMVal::isScope() {
     return std::holds_alternative<sakScope>(instance);
 }
 
-sakValue& VMVal::getValue() {
-    if (!isValue()) throw std::bad_variant_access();
-    return std::get<sakValue>(instance);
+sakValue VMVal::getValue() {
+    if (isObj()) return std::get<Object>(instance).getValueObj().getValue();
+    else if (isValue()) return std::get<sakValue>(instance);
+    else throw std::bad_variant_access();
 }
 
 Object& VMVal::getObj() {
-    if (!isId()) throw std::bad_variant_access();
+    if (!isObj()) throw std::bad_variant_access();
     return std::get<Object>(instance);
 }
 
