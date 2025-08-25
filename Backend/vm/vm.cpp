@@ -81,7 +81,7 @@ void sakVM::__sak_lgc_lsequ_than() {
     auto lval = __sak_pop();
     __sak_push(lval <= rval);
 }
-void sakVM::__sak_lgc_equ_than() {
+void sakVM::__sak_lgc_equ() {
     auto rval = __sak_pop();
     auto lval = __sak_pop();
     __sak_push(lval == rval);
@@ -269,7 +269,7 @@ void sakVM::run() {
             __sak_lgc_lsequ_than();
             break;
         case INS::LGC_EQU:
-            __sak_lgc_equ_than();
+            __sak_lgc_equ();
             break;
         case INS::LGC_NOT_EQU:
             __sak_lgc_not_equ_than();
