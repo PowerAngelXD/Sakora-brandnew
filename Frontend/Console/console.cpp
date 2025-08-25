@@ -61,12 +61,10 @@ void sakoraConsole::sakConsole::run() {
                 auto lexerResult = lexer.startLexer(lineContent);
 
                 Parser parser(lexerResult);
-                auto parserResult = parser.parse();
+                auto parserResult = parser.parseWholeExpr();
 
                 Generator gen;
-                for (auto stmt : parserResult) {
-                    gen.generate(*stmt);
-                }
+                gen.generate(*parserResult);
 
                 for (auto code : gen.insSet) {
                     std::cout << code.toString() << std::endl;

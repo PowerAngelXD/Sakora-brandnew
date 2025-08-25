@@ -1,8 +1,8 @@
 #include "vm.h"
 
-sakVM::sakVM() : insSet({}), global("__global__", {}), prevScope(nullptr), currentScope(std::make_shared<sakScope>(global)), s_index(0), c_index(0) {}
+sakVM::sakVM() : insSet({}), s_index(0), c_index(0) {}
 sakVM::sakVM(std::vector<INS::Instruction> set)
-     : insSet(set), global("__global__", {}), prevScope(nullptr), currentScope(std::make_shared<sakScope>(global)), s_index(0), c_index(0) {}
+     : insSet(set), s_index(0), c_index(0) {}
 
 // code
 void sakVM::__sak_push(sakValue val) {
@@ -22,7 +22,7 @@ Object& sakVM::__sak_pop_obj() {
     return storage.at(s_index ++).getObj();
 }
 void sakVM::__sak_push_obj(sakValue name) {
-    Object& obj = currentScope->getObj(name.getStrVal(), name.defLine, name.defColumn);
+    Object obj = scopeMgr.getObject(name.getStrVal(), name.defLine, name.defColumn);
     __sak_push(obj);
 }
 void sakVM::__sak_add() {
@@ -140,12 +140,12 @@ void sakVM::__sak_declare(std::vector<sakValue> args) {
             auto value = __sak_pop();
 
             auto obj = Object(objName, value, value.defLine, value.defColumn);
-            currentScope->addObj(obj);
+            scopeMgr.createObject(obj);
         }
         else {
             // 仅声明
-            auto obj = Object(objName, type,  type.defLine, type.defColumn);
-            currentScope->addObj(obj);
+            auto obj = Object(objName, type.getTidVal(), type.defLine, type.defColumn);
+            scopeMgr.createObject(obj);
         }
     }
     else {
@@ -153,12 +153,11 @@ void sakVM::__sak_declare(std::vector<sakValue> args) {
         auto value = __sak_pop();
 
         auto obj = Object(args.at(0).getStrVal(), value, value.defLine, value.defColumn);
-        currentScope->addObj(obj);
+        scopeMgr.createObject(obj);
     }
 }
 void sakVM::__sak_get_val(sakValue name) {
-    // TODO: SCOPE管理出现重大问题
-    auto obj = currentScope->getObj(name.getStrVal(), name.defLine, name.defColumn);
+    auto obj = scopeMgr.getObject(name.getStrVal(), name.defLine, name.defColumn);
     if (obj.isValueObj() && !obj.getValueObj().isNull()) {
         auto val = obj.getValueObj().getValue();
         __sak_push(val);
@@ -176,7 +175,7 @@ void sakVM::__sak_assign() {
     auto value = __sak_pop();
     obj.getValueObj().assign(value);
 
-    currentScope->update(obj);
+    scopeMgr.assignObject(obj);
 }
 void sakVM::__sak_jmp(sakValue jmp_type) {
     auto type = jmp_type.getStrVal();
@@ -204,7 +203,7 @@ void sakVM::__sak_jmp(sakValue jmp_type) {
                 c_index ++;
                 auto code = insSet.at(c_index);
                 
-                if (code.getPara().getStrVal() == "[Tag=IfGroupEnd]") {
+                if (!code.getParas().empty() && code.getPara().getStrVal() == "[Tag=IfGroupEnd]") {
                     c_index --;
                     break;
                 }
@@ -213,14 +212,10 @@ void sakVM::__sak_jmp(sakValue jmp_type) {
     }
 }
 void sakVM::__sak_new_scope(sakValue name) {
-    currentScope->createScope(name.getStrVal());
-    prevScope = currentScope;
-    currentScope = std::make_shared<sakScope>(currentScope->getScope(name.getStrVal()));
+    scopeMgr.createScope(name.getStrVal());
 }
 void sakVM::__sak_end_scope() {
-    currentScope->~sakScope();
-    currentScope = prevScope;
-    prevScope = nullptr;
+    scopeMgr.deleteCurrent();
 }
 //
 
@@ -229,6 +224,7 @@ void sakVM::loadCodes(std::vector<INS::Instruction> set) {
 }
 
 void sakVM::run() {
+    c_index = 0; s_index = 0;
     for (;c_index < insSet.size(); c_index ++) {
         auto code = insSet.at(c_index);
         switch (code.getOp())

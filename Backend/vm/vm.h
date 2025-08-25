@@ -13,10 +13,7 @@ class sakVM {
     std::vector<INS::Instruction> insSet;
     std::vector<VMVal> storage; // 临时储存容器
     std::stack<VMVal> runtime;  // 实际运行栈
-    sakScope global; // 全局作用域
-
-    std::shared_ptr<sakScope> prevScope;
-    std::shared_ptr<sakScope> currentScope;
+    sakScopeMgr scopeMgr; // 作用域管理器
 
     std::size_t s_index;           // 管理临时储存的index
     std::size_t c_index;           // 管理代码的index

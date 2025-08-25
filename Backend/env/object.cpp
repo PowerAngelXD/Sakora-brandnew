@@ -42,9 +42,6 @@ const sakValue& ValueObject::getValue() {
 }
 
 ValueObject& ValueObject::assign(sakValue val) {
-    if (this->isNull())
-        throw VMError::UseNullValueError(defLine, defColumn);
-
     this->value = std::make_shared<sakValue>(std::move(val));
     return *this;
 }
