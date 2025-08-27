@@ -193,6 +193,10 @@ Lexer::TokenSequence Lexer::LexerInstance::startLexer(std::string raw) {
                     i += 2;
                     sequence.emplace_back(Lexer::Symbol, "==", ln, col);
                 }
+                else if (raw.at(i + 1) == '>') {
+                    i += 2;
+                    sequence.emplace_back(Lexer::Symbol, "=>", ln, col);
+                }
                 else {
                     next();
                     sequence.emplace_back(Lexer::Symbol, "=", ln, col);
