@@ -243,6 +243,10 @@ namespace AST {
             std::shared_ptr<Lexer::Token> caseOp = nullptr;
             std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
         };
+        std::vector<std::shared_ptr<matchBlock>> matchBlocks;
+        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+
+        std::string toString() override;
     };
 
     class WhileStmtNode : public Node {
@@ -268,6 +272,8 @@ namespace AST {
         std::shared_ptr<IfStmtNode> ifStmt = nullptr;
         std::shared_ptr<ElseIfStmtNode> elseIfStmt = nullptr;
         std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
+        std::shared_ptr<BlockStmtNode> blockStmt = nullptr;
+        std::shared_ptr<MatchStmtNode> matchStmt = nullptr;
 
         std::string toString() override;
     };

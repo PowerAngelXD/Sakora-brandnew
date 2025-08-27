@@ -249,11 +249,36 @@ std::string AST::ElseStmtNode::toString() {
     return oss.str();
 }
 
+std::string AST::MatchStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "MatchStmtNode(";
+    if (matchMark) oss << "matchMark: " << matchMark->toString() << ", ";
+    if (expr) oss << "expr: " << expr->toString() << ", ";
+    oss << "matchBlocks: [";
+    for (size_t i = 0; i < matchBlocks.size(); ++i) {
+        const auto& block = matchBlocks[i];
+        if (block) {
+            oss << "{";
+            if (block->caseMark) oss << "caseMark: " << block->caseMark->toString() << ", ";
+            if (block->caseExpr) oss << "caseExpr: " << block->caseExpr->toString() << ", ";
+            if (block->bodyBlock) oss << "bodyBlock: " << block->bodyBlock->toString();
+            oss << "}";
+        }
+        if (i + 1 < matchBlocks.size()) oss << ", ";
+    }
+    oss << "]";
+    if (rightBrace) oss << ", rightBrace: " << rightBrace->toString();
+    oss << ")";
+    return oss.str();
+}
+
 std::string AST::StmtNode::toString() {
     if (letStmt) return letStmt->toString();
     else if (ifStmt) return ifStmt->toString();
     else if (elseIfStmt) return elseIfStmt->toString();
     else if (elseStmt) return elseStmt->toString();
+    else if (blockStmt) return blockStmt->toString();
+    else if (matchStmt) return matchStmt->toString();
     else return assignStmt->toString();
 }
 
