@@ -8,7 +8,7 @@ else if (a == "who") {
 }
 
 match (a) {
-    "world"=> {
+    "world!"=> {
         a = "woRld";
     }
     "hello"=> {
