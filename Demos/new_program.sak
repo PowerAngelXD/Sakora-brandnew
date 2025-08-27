@@ -6,3 +6,15 @@ if (a == "hello world") {
 else if (a == "who") {
     a = "world";
 }
+
+match (a) {
+    "world"=> {
+        a = "woRld";
+    }
+    "hello"=> {
+        a = "heLLo";
+    }
+    default=> {
+        a = "hello world";
+    }
+}
