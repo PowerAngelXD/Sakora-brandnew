@@ -564,7 +564,7 @@ std::shared_ptr<AST::MatchStmtNode> Parser::parseMatchStmt() {
 
     if (!isWholeExpr())
         throw ParserError::WrongMatchError(peek().content, "An expression", peek().line, peek().column);
-    node->expr = parseWholeExpr();
+    node->identifier = parseIdentifierExpr();
 
     if (peek().content != ")")
         throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);
@@ -574,7 +574,7 @@ std::shared_ptr<AST::MatchStmtNode> Parser::parseMatchStmt() {
         throw ParserError::WrongMatchError(peek().content, "'{'", peek().line, peek().column);
     node->leftBrace = std::make_shared<Lexer::Token>(eat());
 
-    while (isWholeExpr()) {
+    while (isWholeExpr() && peek().content != "default") {
         auto block = std::make_shared<AST::MatchStmtNode::matchBlock>();
 
         if (!isWholeExpr())
@@ -588,6 +588,13 @@ std::shared_ptr<AST::MatchStmtNode> Parser::parseMatchStmt() {
         block->bodyBlock = parseBlockStmt();
 
         node->matchBlocks.emplace_back(block);
+    }
+    if (peek().content == "default") {
+        node->defaultMark = std::make_shared<Lexer::Token>(eat());
+        if (peek().content != "=>")
+            throw ParserError::WrongMatchError(peek().content, "'=>'", peek().line, peek().column);
+        node->defaultOp = std::make_shared<Lexer::Token>(eat());
+        node->defaultBlock = parseBlockStmt();
     }
 
     if (peek().content != "}")

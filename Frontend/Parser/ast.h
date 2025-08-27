@@ -233,7 +233,7 @@ namespace AST {
     public:
         std::shared_ptr<Lexer::Token> matchMark = nullptr;
         std::shared_ptr<Lexer::Token> left = nullptr;
-        std::shared_ptr<WholeExprNode> expr = nullptr;
+        std::shared_ptr<IdentifierExprNode> identifier = nullptr;
         std::shared_ptr<Lexer::Token> right = nullptr;
 
         std::shared_ptr<Lexer::Token> leftBrace = nullptr;
@@ -243,6 +243,11 @@ namespace AST {
             std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
         };
         std::vector<std::shared_ptr<matchBlock>> matchBlocks;
+        
+        std::shared_ptr<Lexer::Token> defaultMark = nullptr;
+        std::shared_ptr<Lexer::Token> defaultOp = nullptr;
+        std::shared_ptr<BlockStmtNode> defaultBlock = nullptr;
+
         std::shared_ptr<Lexer::Token> rightBrace = nullptr;
 
         std::string toString() override;

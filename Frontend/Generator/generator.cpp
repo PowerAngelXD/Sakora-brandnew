@@ -293,9 +293,30 @@ void Generator::generate(AST::ElseIfStmtNode node) {
 void Generator::generate(AST::ElseStmtNode node) {
     generate(*node.bodyBlock, true);
 }
+void Generator::generate(AST::MatchStmtNode node) {
+    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.left->line, node.left->column, {sakValue::createStringVal("[Tag=MatchGroupBegin]", node.matchMark->line, node.matchMark->column)}));
+
+    for (auto block : node.matchBlocks) {
+        generate(*node.identifier);
+        generate(*block->caseExpr);
+        insSet.emplace_back(INS::genIns(INS::LGC_EQU, block->caseOp->line, block->caseOp->column, {}));
+
+        insSet.emplace_back(INS::genIns(INS::JMP, block->caseOp->line, block->caseOp->column, {sakValue::createStringVal("[True-in]", block->caseOp->line, block->caseOp->column)}));
+
+        generate(*block->bodyBlock, true);
+        
+        insSet.emplace_back(INS::genIns(INS::JMP, block->caseOp->line, block->caseOp->column, {sakValue::createStringVal("[Finish-out]", block->caseOp->line, block->caseOp->column)}));
+    }
+    if (node.defaultBlock) {
+        generate(*node.defaultBlock, true);
+    }
+
+    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.rightBrace->line, node.rightBrace->column, {sakValue::createStringVal("[Tag=MatchGroupEnd]", node.matchMark->line, node.matchMark->column)}));
+}
 
 void Generator::generate(AST::StmtNode node) {
     if (node.assignStmt) generate(*node.assignStmt);
     else if (node.letStmt) generate(*node.letStmt);
     else if (node.ifStmt) generate(*node.ifStmt);
+    else if (node.matchStmt) generate(*node.matchStmt);
 }

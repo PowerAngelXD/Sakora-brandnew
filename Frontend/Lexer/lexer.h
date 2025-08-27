@@ -8,7 +8,7 @@
 namespace Lexer {
     enum TokenType { Identifier, Symbol, Number, Keyword, String, Char, EndFlag };
     static std::vector<std::string> KeywordTable = {"let", "if", "else", "and", "or", "int", "float", "char", "true", "false",
-                                                    "typeof", "mutable", "match", "while", "for"};
+                                                    "typeof", "mutable", "match", "while", "for", "default"};
 
     struct Token {
         TokenType type;

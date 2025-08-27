@@ -203,7 +203,8 @@ void sakVM::__sak_jmp(sakValue jmp_type) {
                 c_index ++;
                 auto code = insSet.at(c_index);
                 
-                if (!code.getParas().empty() && code.getPara().getStrVal() == "[Tag=IfGroupEnd]") {
+                if (code.getOp() == INS::END_SCOPE && (code.getPara().getStrVal() == "[Tag=IfGroupEnd]" ||
+                                                        code.getPara().getStrVal() == "[Tag=MatchGroupEnd]")) {
                     c_index --;
                     break;
                 }

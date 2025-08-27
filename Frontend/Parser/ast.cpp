@@ -253,7 +253,7 @@ std::string AST::MatchStmtNode::toString() {
     std::ostringstream oss;
     oss << "MatchStmtNode(";
     if (matchMark) oss << "matchMark: " << matchMark->toString() << ", ";
-    if (expr) oss << "expr: " << expr->toString() << ", ";
+    if (identifier) oss << "iden: " << identifier->toString() << ", ";
     oss << "matchBlocks: [";
     for (size_t i = 0; i < matchBlocks.size(); ++i) {
         const auto& block = matchBlocks[i];
@@ -266,6 +266,8 @@ std::string AST::MatchStmtNode::toString() {
         if (i + 1 < matchBlocks.size()) oss << ", ";
     }
     oss << "]";
+    if (defaultMark) oss << ", defaultMark: " << defaultMark->toString();
+    if (defaultBlock) oss << ", defaultBlock: " << defaultBlock->toString();
     if (rightBrace) oss << ", rightBrace: " << rightBrace->toString();
     oss << ")";
     return oss.str();
