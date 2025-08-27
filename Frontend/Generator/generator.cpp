@@ -245,23 +245,30 @@ void Generator::generate(AST::AssignStmtNode node) {
     generate(*node.iden->idens.at(0), true);
     insSet.emplace_back(INS::genIns(INS::ASSIGN, node.assignOp->line, node.assignOp->column, {}));
 }
+void Generator::generate(AST::BlockStmtNode node, bool jmpCond) {
+    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=BlockBegin]", node.leftBrace->line, node.leftBrace->column)}));
+    for (auto stmt : node.body) {
+        generate(*stmt);
+    }
+
+    if (jmpCond) {
+        insSet.emplace_back(INS::genIns(INS::PUSH, node.rightBrace->line, node.rightBrace->column, {sakValue::createBoolVal("true", node.rightBrace->line, node.rightBrace->column)}));
+    }
+
+    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.rightBrace->line, node.rightBrace->column, {sakValue::createStringVal("[Tag=BlockEnd]", node.rightBrace->line, node.rightBrace->column)}));
+}
 // Tag解析：
 // [True-in]: 如果条件结果为真则JMP入该scope执行代码
 // [Tag=XXXX]: 打上Tag,证明这个scope的作用是什么，e.g. Tag=IfBegin标志着if下的scope开始
 // [Finish-out]: 表示如果内部代码被执行则直接跳出if-elseif-else控制流
 void Generator::generate(AST::IfStmtNode node) {
-    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=IfGroupBegin]", node.ifMark->line, node.ifMark->column)}));
+    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.left->line, node.left->column, {sakValue::createStringVal("[Tag=IfGroupBegin]", node.ifMark->line, node.ifMark->column)}));
 
     generate(*node.condition);
     insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[True-in]", node.ifMark->line, node.ifMark->column)}));
-    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=IfBegin]", node.ifMark->line, node.ifMark->column)}));
-    for (auto stmt : node.body) {
-        generate(*stmt);
-    }
-    // 执行结束之后的结果，最后要交给JMP指令进行检查
-    insSet.emplace_back(INS::genIns(INS::PUSH, node.rightBrace->line, node.rightBrace->column, {sakValue::createBoolVal("true", node.rightBrace->line, node.rightBrace->column)}));
+    
+    generate(*node.bodyBlock, true);
 
-    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=IfEnd]", node.ifMark->line, node.ifMark->column)}));
     insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[Finish-out]", node.ifMark->line, node.ifMark->column)}));
 
     if (!node.elseIfstmts.empty()) {
@@ -273,26 +280,18 @@ void Generator::generate(AST::IfStmtNode node) {
     if (node.elseStmt) {
         generate(*node.elseStmt);
     }
-    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=IfGroupEnd]", node.ifMark->line, node.ifMark->column)}));
+    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.right->line, node.right->column, {sakValue::createStringVal("[Tag=IfGroupEnd]", node.ifMark->line, node.ifMark->column)}));
 }
 void Generator::generate(AST::ElseIfStmtNode node) {
     generate(*node.condition);
     insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[True-in]", node.ifMark->line, node.ifMark->column)}));
-    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=ElseIfBegin]", node.ifMark->line, node.ifMark->column)}));
-    for (auto stmt : node.body) {
-        generate(*stmt);
-    }
-    // 执行结束之后的结果，最后要交给JMP指令进行检查
-    insSet.emplace_back(INS::genIns(INS::PUSH, node.rightBrace->line, node.rightBrace->column, {sakValue::createBoolVal("true", node.rightBrace->line, node.rightBrace->column)}));
-    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=ElseIfEnd]", node.ifMark->line, node.ifMark->column)}));
+    
+    generate(*node.bodyBlock, true);
+    
     insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[Finish-out]", node.ifMark->line, node.ifMark->column)}));
 }
 void Generator::generate(AST::ElseStmtNode node) {
-    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=ElseBegin]", node.elseMark->line, node.elseMark->column)}));
-    for (auto stmt : node.body) {
-        generate(*stmt);
-    }
-    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.leftBrace->line, node.leftBrace->column, {sakValue::createStringVal("[Tag=ElseEnd]", node.elseMark->line, node.elseMark->column)}));
+    generate(*node.bodyBlock, true);
 }
 
 void Generator::generate(AST::StmtNode node) {

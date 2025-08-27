@@ -51,6 +51,7 @@ public:
     // checker
     bool isLetStmt();
     bool isAssignStmt();
+    bool isBlockStmt();
     bool isIfStmt();
     bool isElseIfStmt();
     bool isElseStmt();
@@ -58,6 +59,7 @@ public:
     // parser
     std::shared_ptr<AST::LetStmtNode> parseLetStmt();
     std::shared_ptr<AST::AssignStmtNode> parseAssignStmt();
+    std::shared_ptr<AST::BlockStmtNode> parseBlockStmt();
     std::shared_ptr<AST::IfStmtNode> parseIfStmt();
     std::shared_ptr<AST::ElseIfStmtNode> parseElseIfStmt();
     std::shared_ptr<AST::ElseStmtNode> parseElseStmt();

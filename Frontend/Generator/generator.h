@@ -23,6 +23,7 @@ public:
 
     void generate(AST::LetStmtNode node);
     void generate(AST::AssignStmtNode node);
+    void generate(AST::BlockStmtNode node, bool jmpCond = false);
     void generate(AST::IfStmtNode node);
     void generate(AST::ElseIfStmtNode node);
     void generate(AST::ElseStmtNode node);

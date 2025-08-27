@@ -181,6 +181,15 @@ namespace AST {
         std::string toString() override;
     };
 
+    class BlockStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
+        std::vector<std::shared_ptr<StmtNode>> body;
+        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+
+        std::string toString() override;
+    };
+
     // Stage1
     class ElseIfStmtNode : public Node {
     public:
@@ -191,9 +200,7 @@ namespace AST {
         std::shared_ptr<BoolExprNode> condition = nullptr;
         std::shared_ptr<Lexer::Token> right = nullptr;
 
-        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
-        std::vector<std::shared_ptr<StmtNode>> body;
-        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+        std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
 
         std::string toString() override;
     };
@@ -202,9 +209,7 @@ namespace AST {
     public:
         std::shared_ptr<Lexer::Token> elseMark = nullptr;
 
-        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
-        std::vector<std::shared_ptr<StmtNode>> body;
-        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+        std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
 
         std::string toString() override;
     };
@@ -216,11 +221,7 @@ namespace AST {
         std::shared_ptr<BoolExprNode> condition = nullptr;
         std::shared_ptr<Lexer::Token> right = nullptr;
 
-        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
-
-        std::vector<std::shared_ptr<StmtNode>> body;
-
-        std::shared_ptr<Lexer::Token> rightBrace = nullptr;
+        std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
 
         std::vector<std::shared_ptr<ElseIfStmtNode>> elseIfstmts;
         std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
@@ -228,9 +229,26 @@ namespace AST {
         std::string toString() override;
     };
 
-    class MatchStmtNode : public Node {};
+    class MatchStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> matchMark = nullptr;
+        std::shared_ptr<Lexer::Token> left = nullptr;
+        std::shared_ptr<WholeExprNode> expr = nullptr;
+        std::shared_ptr<Lexer::Token> right = nullptr;
 
-    class WhileStmtNode : public Node {};
+        std::shared_ptr<Lexer::Token> leftBrace = nullptr;
+        struct matchBlock {
+            std::shared_ptr<Lexer::Token> caseMark = nullptr;
+            std::shared_ptr<WholeExprNode> caseExpr = nullptr;
+            std::shared_ptr<Lexer::Token> caseOp = nullptr;
+            std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
+        };
+    };
+
+    class WhileStmtNode : public Node {
+    public:
+        
+    };
 
     class RepeatStmtNode : public Node {};
 
