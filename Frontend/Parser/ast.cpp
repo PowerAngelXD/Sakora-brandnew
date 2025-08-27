@@ -259,7 +259,6 @@ std::string AST::MatchStmtNode::toString() {
         const auto& block = matchBlocks[i];
         if (block) {
             oss << "{";
-            if (block->caseMark) oss << "caseMark: " << block->caseMark->toString() << ", ";
             if (block->caseExpr) oss << "caseExpr: " << block->caseExpr->toString() << ", ";
             if (block->bodyBlock) oss << "bodyBlock: " << block->bodyBlock->toString();
             oss << "}";

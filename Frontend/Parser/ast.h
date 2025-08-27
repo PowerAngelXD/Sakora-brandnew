@@ -238,7 +238,6 @@ namespace AST {
 
         std::shared_ptr<Lexer::Token> leftBrace = nullptr;
         struct matchBlock {
-            std::shared_ptr<Lexer::Token> caseMark = nullptr;
             std::shared_ptr<WholeExprNode> caseExpr = nullptr;
             std::shared_ptr<Lexer::Token> caseOp = nullptr;
             std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
