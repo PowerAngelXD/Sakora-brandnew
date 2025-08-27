@@ -273,6 +273,16 @@ std::string AST::MatchStmtNode::toString() {
     return oss.str();
 }
 
+std::string AST::WhileStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "WhileStmtNode(";
+    if (whileMark) oss << "whileMark: " << whileMark->toString() << ", ";
+    if (condition) oss << "condition: " << condition->toString() << ", ";
+    if (bodyBlock) oss << "bodyBlock: " << bodyBlock->toString();
+    oss << ")";
+    return oss.str();
+}
+
 std::string AST::StmtNode::toString() {
     if (letStmt) return letStmt->toString();
     else if (ifStmt) return ifStmt->toString();
@@ -280,6 +290,7 @@ std::string AST::StmtNode::toString() {
     else if (elseStmt) return elseStmt->toString();
     else if (blockStmt) return blockStmt->toString();
     else if (matchStmt) return matchStmt->toString();
+    else if (whileStmt) return whileStmt->toString();
     else return assignStmt->toString();
 }
 

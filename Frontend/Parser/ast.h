@@ -243,7 +243,7 @@ namespace AST {
             std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
         };
         std::vector<std::shared_ptr<matchBlock>> matchBlocks;
-        
+
         std::shared_ptr<Lexer::Token> defaultMark = nullptr;
         std::shared_ptr<Lexer::Token> defaultOp = nullptr;
         std::shared_ptr<BlockStmtNode> defaultBlock = nullptr;
@@ -255,7 +255,14 @@ namespace AST {
 
     class WhileStmtNode : public Node {
     public:
-        
+        std::shared_ptr<Lexer::Token> whileMark = nullptr;
+        std::shared_ptr<Lexer::Token> left = nullptr;
+        std::shared_ptr<BoolExprNode> condition = nullptr;
+        std::shared_ptr<Lexer::Token> right = nullptr;
+
+        std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
+
+        std::string toString() override;
     };
 
     class RepeatStmtNode : public Node {};
@@ -278,6 +285,7 @@ namespace AST {
         std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
         std::shared_ptr<BlockStmtNode> blockStmt = nullptr;
         std::shared_ptr<MatchStmtNode> matchStmt = nullptr;
+        std::shared_ptr<WhileStmtNode> whileStmt = nullptr;
 
         std::string toString() override;
     };
