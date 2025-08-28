@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "ast.h"
 
 std::string AST::Node::toString() {

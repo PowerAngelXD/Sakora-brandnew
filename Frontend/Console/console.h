@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <fstream>
+#include <chrono>
 #include "../Lexer/lexer.h"
 #include "../Parser/parser.h"
 #include "../Generator/generator.h"

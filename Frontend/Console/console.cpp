@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "console.h"
 
 
@@ -38,6 +39,7 @@ void sakoraConsole::sakConsole::run() {
 
                 src.push_back('\0');
 
+                auto start = std::chrono::high_resolution_clock::now();
                 Lexer::LexerInstance lexer;
                 auto lexerResult = lexer.startLexer(src);
 
@@ -54,7 +56,12 @@ void sakoraConsole::sakConsole::run() {
                 }
 
                 vm.loadCodes(gen.insSet);
+
                 vm.run();
+                auto stop = std::chrono::high_resolution_clock::now();
+                auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
+
+                std::cout << "[Info] Execution finished in " << duration << " ms" << std::endl;
             }
             else {
                 Lexer::LexerInstance lexer;

@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "scope.h"
 
 sakScope::sakScope(std::string name, std::initializer_list<Object> list) 

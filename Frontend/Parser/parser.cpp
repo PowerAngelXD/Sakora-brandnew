@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "parser.h"
 
 Parser::Parser(Lexer::TokenSequence s) {

@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "vm.h"
 
 sakVM::sakVM() : insSet({}), s_index(0), c_index(0) {}

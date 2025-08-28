@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "vm_val.h"
 #include <stdexcept>
 
