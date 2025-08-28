@@ -313,10 +313,24 @@ void Generator::generate(AST::MatchStmtNode node) {
 
     insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.rightBrace->line, node.rightBrace->column, {sakValue::createStringVal("[Tag=MatchGroupEnd]", node.matchMark->line, node.matchMark->column)}));
 }
+void Generator::generate(AST::WhileStmtNode node) {
+    insSet.emplace_back(INS::genIns(INS::NEW_SCOPE, node.left->line, node.left->column, {sakValue::createStringVal("[Tag=WhileGroupBegin]", node.whileMark->line, node.whileMark->column)}));
+
+    generate(*node.condition);
+    insSet.emplace_back(INS::genIns(INS::JMP, node.whileMark->line, node.whileMark->column, {sakValue::createStringVal("[True-in]", node.whileMark->line, node.whileMark->column)}));
+
+    generate(*node.bodyBlock, true);
+
+    insSet.emplace_back(INS::genIns(INS::JMP, node.whileMark->line, node.whileMark->column, {sakValue::createStringVal("[Loop-back]", node.whileMark->line, node.whileMark->column)}));
+
+    insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.right->line, node.right->column, {sakValue::createStringVal("[Tag=WhileGroupEnd]", node.whileMark->line, node.whileMark->column)}));
+}
 
 void Generator::generate(AST::StmtNode node) {
     if (node.assignStmt) generate(*node.assignStmt);
     else if (node.letStmt) generate(*node.letStmt);
     else if (node.ifStmt) generate(*node.ifStmt);
     else if (node.matchStmt) generate(*node.matchStmt);
+    else if (node.whileStmt) generate(*node.whileStmt);
+    else if (node.blockStmt) generate(*node.blockStmt);
 }

@@ -211,6 +211,19 @@ void sakVM::__sak_jmp(sakValue jmp_type) {
             }
         }
     }
+    else if (type == "[Loop-back]") {
+        if (runtime.empty());
+        else {
+            std::cout << "loop back" << std::endl;
+            auto value = __sak_pop();
+            while (true) {
+                c_index --;
+                if (!insSet.at(c_index).getParas().empty() && (insSet.at(c_index).getOp() == INS::NEW_SCOPE && insSet.at(c_index).getPara().getStrVal() == "[Tag=WhileGroupBegin]")) {
+                    break;
+                }
+            }
+        }
+    }
 }
 void sakVM::__sak_new_scope(sakValue name) {
     scopeMgr.createScope(name.getStrVal());

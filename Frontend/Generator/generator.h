@@ -28,6 +28,7 @@ public:
     void generate(AST::ElseIfStmtNode node);
     void generate(AST::ElseStmtNode node);
     void generate(AST::MatchStmtNode node);
+    void generate(AST::WhileStmtNode node);
 
     void generate(AST::StmtNode node);
 };
