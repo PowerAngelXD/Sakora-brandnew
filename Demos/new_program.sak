@@ -9,18 +9,18 @@ while (i < 20) {
             a = "hello";
         }
         "hello" => {
-            a = a + "world";
+            a += "world";
         }
         "hello world" => {
-            a = a + "what tf";
+            a += "what tf";
         }
         default => {
-            a = a + "jjj";
+            a += "jjj";
         }
     }
 
     if (i > 10) {
-        i = i + 5;
+        i += 5;
     }
-    i = i + 1;
+    i ++;
 }
