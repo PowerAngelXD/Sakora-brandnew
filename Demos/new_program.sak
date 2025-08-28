@@ -1,26 +1,26 @@
-let a:string;
-a = "who";
-if (a == "hello world") {
-    a = "hello";
-}
-else if (a == "who") {
-    a = "world";
-}
-
-match (a) {
-    "world!"=> {
-        a = "woRld";
-    }
-    "hello"=> {
-        a = "heLLo";
-    }
-    default=> {
-        a = "hello world";
-    }
-}
-
+let a:string = "who";
 let i = 0;
-while (i < 10) {
-    a = a + "world!";
+while (i < 20) {
+    match (a) {
+        "who" => {
+            a = "whowho";
+        }
+        "whowho" => {
+            a = "hello";
+        }
+        "hello" => {
+            a = a + "world";
+        }
+        "hello world" => {
+            a = a + "what tf";
+        }
+        default => {
+            a = a + "jjj";
+        }
+    }
+
+    if (i > 10) {
+        i = i + 5;
+    }
     i = i + 1;
 }

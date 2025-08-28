@@ -214,7 +214,6 @@ void sakVM::__sak_jmp(sakValue jmp_type) {
     else if (type == "[Loop-back]") {
         if (runtime.empty());
         else {
-            std::cout << "loop back" << std::endl;
             auto value = __sak_pop();
             while (true) {
                 c_index --;

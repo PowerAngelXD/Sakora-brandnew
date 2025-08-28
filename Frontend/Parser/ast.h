@@ -267,9 +267,9 @@ namespace AST {
 
     class RepeatStmtNode : public Node {};
 
-    class FuncDefineStmtNode : public Node {};
-
     class ExprStmtNode : public Node {};
+
+    class FuncDefineStmtNode : public Node {};
 
     // Stage2
     class StructDefineStmtNode : public Node {};
