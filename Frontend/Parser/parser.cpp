@@ -143,33 +143,44 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
     }
 }
 
-std::shared_ptr<AST::CallingExprNode> Parser::parseCallingExpr() {
+std::shared_ptr<AST::BasicIdentifierNode> Parser::parseCallingExpr() {
     if(!isCallingExpr())
         throw ParserError::WrongMatchError(peek().content, "identifier", peek().line, peek().column);
     
-    auto node = std::make_shared<AST::CallingExprNode>();
+    auto node = std::make_shared<AST::BasicIdentifierNode>();
 
     node->iden = std::make_shared<Lexer::Token>(eat());
 
     if (peek().content == "(") {
-        node->left = std::make_shared<Lexer::Token>(eat());
+        node->callOp = std::make_shared<AST::BasicIdentifierNode::CallingOp>();
+        node->callOp->left = std::make_shared<Lexer::Token>(eat());
 
-        if (isWholeExpr()) {
-            // 函数存在参数，开始解析参数列表
-            node->args.emplace_back(parseWholeExpr());
-            while (peek().content == ",") {
-                node->dots.emplace_back(std::make_shared<Lexer::Token>(eat()));
+        if (peek().content != ")") {
+            while (true) {
                 if (!isWholeExpr())
-                    throw ParserError::WrongMatchError(peek().content, "An expression", peek().line, peek().column);
-                    
-                node->args.emplace_back(parseWholeExpr());
+                    throw ParserError::WrongMatchError(peek().content, "An expression as argument", peek().line, peek().column);
+                
+                node->callOp->args.emplace_back(parseWholeExpr());
+
+                if (peek().content == ",") {
+                    node->callOp->dots.emplace_back(std::make_shared<Lexer::Token>(eat()));
+                }
+                else break;
             }
         }
 
         if (peek().content != ")")
-            throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);  
+            throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);
         
-        node->right = std::make_shared<Lexer::Token>(eat());
+        node->callOp->right = std::make_shared<Lexer::Token>(eat());
+    }
+    else if (peek().content == "++" || peek().content == "--") {
+        node->selfOp = std::make_shared<Lexer::Token>(eat());
+    }
+    else if (peek().content == "+=" || peek().content == "-=" || peek().content == "*=" || peek().content == "/=") {
+        node->selfOp = std::make_shared<Lexer::Token>(eat());
+        
+        node->selfExpr = parseAddExpr();
     }
 
     return node;
@@ -416,6 +427,10 @@ bool Parser::isWhileStmt() {
     return peek().content == "while";
 }
 
+bool Parser::isExprStmt() {
+    return isIdentifierExpr() && !isAssignStmt();
+}
+
 
 std::shared_ptr<AST::LetStmtNode> Parser::parseLetStmt() {
     if (!isLetStmt())
@@ -630,9 +645,23 @@ std::shared_ptr<AST::WhileStmtNode> Parser::parseWhileStmt() {
     return node;
 }
 
+std::shared_ptr<AST::ExprStmtNode> Parser::parseExprStmt() {
+    if (!isExprStmt())
+        throw ParserError::WrongMatchError(peek().content, "Expression Statement", peek().line, peek().column);
+    
+    auto node = std::make_shared<AST::ExprStmtNode>();
+    node->idenExpr = parseIdentifierExpr();
+
+    if (peek().content != ";") 
+        throw ParserError::WrongMatchError(peek().content, "';'", peek().line, peek().column);
+    node->stmtEndOp = std::make_shared<Lexer::Token>(eat());
+
+    return node;
+}
+
 
 bool Parser::isStmt() {
-    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseIfStmt() || isElseStmt() || isBlockStmt() || isMatchStmt() || isWhileStmt();
+    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseIfStmt() || isElseStmt() || isBlockStmt() || isMatchStmt() || isWhileStmt() || isExprStmt();
 }
 
 std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
@@ -646,6 +675,7 @@ std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
     else if (isBlockStmt()) stmt->blockStmt = parseBlockStmt();
     else if (isMatchStmt()) stmt->matchStmt = parseMatchStmt();
     else if (isWhileStmt()) stmt->whileStmt = parseWhileStmt();
+    else if (isExprStmt()) stmt->exprStmt = parseExprStmt();
     else throw ParserError::WrongMatchError(peek().content, "Statement", peek().line, peek().column);
     return stmt;
 }

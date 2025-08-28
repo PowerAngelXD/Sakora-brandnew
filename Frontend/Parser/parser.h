@@ -32,7 +32,7 @@ public:
     bool isWholeExpr();
 
     // parser
-    std::shared_ptr<AST::CallingExprNode> parseCallingExpr();
+    std::shared_ptr<AST::BasicIdentifierNode> parseCallingExpr();
     std::shared_ptr<AST::AtomIdentifierNode> parseAtomIdentifier();
     std::shared_ptr<AST::IdentifierExprNode> parseIdentifierExpr();
     std::shared_ptr<AST::PrimExprNode> parsePrimExpr();
@@ -57,6 +57,7 @@ public:
     bool isElseStmt();
     bool isMatchStmt();
     bool isWhileStmt();
+    bool isExprStmt();
 
     // parser
     std::shared_ptr<AST::LetStmtNode> parseLetStmt();
@@ -67,6 +68,7 @@ public:
     std::shared_ptr<AST::ElseStmtNode> parseElseStmt();
     std::shared_ptr<AST::MatchStmtNode> parseMatchStmt();
     std::shared_ptr<AST::WhileStmtNode> parseWhileStmt();
+    std::shared_ptr<AST::ExprStmtNode> parseExprStmt();
     
 
     // Final Parser

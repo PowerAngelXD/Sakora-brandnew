@@ -21,21 +21,27 @@ namespace AST {
     class IdentifierExprNode;
     class StmtNode;
 
-    class CallingExprNode : public Node {
+    class BasicIdentifierNode : public Node {
     public:
         std::shared_ptr<Lexer::Token> iden = nullptr;
         
-        std::shared_ptr<Lexer::Token> left = nullptr;
-        std::vector<std::shared_ptr<WholeExprNode>> args;
-        std::vector<std::shared_ptr<Lexer::Token>> dots;
-        std::shared_ptr<Lexer::Token> right = nullptr;
+        struct CallingOp {
+            std::shared_ptr<Lexer::Token> left = nullptr;
+            std::vector<std::shared_ptr<WholeExprNode>> args;
+            std::vector<std::shared_ptr<Lexer::Token>> dots;
+            std::shared_ptr<Lexer::Token> right = nullptr;
+        };
+
+        std::shared_ptr<CallingOp> callOp = nullptr;
+        std::shared_ptr<Lexer::Token> selfOp = nullptr; // +=，-=，*=， /=， ++， --这种操作符
+        std::shared_ptr<AddExprNode> selfExpr = nullptr;
 
         std::string toString() override;
     };
 
     class AtomIdentifierNode : public Node {
     public:
-        std::shared_ptr<CallingExprNode> iden = nullptr;
+        std::shared_ptr<BasicIdentifierNode> iden = nullptr;
         
         struct getIndexOp {
             std::shared_ptr<Lexer::Token> left = nullptr;
@@ -267,7 +273,14 @@ namespace AST {
 
     class RepeatStmtNode : public Node {};
 
-    class ExprStmtNode : public Node {};
+    class ExprStmtNode : public Node {
+    public:
+        std::shared_ptr<IdentifierExprNode> idenExpr = nullptr;
+
+        std::shared_ptr<Lexer::Token> stmtEndOp = nullptr;
+
+        std::string toString() override;
+    };
 
     class FuncDefineStmtNode : public Node {};
 
@@ -286,6 +299,7 @@ namespace AST {
         std::shared_ptr<BlockStmtNode> blockStmt = nullptr;
         std::shared_ptr<MatchStmtNode> matchStmt = nullptr;
         std::shared_ptr<WhileStmtNode> whileStmt = nullptr;
+        std::shared_ptr<ExprStmtNode> exprStmt = nullptr;
 
         std::string toString() override;
     };

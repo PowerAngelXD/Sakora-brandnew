@@ -7,9 +7,9 @@
 class Generator {
 public:
     std::vector<INS::Instruction> insSet;
-
+    void generate(AST::BasicIdentifierNode node, bool pushObj = false);
     void generate(AST::AtomIdentifierNode node, bool pushObj = false);
-    void generate(AST::IdentifierExprNode node);
+    void generate(AST::IdentifierExprNode node, bool pushObj = false);
     void generate(AST::PrimExprNode node);
     void generate(AST::MulExprNode node);
     void generate(AST::AddExprNode node);
@@ -29,6 +29,7 @@ public:
     void generate(AST::ElseStmtNode node);
     void generate(AST::MatchStmtNode node);
     void generate(AST::WhileStmtNode node);
+    void generate(AST::ExprStmtNode node);
 
     void generate(AST::StmtNode node);
 };

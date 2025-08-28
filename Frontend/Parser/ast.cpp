@@ -4,16 +4,24 @@ std::string AST::Node::toString() {
     return "<AST::Node>";
 }
 
-std::string AST::CallingExprNode::toString() {
+std::string AST::BasicIdentifierNode::toString() {
     std::ostringstream oss;
-    oss << "<CallingExprNode: ";
+    oss << "<BasicIdentifierNode: ";
     if (iden) oss << iden->content;
-    if (left) oss << left->content;
-    for (size_t i = 0; i < args.size(); ++i) {
-        if (i > 0) oss << ", ";
-        if (args[i]) oss << args[i]->toString();
+    if (callOp) {
+        oss << callOp->left->content << "(";
+        for (size_t i = 0; i < callOp->args.size(); ++i) {
+            if (i > 0) oss << ", ";
+            oss << callOp->args[i]->toString();
+        }
+        oss << ")" << callOp->right->content;
     }
-    if (right) oss << right->content;
+    else if (selfOp) {
+        oss << selfOp->toString();
+    }
+    if (selfExpr) {
+        oss << selfExpr->toString();
+    }
     oss << ">";
     return oss.str();
 }
@@ -283,6 +291,11 @@ std::string AST::WhileStmtNode::toString() {
     return oss.str();
 }
 
+std::string AST::ExprStmtNode::toString() {
+    if (idenExpr) return "ExprStmtNode(" + idenExpr->toString() + ")";
+    return "<ExprStmtNode: null>";
+}
+
 std::string AST::StmtNode::toString() {
     if (letStmt) return letStmt->toString();
     else if (ifStmt) return ifStmt->toString();
@@ -291,6 +304,7 @@ std::string AST::StmtNode::toString() {
     else if (blockStmt) return blockStmt->toString();
     else if (matchStmt) return matchStmt->toString();
     else if (whileStmt) return whileStmt->toString();
+    else if (exprStmt) return exprStmt->toString();
     else return assignStmt->toString();
 }
 
