@@ -18,3 +18,9 @@ match (a) {
         a = "hello world";
     }
 }
+
+let i = 0;
+while (i < 10) {
+    a = a + "world!";
+    i = i + 1;
+}
