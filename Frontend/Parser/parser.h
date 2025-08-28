@@ -56,6 +56,7 @@ public:
     bool isElseIfStmt();
     bool isElseStmt();
     bool isMatchStmt();
+    bool isWhileStmt();
 
     // parser
     std::shared_ptr<AST::LetStmtNode> parseLetStmt();
@@ -65,6 +66,7 @@ public:
     std::shared_ptr<AST::ElseIfStmtNode> parseElseIfStmt();
     std::shared_ptr<AST::ElseStmtNode> parseElseStmt();
     std::shared_ptr<AST::MatchStmtNode> parseMatchStmt();
+    std::shared_ptr<AST::WhileStmtNode> parseWhileStmt();
     
 
     // Final Parser

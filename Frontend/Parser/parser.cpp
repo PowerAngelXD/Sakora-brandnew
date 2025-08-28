@@ -412,6 +412,10 @@ bool Parser::isMatchStmt() {
     return peek().content == "match";
 }
 
+bool Parser::isWhileStmt() {
+    return peek().content == "while";
+}
+
 
 std::shared_ptr<AST::LetStmtNode> Parser::parseLetStmt() {
     if (!isLetStmt())
@@ -604,9 +608,31 @@ std::shared_ptr<AST::MatchStmtNode> Parser::parseMatchStmt() {
     return node;
 }
 
+std::shared_ptr<AST::WhileStmtNode> Parser::parseWhileStmt() {
+    if (!isWhileStmt())
+        throw ParserError::WrongMatchError(peek().content, "\"while\"", peek().line, peek().column);
+
+    auto node = std::make_shared<AST::WhileStmtNode>();
+    node->whileMark = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().content != "(")
+        throw ParserError::WrongMatchError(peek().content, "'('", peek().line, peek().column);
+    node->left = std::make_shared<Lexer::Token>(eat());
+    if (!isBoolExpr())
+        throw ParserError::WrongMatchError(peek().content, "Bool Expression", peek().line, peek().column);
+    node->condition = parseBoolExpr();
+    if (peek().content != ")")
+        throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);
+    node->right = std::make_shared<Lexer::Token>(eat());
+
+    node->bodyBlock = parseBlockStmt();
+
+    return node;
+}
+
 
 bool Parser::isStmt() {
-    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseIfStmt() || isElseStmt() || isBlockStmt() || isMatchStmt();
+    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseIfStmt() || isElseStmt() || isBlockStmt() || isMatchStmt() || isWhileStmt();
 }
 
 std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
@@ -619,6 +645,7 @@ std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
     else if (isElseStmt()) stmt->elseStmt = parseElseStmt();
     else if (isBlockStmt()) stmt->blockStmt = parseBlockStmt();
     else if (isMatchStmt()) stmt->matchStmt = parseMatchStmt();
+    else if (isWhileStmt()) stmt->whileStmt = parseWhileStmt();
     else throw ParserError::WrongMatchError(peek().content, "Statement", peek().line, peek().column);
     return stmt;
 }

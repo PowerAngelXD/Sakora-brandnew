@@ -50,7 +50,7 @@ Lexer::TokenSequence Lexer::LexerInstance::startLexer(std::string raw) {
         current = raw.at(i);
 
         if (current == '\n') {
-            ln = 1;
+            ln += 1;
             col = 1;
             next();
         }
