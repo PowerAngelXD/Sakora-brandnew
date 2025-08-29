@@ -2,6 +2,7 @@
 #define SAKORA_VALUE_H
 
 #include "type.h"
+#include "object.h"
 #include <variant>
 #include <sstream>
 
@@ -10,9 +11,11 @@ namespace sakora {
     using StructPtr = std::shared_ptr<StructValue>;
     enum StructKind { Array, Tuple };
 
+    using ObjectPtr = std::shared_ptr<Object>;
+
     // 单值，不是结构
     class Value {
-        std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr> value;
+        std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr> value;
         int line, column;
     public:
         Value(int val, int ln, int col);

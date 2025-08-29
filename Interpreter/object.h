@@ -17,6 +17,8 @@ namespace sakora {
         std::string objName;
         
     };
+
+    class Object {};
 }
 
 #endif
