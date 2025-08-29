@@ -4,12 +4,12 @@
 
 sakType::sakTid::sakTid(const Type&& v) : mainType(v) {}
 sakType::sakTid::sakTid(const Type& v) : mainType(v) {}
-sakType::sakTid::sakTid(const Type&& v, ArrayModifider am) : mainType(v) {
-    modifier.arrayMod = std::make_shared<ArrayModifider>(am);
+sakType::sakTid::sakTid(const Type&& v, ArrayModifier am) : mainType(v) {
+    modifier.arrayMod = std::make_shared<ArrayModifier>(am);
 }
 
-sakType::sakTid::sakTid(const Type& v, ArrayModifider am) : mainType(v) {
-    modifier.arrayMod = std::make_shared<ArrayModifider>(am);
+sakType::sakTid::sakTid(const Type& v, ArrayModifier am) : mainType(v) {
+    modifier.arrayMod = std::make_shared<ArrayModifier>(am);
 }
 
 const sakType::TypeModifier& sakType::sakTid::getModifier() {
@@ -17,8 +17,8 @@ const sakType::TypeModifier& sakType::sakTid::getModifier() {
 }
 sakType::Type sakType::sakTid::getVal() { return mainType; }
 bool sakType::sakTid::setVal(const Type& nv) { mainType = nv; return true; }
-bool sakType::sakTid::setModifier(const ArrayModifider& arrayMod) {
-    modifier.arrayMod = std::make_shared<ArrayModifider>(arrayMod);
+bool sakType::sakTid::setModifier(const ArrayModifier& arrayMod) {
+    modifier.arrayMod = std::make_shared<ArrayModifier>(arrayMod);
     return true;
 }
 

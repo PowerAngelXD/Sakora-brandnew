@@ -552,7 +552,7 @@ sakValue sakValue::inferType() {
     else {
         auto stct = this->getStruct();
         auto array = stct.getArray();
-        sakType::ArrayModifider amdr;
+        sakType::ArrayModifier amdr;
         if (!array.at(0).isStruct()) {
             amdr.lengths.emplace_back(static_cast<int>(array.size()));
             amdr.dimension = 1;

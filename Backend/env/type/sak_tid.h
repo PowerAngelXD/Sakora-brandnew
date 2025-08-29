@@ -12,7 +12,7 @@ namespace sakType {
         Int, String, Float, Boolean, Tid, Char, Null, EMPTY
     };
 
-    struct ArrayModifider {
+    struct ArrayModifier {
         Type arrayType = Type::Null; // 数组类型
 
         std::vector<int> lengths; // 各维度数组的长度
@@ -20,7 +20,7 @@ namespace sakType {
     };
 
     struct TypeModifier {
-        std::shared_ptr<ArrayModifider> arrayMod = nullptr;
+        std::shared_ptr<ArrayModifier> arrayMod = nullptr;
     };
 
     class sakTid : public sakBasicType {
@@ -32,12 +32,12 @@ namespace sakType {
 
         sakTid(const Type&& v);
         sakTid(const Type& v);
-        sakTid(const Type&& v, ArrayModifider am);
-        sakTid(const Type& v, ArrayModifider am);
+        sakTid(const Type&& v, ArrayModifier am);
+        sakTid(const Type& v, ArrayModifier am);
         Type getVal();
         const TypeModifier& getModifier();
         bool setVal(const Type& nv);
-        bool setModifier(const ArrayModifider& arrayMod);
+        bool setModifier(const ArrayModifier& arrayMod);
 
         bool operator ==(sakTid tid);
         bool operator !=(sakTid tid);

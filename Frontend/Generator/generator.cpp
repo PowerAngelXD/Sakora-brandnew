@@ -207,7 +207,7 @@ void Generator::generate(AST::PrimTypeExprNode node) {
 }
 
 void Generator::generate(AST::ArrayTypeExprNode node) {
-    sakType::ArrayModifider amr;
+    sakType::ArrayModifier amr;
     if (node.primType->identifier->content == "int") {
         amr.arrayType = sakType::Type::Int;
     }
