@@ -14,6 +14,7 @@ namespace sakora {
     using ObjectPtr = std::shared_ptr<Object>;
 
     // 单值，不是结构
+    // TODO: Object支持的时候需要对Value的其他函数进行修改
     class Value {
         std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr> value;
         int line, column;
@@ -32,6 +33,7 @@ namespace sakora {
         char getChar();
         bool getBool();
         StructPtr getStruct();
+        ObjectPtr getObject();
 
         void intAssign(int i);
         void floatAssign(double f);
@@ -46,6 +48,21 @@ namespace sakora {
         TypeId inferType();
 
         std::string toString();
+
+        // operators
+        Value operator+ (Value rval);
+        Value operator- (Value rval);
+        Value operator/ (Value rval);
+        Value operator* (Value rval);
+        Value operator> (Value rval);
+        Value operator< (Value rval);
+        Value operator<= (Value rval);
+        Value operator>= (Value rval);
+        Value operator== (Value rval);
+        Value operator!= (Value rval);
+        Value operator! ();
+        Value operator&& (Value rval);
+        Value operator|| (Value rval);
     };
 
     // 将结构包装成值

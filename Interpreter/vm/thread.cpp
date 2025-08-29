@@ -1,0 +1,17 @@
+#include "thread.h"
+
+void svm::threadGroup::createNewThread() {
+    vmThread newThread;
+
+    threads.push_back(newThread);
+    t_index = threads.size() - 1;
+    c_index = 0;
+}
+
+void svm::threadGroup::removePrevThread() {
+    if (threads.size() <= 1) return; // 不能删完
+
+    threads.erase(threads.begin() + t_index);
+    t_index --;
+    c_index = 0;
+}

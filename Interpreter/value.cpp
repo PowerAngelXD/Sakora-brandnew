@@ -45,6 +45,11 @@ sakora::StructPtr sakora::Value::getStruct() {
         return std::get<StructPtr>(value);
     throw std::runtime_error("Type error: Expected Struct at line " + std::to_string(line) + ", column " + std::to_string(column));
 }
+sakora::ObjectPtr sakora::Value::getObject() {
+    if (std::holds_alternative<ObjectPtr>(value))
+        return std::get<ObjectPtr>(value);
+    throw std::runtime_error("Type error: Expected Object at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
 void sakora::Value::intAssign(int i) {
     if (std::holds_alternative<int>(value))
         value = i;
