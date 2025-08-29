@@ -28,6 +28,9 @@ namespace sakora {
         const ArrayModifier& getArrMod();
 
         std::string toString();
+
+        bool operator== (const TypeId& rval);
+        bool operator!= (const TypeId& rval);
     };
 }
 

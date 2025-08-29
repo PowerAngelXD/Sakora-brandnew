@@ -45,3 +45,20 @@ std::string sakora::TypeId::toString() {
     }
     return res;
 }   
+
+// Operators
+
+bool sakora::TypeId::operator== (const TypeId& rval) {
+    if (bType != rval.bType) return false;
+    if ((arrMod == nullptr) != (rval.arrMod == nullptr)) return false;
+    if (arrMod == nullptr && rval.arrMod == nullptr) return true;
+    // 都不为nullptr
+    if (arrMod->dimension != rval.arrMod->dimension) return false;
+    if (arrMod->lengthList != rval.arrMod->lengthList) return false;
+    
+    return true;
+}
+
+bool sakora::TypeId::operator!= (const TypeId& rval) {
+    return !(*this == rval);
+}
