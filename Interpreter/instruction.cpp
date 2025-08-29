@@ -2,30 +2,30 @@
 
 // 构造函数实现
 // Constructor implementation
-sakora::sakIns::sakIns(sakora::InsOp op, int ln, int col, std::initializer_list<std::string> _args)
+sakora::VMCode::VMCode(sakora::InsOp op, int ln, int col, std::initializer_list<std::string> _args)
     : VMOp(op), line(ln), column(col), args(_args) {}
 
 // 获取指令操作码
 // Get instruction opcode
-const sakora::InsOp& sakora::sakIns::getOp() {
+const sakora::InsOp& sakora::VMCode::getOp() {
     return VMOp;
 }
 
 // 获取所有参数
 // Get all arguments
-std::vector<std::string> sakora::sakIns::getArgs() {
+std::vector<std::string> sakora::VMCode::getArgs() {
     return args;
 }
 
 // 获取指定位置参数
 // Get argument at specified position
-std::string sakora::sakIns::getArg(int pos) {
+std::string sakora::VMCode::getArg(int pos) {
     if (pos < static_cast<int>(args.size()))
         return args[pos];
     return "";
 }
 
-std::string sakora::sakIns::toString() {
+std::string sakora::VMCode::toString() {
     std::ostringstream oss;
     oss << "Instruction(Op: ";
     switch (VMOp) {

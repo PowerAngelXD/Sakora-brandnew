@@ -18,7 +18,7 @@ namespace sakora {
     };
 
     // 指令类，管理指令使用
-    class sakIns {
+    class VMCode {
         InsOp VMOp;
         int line, column;
         std::vector<std::string> args;
@@ -28,7 +28,7 @@ namespace sakora {
            ln, col  意指对应的行列
            args     意指参数
         */
-        sakIns(InsOp op, int ln, int col, std::initializer_list<std::string> _args = {});
+        VMCode(InsOp op, int ln, int col, std::initializer_list<std::string> _args = {});
 
         const InsOp& getOp();
         std::vector<std::string> getArgs();
