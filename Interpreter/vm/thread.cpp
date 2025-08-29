@@ -4,7 +4,7 @@ void svm::threadGroup::createNewThread() {
     vmThread newThread;
 
     threads.push_back(newThread);
-    t_index = threads.size() - 1;
+    t_index ++;
     c_index = 0;
 }
 
