@@ -203,3 +203,115 @@ std::string sakora::Value::toString() {
     }
     return oss.str();
 }
+
+// Operator
+sakora::Value sakora::Value::operator+ (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getInt() + rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getInt() + rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot add type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getFloat() + rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getFloat() + rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot add type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+
+    if (this->inferType() != rval.inferType())
+        throw std::runtime_error("Type error: Cannot add different types at line " + std::to_string(line) + ", column " + std::to_string(column));
+    
+    if (std::holds_alternative<std::string>(value)) {
+        return sakora::Value(this->getString() + rval.getString(), line, column);
+    }
+    else if (std::holds_alternative<StructPtr>(value) && this->getStruct()->kind == sakora::Array) {
+        // 数组的加法是连接
+        auto newArr = this->getStruct()->content;
+        auto rvalArr = rval.getStruct()->content;
+        newArr.insert(newArr.end(), rvalArr.begin(), rvalArr.end());
+        return sakora::Value(sakora::StructValue{newArr, sakora::Array}, line, column);
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot add type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
+sakora::Value sakora::Value::operator- (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getInt() - rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getInt() - rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot subtract type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getFloat() - rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getFloat() - rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot subtract type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot subtract type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
+sakora::Value sakora::Value::operator/ (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value)) {
+            if (rval.getInt() == 0)
+                throw std::runtime_error("Runtime error: Division by zero at line " + std::to_string(line) + ", column " + std::to_string(column));
+            return sakora::Value(this->getInt() / rval.getInt(), line, column);
+        }
+        else if (std::holds_alternative<double>(rval.value)) {
+            if (rval.getFloat() == 0.0)
+                throw std::runtime_error("Runtime error: Division by zero at line " + std::to_string(line) + ", column " + std::to_string(column));
+            return sakora::Value(this->getInt() / rval.getFloat(), line, column);
+        }
+        else
+            throw std::runtime_error("Type error: Cannot divide type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value)) {
+            if (rval.getInt() == 0)
+                throw std::runtime_error("Runtime error: Division by zero at line " + std::to_string(line) + ", column " + std::to_string(column));
+            return sakora::Value(this->getFloat() / rval.getInt(), line, column);
+        }
+        else if (std::holds_alternative<double>(rval.value)) {
+            if (rval.getFloat() == 0.0)
+                throw std::runtime_error("Runtime error: Division by zero at line " + std::to_string(line) + ", column " + std::to_string(column));
+            return sakora::Value(this->getFloat() / rval.getFloat(), line, column);
+        }
+        else
+            throw std::runtime_error("Type error: Cannot divide type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot divide type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
+sakora::Value sakora::Value::operator* (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getInt() * rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getInt() * rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot multiply type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getFloat() * rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getFloat() * rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot multiply type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot multiply type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
