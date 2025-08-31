@@ -387,3 +387,21 @@ sakora::Value sakora::Value::operator>= (sakora::Value rval) {
 sakora::Value sakora::Value::operator<= (sakora::Value rval) {
     return sakora::Value(((*this < rval) || (*this == rval)).getBool(), line, column);
 }
+sakora::Value sakora::Value::operator&& (sakora::Value rval) {
+    if (std::holds_alternative<bool>(value) && std::holds_alternative<bool>(rval.value))
+        return sakora::Value(this->getBool() && rval.getBool(), line, column);
+    else
+        throw std::runtime_error("Type error: Cannot perform logical AND at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
+sakora::Value sakora::Value::operator|| (sakora::Value rval) {
+    if (std::holds_alternative<bool>(value) && std::holds_alternative<bool>(rval.value))
+        return sakora::Value(this->getBool() || rval.getBool(), line, column);
+    else
+        throw std::runtime_error("Type error: Cannot perform logical OR at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
+sakora::Value sakora::Value::operator! () {
+    if (std::holds_alternative<bool>(value))
+        return sakora::Value(!this->getBool(), line, column);
+    else
+        throw std::runtime_error("Type error: Cannot perform logical NOT at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
