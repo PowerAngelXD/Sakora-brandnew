@@ -315,3 +315,75 @@ sakora::Value sakora::Value::operator* (sakora::Value rval) {
         throw std::runtime_error("Type error: Cannot multiply type at line " + std::to_string(line) + ", column " + std::to_string(column));
     }
 }
+sakora::Value sakora::Value::operator< (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getInt() < rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getInt() < rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getFloat() < rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getFloat() < rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
+sakora::Value sakora::Value::operator> (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getInt() > rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getInt() > rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getFloat() > rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getFloat() > rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
+sakora::Value sakora::Value::operator== (sakora::Value rval) {
+    if (std::holds_alternative<int>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getInt() == rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getInt() == rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<double>(value)) {
+        if (std::holds_alternative<int>(rval.value))
+            return sakora::Value(this->getFloat() == rval.getInt(), line, column);
+        else if (std::holds_alternative<double>(rval.value))
+            return sakora::Value(this->getFloat() == rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else {
+        throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+}
+sakora::Value sakora::Value::operator!= (sakora::Value rval) {
+    return sakora::Value(!((*this == rval).getBool()), line, column);
+}
+sakora::Value sakora::Value::operator>= (sakora::Value rval) {
+    return sakora::Value(((*this > rval) || (*this == rval)).getBool(), line, column);
+}
+sakora::Value sakora::Value::operator<= (sakora::Value rval) {
+    return sakora::Value(((*this < rval) || (*this == rval)).getBool(), line, column);
+}
