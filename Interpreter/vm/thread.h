@@ -12,7 +12,7 @@ namespace svm {
         int t_index; // 代表现在所在thread的index
         int c_index; // 代表现在指向的VMCode的index
 
-        threadGroup()=default;
+        threadGroup();
         void createNewThread();  // 创建新的thread，并让t_index更新为现在的位置
         void removePrevThread(); // 将上一个使用的thread remove掉，并更新t_index为上一个位置
     };

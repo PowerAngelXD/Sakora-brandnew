@@ -1,7 +1,27 @@
 #include "scope.h"
 
 bool sakora::Scope::isExist(std::string field) {
-    return members.find(field) != members.end();
+    if (members.find(field) != members.end()) {
+        return true;
+    }
+    else {
+        if (prev.expired()) {
+            return this->prev.lock()->isExist(field);
+        }
+        else return false;
+    }
+}
+
+std::shared_ptr<sakora::Scope> sakora::Scope::locate(std::string field, int ln, int col) {
+    if (members.find(field) != members.end()) {
+        return shared_from_this();
+    }
+    else {
+        if (prev.expired()) {
+            return this->prev.lock()->locate(field, ln, col);
+        }
+        else throw VMError::UnknownIdentifierError(field, ln, col);
+    }
 }
 
 // Scope Manager

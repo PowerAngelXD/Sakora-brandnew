@@ -1,5 +1,11 @@
 #include "thread.h"
 
+svm::threadGroup::threadGroup() {
+    threads.emplace_back();
+    t_index = 0;
+    c_index = 0;
+}
+
 void svm::threadGroup::createNewThread() {
     vmThread newThread;
 
