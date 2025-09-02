@@ -70,6 +70,11 @@ namespace sakora {
         std::vector<Value> content;
         StructKind kind;
     };
+
+    Value str2Int(std::string s);
+    Value str2Bool(std::string s);
+    Value str2Float(std::string s);
+    Value str2Str(std::string s);
 }
 
 #endif
