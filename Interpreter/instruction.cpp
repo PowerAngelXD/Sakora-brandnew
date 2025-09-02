@@ -2,7 +2,7 @@
 
 // 构造函数实现
 // Constructor implementation
-sakora::VMCode::VMCode(sakora::InsOp op, int ln, int col, std::initializer_list<std::string> _args)
+sakora::VMCode::VMCode(sakora::InsOp op, int ln, int col, std::initializer_list<sakora::Value> _args)
     : VMOp(op), line(ln), column(col), args(_args) {}
 
 // 获取指令操作码
@@ -13,16 +13,15 @@ const sakora::InsOp& sakora::VMCode::getOp() {
 
 // 获取所有参数
 // Get all arguments
-std::vector<std::string> sakora::VMCode::getArgs() {
+std::vector<sakora::Value> sakora::VMCode::getArgs() {
     return args;
 }
 
 // 获取指定位置参数
 // Get argument at specified position
-std::string sakora::VMCode::getArg(int pos) {
+sakora::Value sakora::VMCode::getArg(int pos) {
     if (pos < static_cast<int>(args.size()))
-        return args[pos];
-    return "";
+        return args.at(pos);
 }
 
 std::string sakora::VMCode::toString() {
@@ -58,7 +57,7 @@ std::string sakora::VMCode::toString() {
     }
     oss << ", Line: " << line << ", Column: " << column << ", Args: [";
     for (size_t i = 0; i < args.size(); ++i) {
-        oss << args[i];
+        oss << args.at(i).toString();
         if (i < args.size() - 1) oss << ", ";
     }
     oss << "])";
