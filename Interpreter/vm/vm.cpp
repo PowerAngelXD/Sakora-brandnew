@@ -135,4 +135,20 @@ void svm::VMInstance::vmDeclare() {
     scopeMgr.currentScope->members[name] = val;
 }
 
+void svm::VMInstance::vmAssign() {
+    auto val = Pop();
+    auto name = codeArgs.at(0);
+    
+    scopeMgr.
+        currentScope->
+        locate(name, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)))->
+        members[name] = val;
+}
+
+void svm::VMInstance::vmGet() {
+    auto name = codeArgs.at(0);
+
+    runtimeStack.push(scopeMgr.currentScope->locate(name, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)))->members[name]);
+}
+
 //

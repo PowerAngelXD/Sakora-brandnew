@@ -19,6 +19,8 @@ namespace sakora {
         std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr> value;
         int line, column;
     public:
+        Value()=default;
+        
         Value(int val, int ln, int col);
         Value(double val, int ln, int col);
         Value(std::string val, int ln, int col);
