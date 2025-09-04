@@ -416,10 +416,10 @@ sakora::Value sakora::cstr2Float(std::string s, int ln, int col) {
     return Value(std::stod(s), ln, col);
 }
 sakora::Value sakora::cstr2Str(std::string s, int ln, int col) {
-    return Value(s, ln, col);
+    return Value(s.substr(1, s.length() - 2), ln, col);
 }
 sakora::Value sakora::cstr2Char(std::string s, int ln, int col) {
     if (s.length() != 1)
         throw std::runtime_error("Type error: Cannot convert string to char at line " + std::to_string(ln) + ", column " + std::to_string(col));
-    return Value(s[0], ln, col);
+    return Value(s.substr(1, s.size() - 2), ln, col);
 }
