@@ -71,10 +71,11 @@ namespace sakora {
         StructKind kind;
     };
 
-    Value str2Int(std::string s);
-    Value str2Bool(std::string s);
-    Value str2Float(std::string s);
-    Value str2Str(std::string s);
+    Value cstr2Int(std::string s, int ln, int col);
+    Value cstr2Bool(std::string s, int ln, int col);
+    Value cstr2Float(std::string s, int ln, int col);
+    Value cstr2Str(std::string s, int ln, int col);
+    Value cstr2Char(std::string s, int ln, int col);
 }
 
 #endif
