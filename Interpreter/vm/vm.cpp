@@ -115,6 +115,17 @@ void svm::VMInstance::vmArrMake() {
     runtimeStack.push(sakora::Value(sakora::StructValue{arr, sakora::Array}, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
 }
 
+void svm::VMInstance::vmArrTidyChk() {
+    auto arr = Pop();
+    auto arr_t = arr.inferType();
+    auto f_len = arr_t.getArrMod().lengthList.at(0);
+    for (auto len : arr_t.getArrMod().lengthList) {
+        if (len != f_len)
+            throw VMError::NotTidyArrayError(std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)));
+    }
+    runtimeStack.push(arr);
+}
+
 void svm::VMInstance::vmDeclare() {
     auto val = Pop();
     auto name = codeArgs.at(0); // declare指令的第一个参数意为变量名
