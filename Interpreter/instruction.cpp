@@ -22,6 +22,8 @@ std::vector<std::string> sakora::VMCode::getArgs() {
 std::string sakora::VMCode::getArg(int pos) {
     if (pos < static_cast<int>(args.size()))
         return args.at(pos);
+    else
+        throw std::out_of_range("Argument position out of range");
 }
 
 std::string sakora::VMCode::toString() {
