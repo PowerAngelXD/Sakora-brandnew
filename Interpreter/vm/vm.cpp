@@ -14,6 +14,30 @@ void svm::VMInstance::removeThread() {
     threadMgr.removePrevThread();
 }
 
+svm::vmThread svm::VMInstance::getCurrentThread() {
+    return threadMgr.threads.at(threadMgr.t_index);
+}
+
+void svm::VMInstance::nextCode() {
+    threadMgr.c_index ++;
+    codeArgs = getCurrentThread().at(threadMgr.c_index).getArgs();
+}
+
+void svm::VMInstance::backCode() {
+    threadMgr.c_index --;
+    codeArgs = getCurrentThread().at(threadMgr.c_index).getArgs();
+}
+
+void svm::VMInstance::moveTo(int pos) {
+    threadMgr.c_index = pos;
+    codeArgs = getCurrentThread().at(threadMgr.c_index).getArgs();
+}
+
+void svm::VMInstance::moveOffset(int offset) {
+    threadMgr.c_index = threadMgr.c_index + offset;
+    codeArgs = getCurrentThread().at(threadMgr.c_index).getArgs();
+}
+
 // VMCode
 void svm::VMInstance::vmPush() {
     auto s_val = codeArgs.at(0); // push指令的第一个参数意为push进入一个值
@@ -151,4 +175,40 @@ void svm::VMInstance::vmGet() {
     runtimeStack.push(scopeMgr.currentScope->locate(name, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)))->members[name]);
 }
 
+void svm::VMInstance::vmFrom() {
+    auto from_type = codeArgs.at(0);
+    if (from_type == "[Index]") {
+        auto index = Pop();
+        auto arr = Pop();
+        runtimeStack.push(arr.getStruct()->content.at(index.getInt()));
+    }
+}
+
+void svm::VMInstance::vmNewScope() {
+    scopeMgr.createScope();
+}
+
+void svm::VMInstance::vmEndScope() {
+    scopeMgr.removeScope();
+}
+
+void svm::VMInstance::vmJtin() {
+    auto cond = Pop();
+    if (cond.getBool()); // 为真，进入block
+    else {
+        // 为假，跳过block
+        int st = 0;
+        while (true) {
+            
+        }
+    }
+}
+
+void svm::VMInstance::vmJtbck() {
+
+}
+
+void svm::VMInstance::vmJout() {
+
+}
 //

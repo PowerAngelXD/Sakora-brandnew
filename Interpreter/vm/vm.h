@@ -16,6 +16,12 @@ namespace svm {
         inline sakora::Value Pop();
         void newThread();
         void removeThread();
+        vmThread getCurrentThread();
+
+        void nextCode();
+        void backCode();
+        void moveTo(int pos);
+        void moveOffset(int offset = 0);
         // 对应的指令实现方法
         void vmPush();
         void vmAdd();       void vmSub();       void vmMul();          void vmDiv();
