@@ -14,7 +14,7 @@ namespace sakora {
         ARR_MAKE, ARR_TIDY_CHK, 
         DECLARE, ASSIGN, GET, FROM, 
         NEW_SCOPE, END_SCOPE, 
-        FLAG, JTIN, JTBCK, JOUT
+        FLAG, JTIN, JTBCK
     };
 
     // 指令类，管理指令使用
