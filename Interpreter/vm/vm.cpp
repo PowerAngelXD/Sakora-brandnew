@@ -18,6 +18,10 @@ svm::vmThread svm::VMInstance::getCurrentThread() {
     return threadMgr.threads.at(threadMgr.t_index);
 }
 
+sakora::VMCode svm::VMInstance::getCurrentCode() {
+    return getCurrentThread().at(threadMgr.c_index);
+}
+
 void svm::VMInstance::nextCode() {
     threadMgr.c_index ++;
     codeArgs = getCurrentThread().at(threadMgr.c_index).getArgs();
@@ -192,23 +196,141 @@ void svm::VMInstance::vmEndScope() {
     scopeMgr.removeScope();
 }
 
-void svm::VMInstance::vmJtin() {
+void svm::VMInstance::vmJmptin() {
     auto cond = Pop();
     if (cond.getBool()); // 为真，进入block
     else {
         // 为假，跳过block
         int st = 0;
         while (true) {
-            
+            nextCode();
+            auto c = getCurrentCode();
+            if (c.getOp() == sakora::NEW_SCOPE) st ++;
+            else if (c.getOp() == sakora::END_SCOPE) st --;
+
+            if (st == 0) break;
         }
     }
 }
 
-void svm::VMInstance::vmJtbck() {
+void svm::VMInstance::vmJmpbck() {
+    auto cond = Pop();
+    if (cond.getBool()) {
+        // 为真，进入循环
+        int st = 0;
+        while (true) {
+            backCode();
+            auto c = getCurrentCode();
+            if (c.getOp() == sakora::END_SCOPE) st ++;
+            else if (c.getOp() == sakora::NEW_SCOPE) st --;
 
-}
-
-void svm::VMInstance::vmJout() {
-
+            if (st == 0) break;
+        }
+    }
+    else {} // 为假，跳出循环
 }
 //
+
+void svm::VMInstance::clearThenLoad(vmThread thread) {
+    threadMgr.threads.clear();
+    threadMgr.t_index = -1;
+    threadMgr.createNewThread();
+    threadMgr.threads.at(threadMgr.t_index) = thread;
+}
+
+void svm::VMInstance::load(vmThread thread) {
+    threadMgr.createNewThread();
+    threadMgr.threads.at(threadMgr.t_index) = thread;
+}
+
+void svm::VMInstance::start(bool isDebug) {
+    for (; threadMgr.c_index < static_cast<int>(getCurrentThread().size()); threadMgr.c_index ++) {
+        auto code = getCurrentCode();
+        switch (code.getOp())
+        {
+        case sakora::PUSH:
+            vmPush();
+            break;
+        case sakora::ADD:
+            vmAdd();
+            break;
+        case sakora::SUB:
+            vmSub();
+            break;
+        case sakora::MUL:
+            vmMul();
+            break;  
+        case sakora::DIV:
+            vmDiv();
+            break;
+        case sakora::LGC_AND:
+            vmLgcAnd();
+            break;
+        case sakora::LGC_OR:
+            LgcOr();
+            break;
+        case sakora::LGC_EQU:
+            vmLgcEqu();
+            break;
+        case sakora::LGC_NOT:
+            vmLgcNot();
+            break;
+        case sakora::LGC_MR_THAN:
+            vmLgcMrThan();
+            break;
+        case sakora::LGC_LS_THAN:
+            vmLgcLsThan();
+            break;
+        case sakora::LGC_MREQU_THAN:
+            vmLgcMrequThan();
+            break;
+        case sakora::LGC_LSEQU_THAN:
+            vmLgcLsequThan();
+            break;
+        case sakora::ARR_MAKE:
+            vmArrMake();
+            break;
+        case sakora::ARR_TIDY_CHK:
+            vmArrTidyChk();
+            break;
+        case sakora::DECLARE:
+            vmDeclare();
+            break;
+        case sakora::ASSIGN:
+            vmAssign();
+            break;
+        case sakora::GET:
+            vmGet();
+            break;
+        case sakora::FROM:
+            vmFrom();
+            break;
+        case sakora::NEW_SCOPE:
+            vmNewScope();
+            break;
+        case sakora::END_SCOPE: 
+            vmEndScope();
+            break;
+        case sakora::JTIN:
+            vmJmptin();
+            break;
+        case sakora::JTBCK:
+            vmJmpbck();
+            break;
+        case sakora::FLAG:
+            break;
+        
+        default:
+            break;
+        }
+    }
+
+    if (isDebug) {
+        if (!runtimeStack.empty()) {
+            auto rt = runtimeStack.top();
+            std::cout << "[Result]: " << rt.toString() << std::endl;
+            std::cout << "[Type]: " << rt.inferType().toString() << std::endl;
+        }
+        else std::cout << "[No result]" << std::endl;
+    }
+}

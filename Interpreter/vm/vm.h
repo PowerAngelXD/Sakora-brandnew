@@ -17,6 +17,7 @@ namespace svm {
         void newThread();
         void removeThread();
         vmThread getCurrentThread();
+        sakora::VMCode getCurrentCode();
 
         void nextCode();
         void backCode();
@@ -30,9 +31,11 @@ namespace svm {
         void vmArrMake();   void vmArrTidyChk();
         void vmDeclare();   void vmAssign();    void vmGet();          void vmFrom();
         void vmNewScope();  void vmEndScope();
-        void vmJtin();      void vmJtbck();     void vmJout();
+        void vmJmptin();      void vmJmpbck();
         //
 
+        void clearThenLoad(vmThread thread);
+        void load(vmThread thread);
         void start(bool isDebug = false);
 
     };
