@@ -20,9 +20,10 @@ namespace sakora {
     // 指令类，管理指令使用
     class VMCode {
         InsOp VMOp;
-        int line, column;
         std::vector<std::string> args;
     public:
+        int line, column;
+
         /* 构造函数，用于构造一个sakVM指令实例
            op       意指对应的VM指令
            ln, col  意指对应的行列

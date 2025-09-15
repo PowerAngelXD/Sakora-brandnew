@@ -3,7 +3,7 @@
 // 构造函数实现
 // Constructor implementation
 sakora::VMCode::VMCode(sakora::InsOp op, int ln, int col, std::initializer_list<std::string> _args)
-    : VMOp(op), line(ln), column(col), args(_args) {}
+    : VMOp(op), args(_args), line(ln), column(col) {}
 
 // 获取指令操作码
 // Get instruction opcode
@@ -55,7 +55,6 @@ std::string sakora::VMCode::toString() {
         case FLAG: oss << "FLAG"; break;
         case JTIN: oss << "JTIN"; break;
         case JTBCK: oss << "JTBCK"; break;
-        case JOUT: oss << "JOUT"; break;
     }
     oss << ", Line: " << line << ", Column: " << column << ", Args: [";
     for (size_t i = 0; i < args.size(); ++i) {
