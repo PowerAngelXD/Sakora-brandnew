@@ -140,16 +140,18 @@ void svm::VMInstance::vmArrMake() {
         arr.push_back(Pop());
     }
     std::reverse(arr.begin(), arr.end());
-    runtimeStack.push(sakora::Value(sakora::StructValue{arr, sakora::Array}, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
+    auto code = getCurrentCode();
+    runtimeStack.push(sakora::Value(sakora::StructValue{arr, sakora::Array}, code.line, code.column));
 }
 
 void svm::VMInstance::vmArrTidyChk() {
     auto arr = Pop();
     auto arr_t = arr.inferType();
     auto f_len = arr_t.getArrMod().lengthList.at(0);
+    auto code = getCurrentCode();
     for (auto len : arr_t.getArrMod().lengthList) {
         if (len != f_len)
-            throw VMError::NotTidyArrayError(std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)));
+            throw VMError::NotTidyArrayError(code.line, code.column);
     }
     runtimeStack.push(arr);
 }
@@ -157,8 +159,9 @@ void svm::VMInstance::vmArrTidyChk() {
 void svm::VMInstance::vmDeclare() {
     auto val = Pop();
     auto name = codeArgs.at(0); // declare指令的第一个参数意为变量名
+    auto code = getCurrentCode();
     if (scopeMgr.currentScope->isExist(name)) {
-        throw VMError::AlreadyIdentifierError(name, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)));
+        throw VMError::AlreadyIdentifierError(name, code.line, code.column);
     }
     scopeMgr.currentScope->members[name] = val;
 }
@@ -167,16 +170,17 @@ void svm::VMInstance::vmAssign() {
     auto val = Pop();
     auto name = codeArgs.at(0);
     
+    auto code = getCurrentCode();
     scopeMgr.
         currentScope->
-        locate(name, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)))->
+        locate(name, code.line, code.column)->
         members[name] = val;
 }
 
 void svm::VMInstance::vmGet() {
     auto name = codeArgs.at(0);
-
-    runtimeStack.push(scopeMgr.currentScope->locate(name, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2)))->members[name]);
+    auto code = getCurrentCode();
+    runtimeStack.push(scopeMgr.currentScope->locate(name, code.line, code.column)->members[name]);
 }
 
 void svm::VMInstance::vmFrom() {
