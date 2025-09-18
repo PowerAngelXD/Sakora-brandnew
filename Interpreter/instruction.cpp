@@ -50,8 +50,8 @@ std::string sakora::VMCode::toString() {
         case ASSIGN: oss << "ASSIGN"; break;
         case GET: oss << "GET"; break;
         case FROM: oss << "FROM"; break;
-        case NEW_SCOPE: oss << "NEW_SCOPE"; break;
-        case END_SCOPE: oss << "END_SCOPE"; break;
+        case BLOCK_START: oss << "BLOCK_START"; break;
+        case BLOCK_END: oss << "BLOCK_END"; break;
         case FLAG: oss << "FLAG"; break;
         case JTIN: oss << "JTIN"; break;
         case JTBCK: oss << "JTBCK"; break;
