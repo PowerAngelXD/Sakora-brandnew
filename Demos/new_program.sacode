@@ -3,91 +3,91 @@ PUSH <String>
 DECLARE "a""[HasTypeModifier]"
 PUSH 0
 DECLARE "i"
-NEW_SCOPE "[Tag=WhileGroupBegin]"
+BLOCK_START "[Tag=WhileGroupBegin]"
     GET_VAL "i"
     PUSH 200000
     LGC_LS_THAN
     JMP "[True-in]"
-    NEW_SCOPE "[Tag=BlockBegin]"
-        NEW_SCOPE "[Tag=MatchGroupBegin]"
+    BLOCK_START "[Tag=BlockBegin]"
+        BLOCK_START "[Tag=MatchGroupBegin]"
             GET_VAL "a"
             PUSH "who"
             LGC_EQU
             JMP "[True-in]"
-            NEW_SCOPE "[Tag=BlockBegin]"
+            BLOCK_START "[Tag=BlockBegin]"
                 PUSH "whowho"
                 PUSH_OBJ "a"
                 ASSIGN 
                 PUSH true
-            END_SCOPE "[Tag=BlockEnd]"
+            BLOCK_END "[Tag=BlockEnd]"
             JMP "[Finish-out]"
             GET_VAL "a"
             PUSH "whowho"
             LGC_EQU
             JMP "[True-in]"
-            NEW_SCOPE "[Tag=BlockBegin]"
+            BLOCK_START "[Tag=BlockBegin]"
                 PUSH "hello"
                 PUSH_OBJ "a"
                 ASSIGN 
                 PUSH true
-            END_SCOPE "[Tag=BlockEnd]"
+            BLOCK_END "[Tag=BlockEnd]"
             JMP "[Finish-out]"
             GET_VAL "a"
             PUSH "hello"
             LGC_EQU
             JMP "[True-in]"
-            NEW_SCOPE "[Tag=BlockBegin]"
+            BLOCK_START "[Tag=BlockBegin]"
                 GET_VAL "a"
                 PUSH "world"
                 ADD
                 PUSH_OBJ "a"
                 ASSIGN 
                 PUSH true
-            END_SCOPE "[Tag=BlockEnd]"
+            BLOCK_END "[Tag=BlockEnd]"
             JMP "[Finish-out]"
             GET_VAL "a"
             PUSH "hello world"
             LGC_EQU
             JMP "[True-in]"
-            NEW_SCOPE "[Tag=BlockBegin]"
+            BLOCK_START "[Tag=BlockBegin]"
                 GET_VAL "a"
                 PUSH "what tf"
                 ADD
                 PUSH_OBJ "a"
                 ASSIGN 
                 PUSH true
-            END_SCOPE "[Tag=BlockEnd]"
+            BLOCK_END "[Tag=BlockEnd]"
             JMP "[Finish-out]"
-            NEW_SCOPE "[Tag=BlockBegin]"
+            BLOCK_START "[Tag=BlockBegin]"
                 GET_VAL "a"
                 PUSH " [X] "
                 ADD
                 PUSH_OBJ "a"
                 ASSIGN 
                 PUSH true
-            END_SCOPE "[Tag=BlockEnd]"
-        END_SCOPE "[Tag=MatchGroupEnd]"
-        NEW_SCOPE "[Tag=IfGroupBegin]"
+            BLOCK_END "[Tag=BlockEnd]"
+        BLOCK_END "[Tag=MatchGroupEnd]"
+        BLOCK_START "[Tag=IfGroupBegin]"
             GET_VAL "i"
             PUSH 10
             LGC_MR_THAN
             JMP "[True-in]"
-            NEW_SCOPE "[Tag=BlockBegin]"
+            BLOCK_START "[Tag=BlockBegin]"
                 GET_VAL "i"
                 PUSH 5
                 ADD
                 PUSH_OBJ "i"
                 ASSIGN 
                 PUSH true
-            END_SCOPE "[Tag=BlockEnd]"
+            BLOCK_END "[Tag=BlockEnd]"
             JMP "[Finish-out]"
-        END_SCOPE "[Tag=IfGroupEnd]"
+        BLOCK_END "[Tag=IfGroupEnd]"
         GET_VAL "i"
         PUSH 1
         ADD
         PUSH_OBJ "i"
         ASSIGN 
         PUSH true
-    END_SCOPE "[Tag=BlockEnd]"
+    BLOCK_END "[Tag=BlockEnd]"
     JMP "[Loop-back]"
-END_SCOPE "[Tag=WhileGroupEnd]"
+BLOCK_END "[Tag=WhileGroupEnd]"
