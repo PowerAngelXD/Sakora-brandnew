@@ -192,7 +192,7 @@ void svm::VMInstance::vmFrom() {
     }
 }
 
-void svm::VMInstance::vmNewScope() {
+void svm::VMInstance::vmBlockStart() {
     scopeMgr.createScope();
 }
 
@@ -209,8 +209,8 @@ void svm::VMInstance::vmJmptin() {
         while (true) {
             nextCode();
             auto c = getCurrentCode();
-            if (c.getOp() == sakora::NEW_SCOPE) st ++;
-            else if (c.getOp() == sakora::END_SCOPE) st --;
+            if (c.getOp() == sakora::BLOCK_START) st ++;
+            else if (c.getOp() == sakora::BLOCK_END) st --;
 
             if (st == 0) break;
         }
@@ -225,8 +225,8 @@ void svm::VMInstance::vmJmpbck() {
         while (true) {
             backCode();
             auto c = getCurrentCode();
-            if (c.getOp() == sakora::END_SCOPE) st ++;
-            else if (c.getOp() == sakora::NEW_SCOPE) st --;
+            if (c.getOp() == sakora::BLOCK_END) st ++;
+            else if (c.getOp() == sakora::BLOCK_START) st --;
 
             if (st == 0) break;
         }
@@ -309,10 +309,10 @@ void svm::VMInstance::start(bool isDebug) {
         case sakora::FROM:
             vmFrom();
             break;
-        case sakora::NEW_SCOPE:
-            vmNewScope();
+        case sakora::BLOCK_START:
+            vmBlockStart();
             break;
-        case sakora::END_SCOPE: 
+        case sakora::BLOCK_END: 
             vmEndScope();
             break;
         case sakora::JTIN:

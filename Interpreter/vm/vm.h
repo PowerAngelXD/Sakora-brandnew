@@ -30,7 +30,7 @@ namespace svm {
         void vmLgcMrThan(); void vmLgcLsThan(); void vmLgcMrequThan(); void vmLgcLsequThan();
         void vmArrMake();   void vmArrTidyChk();
         void vmDeclare();   void vmAssign();    void vmGet();          void vmFrom();
-        void vmNewScope();  void vmEndScope();
+        void vmBlockStart();  void vmEndScope();
         void vmJmptin();      void vmJmpbck();
         //
 
