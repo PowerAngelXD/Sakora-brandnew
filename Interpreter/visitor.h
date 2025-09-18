@@ -7,9 +7,19 @@
 namespace sakora {
     using CodeSequence = std::vector<VMCode>;
 
+    class CodeArgs {
+    public:
+        class Push {
+        public:
+           inline static std::string OBJ = "[OBJ]";
+           inline static std::string TYPE = "[TYPE]"; 
+           inline static std::string VAL = "[VAL]";
+        };
+    };
+
     class CodeMaker {
     public:
-        static VMCode PUSH(std::string value, int ln, int col);
+        static VMCode PUSH(std::string value, std::string arg, int ln, int col);
         static VMCode ADD();
         static VMCode SUB();
         static VMCode MUL();
@@ -29,8 +39,8 @@ namespace sakora {
         static VMCode ASSIGN(std::string name, int ln, int col);
         static VMCode GET(std::string name, int ln, int col);
         static VMCode FROM(std::string type, int ln, int col);
-        static VMCode NEW_SCOPE();
-        static VMCode END_SCOPE();
+        static VMCode BLOCK_START();
+        static VMCode BLOCK_END();
         static VMCode FLAG(std::string flag_name);
         static VMCode JTIN();
         static VMCode JTBCK();
