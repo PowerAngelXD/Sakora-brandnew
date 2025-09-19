@@ -7,6 +7,7 @@
 #include <map>
 
 namespace sakora {
+    using memberPair = std::pair<std::string, Value>;
     class Scope : public std::enable_shared_from_this<Scope> {
     public:
         std::weak_ptr<Scope> prev; // 指针，指向上一个scope
@@ -29,6 +30,8 @@ namespace sakora {
 
         void createScope();
         void removeScope();
+
+        Value& get(std::string field, int ln, int col);
     };
 }
 

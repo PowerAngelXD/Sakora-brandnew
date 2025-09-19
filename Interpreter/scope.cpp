@@ -45,3 +45,7 @@ void sakora::ScopeManager::removeScope() {
         currentScope->next = nullptr;
     }
 }
+
+sakora::Value& sakora::ScopeManager::get(std::string field, int ln, int col) {
+    return currentScope->locate(field, ln, col)->members[field];
+}
