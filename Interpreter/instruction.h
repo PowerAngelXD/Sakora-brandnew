@@ -37,6 +37,53 @@ namespace sakora {
 
         std::string toString();
     };
+
+    using CodeSequence = std::vector<VMCode>;
+
+    class CodeArgs {
+    public:
+        class Push {
+        public:
+           inline static std::string IDEN = "[IDEN]";
+           inline static std::string TYPE = "[TYPE]"; 
+           inline static std::string VAL = "[VAL]";
+        };
+
+        class Declare {
+        public:
+            inline static std::string HAS_TMOD = "[HAS_TMOD]";
+            inline static std::string NO_TMOD = "[NO_TMOD]";
+        };
+    };
+
+    class CodeMaker {
+    public:
+        static VMCode push(std::string value, std::string arg, int ln, int col);
+        static VMCode add();
+        static VMCode sub();
+        static VMCode mul();
+        static VMCode div();
+        static VMCode lgcAnd();
+        static VMCode lgcOr();
+        static VMCode lgcNotEqu();
+        static VMCode lgcEqu();
+        static VMCode lgcMrThan();
+        static VMCode lgcLsThan();
+        static VMCode lgcMrEquThan();
+        static VMCode lgcLsEquThan();
+        static VMCode lgcNot();
+        static VMCode arrMake(std::string size, int ln, int col);
+        static VMCode arrTidyChk(int ln, int col);
+        static VMCode declare(std::string name, std::string hasMod, int ln, int col);
+        static VMCode assign(int ln, int col);
+        static VMCode get(std::string name, int ln, int col);
+        static VMCode from(std::string type, int ln, int col);
+        static VMCode blockStart();
+        static VMCode blockEnd();
+        static VMCode flag(std::string flag_name);
+        static VMCode jtin();
+        static VMCode jtbck();
+    };
 }
 
 #endif

@@ -4,48 +4,28 @@
 #include "../Frontend/Parser/parser.h"
 #include "instruction.h"
 
+
+#define BLK_START make(CodeMaker::blockStart());
+#define BLK_END make(CodeMaker::blockEnd());
+#define JMPTIN make(CodeMaker::jtin());
+#define JMPTBCK make(CodeMaker::jtbck());
+#define LGC_AND make(CodeMaker::lgcAnd());
+#define LGC_OR make(CodeMaker::lgcOr());
+#define LGC_EQU make(CodeMaker::lgcEqu());
+#define LGC_NOT_EQU make(CodeMaker::lgcNotEqu());
+#define LGC_NOT make(CodeMaker::lgcNot());
+#define LGC_MR_THAN make(CodeMaker::lgcMrThan());
+#define LGC_LS_THAN make(CodeMaker::lgcLsThan());
+#define LGC_MREQU_THAN make(CodeMaker::lgcMrEquThan());
+#define LGC_LSEQU_THAN make(CodeMaker::lgcLsEquThan());
+
+#define ADD make(CodeMaker::add());
+#define SUB make(CodeMaker::sub());
+#define MUL make(CodeMaker::mul());
+#define DIV make(CodeMaker::div());
+
+
 namespace sakora {
-    using CodeSequence = std::vector<VMCode>;
-
-    class CodeArgs {
-    public:
-        class Push {
-        public:
-           inline static std::string OBJ = "[OBJ]";
-           inline static std::string TYPE = "[TYPE]"; 
-           inline static std::string VAL = "[VAL]";
-        };
-    };
-
-    class CodeMaker {
-    public:
-        static VMCode PUSH(std::string value, std::string arg, int ln, int col);
-        static VMCode ADD();
-        static VMCode SUB();
-        static VMCode MUL();
-        static VMCode DIV();
-        static VMCode LGC_AND();
-        static VMCode LGC_OR();
-        static VMCode LGC_NOT_EQU();
-        static VMCode LGC_EQU();
-        static VMCode LGC_MR_THAN();
-        static VMCode LGC_LS_THAN();
-        static VMCode LGC_MREQU_THAN();
-        static VMCode LGC_LSEQU_THAN();
-        static VMCode LGC_NOT();
-        static VMCode ARR_MAKE(std::string size, int ln, int col);
-        static VMCode ARR_TIDY_CHK(int ln, int col);
-        static VMCode DECLARE(std::string name, int ln, int col);
-        static VMCode ASSIGN(std::string name, int ln, int col);
-        static VMCode GET(std::string name, int ln, int col);
-        static VMCode FROM(std::string type, int ln, int col);
-        static VMCode BLOCK_START();
-        static VMCode BLOCK_END();
-        static VMCode FLAG(std::string flag_name);
-        static VMCode JTIN();
-        static VMCode JTBCK();
-    };
-
     class Visitor {
     public:
         CodeSequence seq;
@@ -71,7 +51,6 @@ namespace sakora {
         void visit(AST::AssignStmtNode node);
         void visit(AST::BlockStmtNode node, bool jmpCond = false);
         void visit(AST::IfStmtNode node);
-        void visit(AST::ElseIfStmtNode node);
         void visit(AST::ElseStmtNode node);
         void visit(AST::MatchStmtNode node);
         void visit(AST::WhileStmtNode node);
