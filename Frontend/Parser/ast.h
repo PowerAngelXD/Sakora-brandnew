@@ -215,6 +215,7 @@ namespace AST {
     public:
         std::shared_ptr<Lexer::Token> elseMark = nullptr;
 
+        std::shared_ptr<StmtNode> stmt = nullptr;
         std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
 
         std::string toString() override;

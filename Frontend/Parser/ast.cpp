@@ -254,6 +254,7 @@ std::string AST::ElseStmtNode::toString() {
     oss << "ElseStmtNode(";
     if (elseMark) oss << "elseMark: " << elseMark->toString() << ", ";
     if (bodyBlock) oss << "bodyBlock: " << bodyBlock->toString();
+    if (stmt) oss << "singleStmt: " << stmt->toString();
     oss << ")";
     return oss.str();
 }

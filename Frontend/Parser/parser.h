@@ -68,7 +68,6 @@ public:
     bool isAssignStmt();      // 赋值语句检查 / Assignment statement check
     bool isBlockStmt();       // 代码块语句检查 / Block statement check
     bool isIfStmt();          // if条件语句检查 / If statement check
-    bool isElseIfStmt();      // else if语句检查 / Else-if statement check
     bool isElseStmt();        // else语句检查 / Else statement check
     bool isMatchStmt();       // match匹配语句检查 / Match statement check
     bool isWhileStmt();       // while循环语句检查 / While statement check
@@ -79,7 +78,6 @@ public:
     std::shared_ptr<AST::AssignStmtNode> parseAssignStmt();         // 解析赋值语句 / Parse assignment statement
     std::shared_ptr<AST::BlockStmtNode> parseBlockStmt();           // 解析代码块语句 / Parse block statement
     std::shared_ptr<AST::IfStmtNode> parseIfStmt();                 // 解析if条件语句 / Parse if statement
-    std::shared_ptr<AST::ElseIfStmtNode> parseElseIfStmt();        // 解析else if语句 / Parse else-if statement
     std::shared_ptr<AST::ElseStmtNode> parseElseStmt();            // 解析else语句 / Parse else statement
     std::shared_ptr<AST::MatchStmtNode> parseMatchStmt();          // 解析match匹配语句 / Parse match statement
     std::shared_ptr<AST::WhileStmtNode> parseWhileStmt();          // 解析while循环语句 / Parse while statement
