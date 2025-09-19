@@ -5,16 +5,67 @@ void sakora::Visitor::make(sakora::VMCode code) {
     seq.push_back(code);
 }
 
-void sakora::Visitor::visit(AST::BasicIdentifierNode node) {
-    
+void sakora::Visitor::visit(AST::BasicIdentifierNode node, bool isPush) {
+    auto id = node.iden;
+
+    if (node.selfOp) {
+        if (node.selfOp->content == "++") {
+            make(CodeMaker::get(id->content, id->line, id->column));
+            make(CodeMaker::push("1", CodeArgs::Push::VAL, id->line, id->column));
+            ADD
+        }
+        else if (node.selfOp->content == "--") {
+            make(CodeMaker::get(id->content, id->line, id->column));
+            make(CodeMaker::push("1", CodeArgs::Push::VAL, id->line, id->column));
+            SUB
+        }
+        else if (node.selfOp->content == "+=") {
+            make(CodeMaker::get(id->content, id->line, id->column));
+            visit(*node.selfExpr);
+            ADD
+        }
+        else if (node.selfOp->content == "-=") {
+            make(CodeMaker::get(id->content, id->line, id->column));
+            visit(*node.selfExpr);
+            SUB
+        }
+        else if (node.selfOp->content == "*=") {
+            make(CodeMaker::get(id->content, id->line, id->column));
+            visit(*node.selfExpr);
+            MUL
+        }
+        else if (node.selfOp->content == "/=") {
+            make(CodeMaker::get(id->content, id->line, id->column));
+            visit(*node.selfExpr);
+            DIV
+        }
+    }
+
+    if (isPush)
+        make(CodeMaker::push(id->content, CodeArgs::Push::IDEN, id->line, id->column));
+    else 
+        make(CodeMaker::get(id->content, id->line, id->column));
+
+    if (node.selfOp)
+        make(CodeMaker::assign(id->line, id->column));
 }
 
-void sakora::Visitor::visit(AST::AtomIdentifierNode node) {
-
+void sakora::Visitor::visit(AST::AtomIdentifierNode node, bool isPush) {
+    visit(*node.iden, isPush);
+    if (!node.getIndexOps.empty()) {
+        for (std::size_t i = 0; i < node.getIndexOps.size(); i ++) {
+            visit(*node.getIndexOps.at(i)->index);
+            make(CodeMaker::from(CodeArgs::From::INDEX, node.getIndexOps.at(i)->left->line, node.getIndexOps.at(i)->left->column));
+        }
+    }
 }
 
-void sakora::Visitor::visit(AST::IdentifierExprNode node) {
-
+void sakora::Visitor::visit(AST::IdentifierExprNode node, bool isPush) {
+    visit(*node.idens.at(0), isPush);
+    for (std::size_t i = 1; i < node.getOps.size(); i ++) {
+        visit(*node.idens.at(i), isPush);
+        make(CodeMaker::from(CodeArgs::From::MEMBER, node.getOps.at(i)->line, node.getOps.at(i)->column));
+    }
 }
 
 void sakora::Visitor::visit(AST::PrimExprNode node) {

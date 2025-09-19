@@ -33,9 +33,9 @@ namespace sakora {
         void make(VMCode code);
 
 
-        void visit(AST::BasicIdentifierNode node);
-        void visit(AST::AtomIdentifierNode node);
-        void visit(AST::IdentifierExprNode node);
+        void visit(AST::BasicIdentifierNode node, bool isPush = false);
+        void visit(AST::AtomIdentifierNode node, bool isPush = false);
+        void visit(AST::IdentifierExprNode node, bool isPush = false);
         void visit(AST::PrimExprNode node);
         void visit(AST::MulExprNode node);
         void visit(AST::AddExprNode node);

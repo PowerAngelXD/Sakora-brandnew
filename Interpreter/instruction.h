@@ -54,6 +54,12 @@ namespace sakora {
             inline static std::string HAS_TMOD = "[HAS_TMOD]";
             inline static std::string NO_TMOD = "[NO_TMOD]";
         };
+
+        class From {
+        public:
+            inline static std::string INDEX = "[INDEX]";
+            inline static std::string MEMBER = "[MEMBER]";
+        };
     };
 
     class CodeMaker {

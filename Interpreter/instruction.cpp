@@ -2,6 +2,10 @@
 
 #include "instruction.h"
 
+sakora::VMCode sakora::CodeMaker::push(std::string value, std::string arg, int ln, int col) {
+return VMCode(sakora::PUSH, ln, col, {value, arg});
+}
+
 sakora::VMCode sakora::CodeMaker::add() {
     return VMCode(sakora::ADD, 0, 0, {});
 }
