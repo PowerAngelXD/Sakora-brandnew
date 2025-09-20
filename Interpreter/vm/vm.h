@@ -12,6 +12,8 @@ namespace svm {
         sakora::ScopeManager scopeMgr;
         std::vector<std::string> codeArgs; // 当前code的args
     public:
+        VMInstance()=default;
+
         // vm内工具方法
         inline sakora::Value Pop();
         void newThread();

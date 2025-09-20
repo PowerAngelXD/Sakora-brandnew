@@ -45,20 +45,83 @@ void svm::VMInstance::moveOffset(int offset) {
 // VMCode
 void svm::VMInstance::vmPush() {
     auto s_val = codeArgs.at(0); // push指令的第一个参数意为push进入一个值
-    if (s_val == "true" || s_val == "false") {
-        runtimeStack.push(sakora::cstr2Bool(s_val, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
+    if (codeArgs.at(1) == sakora::CodeArgs::Push::VAL) {
+        if (s_val == "true" || s_val == "false") {
+            runtimeStack.push(sakora::cstr2Bool(s_val, getCurrentCode().line, getCurrentCode().column));
+        }
+        else if (s_val.find('.') != std::string::npos) {
+            runtimeStack.push(sakora::cstr2Float(s_val, getCurrentCode().line, getCurrentCode().column));
+        }
+        else if (s_val.front() == '\"' && s_val.back() == '\"') {
+            runtimeStack.push(sakora::cstr2Str(s_val, getCurrentCode().line, getCurrentCode().column));
+        }
+        else if (s_val.front() == '\'' && s_val.back() == '\'') {
+            runtimeStack.push(sakora::cstr2Char(s_val, getCurrentCode().line, getCurrentCode().column));
+        }
+        else {
+            runtimeStack.push(sakora::cstr2Int(s_val, getCurrentCode().line, getCurrentCode().column));
+        }
     }
-    else if (s_val.find('.') != std::string::npos) {
-        runtimeStack.push(sakora::cstr2Float(s_val, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
+    else if (codeArgs.at(1) == sakora::CodeArgs::Push::IDEN) {
+        runtimeStack.push(sakora::Value({s_val}, getCurrentCode().line, getCurrentCode().column));
     }
-    else if (s_val.front() == '\"' && s_val.back() == '\"') {
-        runtimeStack.push(sakora::cstr2Str(s_val, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
-    }
-    else if (s_val.front() == '\'' && s_val.back() == '\'') {
-        runtimeStack.push(sakora::cstr2Char(s_val, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
-    }
-    else {
-        runtimeStack.push(sakora::cstr2Int(s_val, std::stoi(codeArgs.at(1)), std::stoi(codeArgs.at(2))));
+    else if (codeArgs.at(1) == sakora::CodeArgs::Push::TYPE) {
+        auto type_str = codeArgs.at(0);
+        std::string basic_type; //0123456
+        std::size_t i = 0; //    "int|123"
+        for (; i < type_str.length(); i ++) {
+            if (type_str.at(i) == '|') break;
+            basic_type += type_str.at(i);
+        }
+
+        if (type_str.length() > i + 1) {
+            // 后面还有内容，可能是array等类型
+            i ++;
+            std::string type_kind;
+            for (; i < type_str.length(); i ++) {
+                if (type_str.at(i) == '|') break;
+                type_kind += type_str.at(i);
+            }
+            if (type_kind == "array") {
+                sakora::ArrayModifier amod;
+                i ++;
+                for (; i < type_str.length(); i ++) {
+                    std::string temp;
+
+                    amod.dimension ++;
+                    temp += type_str.at(i);
+                    amod.lengthList.push_back(std::stoi(temp.c_str()));
+                }
+
+                if (basic_type == "int") 
+                    runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Int, amod), getCurrentCode().line, getCurrentCode().column));
+                else if (basic_type == "string") 
+                    runtimeStack.push(sakora::Value(sakora::TypeId(sakora::String, amod), getCurrentCode().line, getCurrentCode().column));
+                else if (basic_type == "char") 
+                    runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Char, amod), getCurrentCode().line, getCurrentCode().column));
+                else if (basic_type == "float") 
+                    runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Float, amod), getCurrentCode().line, getCurrentCode().column));
+                else if (basic_type == "bool") 
+                    runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Bool, amod), getCurrentCode().line, getCurrentCode().column));
+                else if (basic_type == "tid") 
+                    runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Tid, amod), getCurrentCode().line, getCurrentCode().column));
+            }
+        }
+        else {
+            // 是普通类型
+            if (basic_type == "int") 
+                runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Int), getCurrentCode().line, getCurrentCode().column));
+            else if (basic_type == "string") 
+                runtimeStack.push(sakora::Value(sakora::TypeId(sakora::String), getCurrentCode().line, getCurrentCode().column));
+            else if (basic_type == "char") 
+                runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Char), getCurrentCode().line, getCurrentCode().column));
+            else if (basic_type == "float") 
+                runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Float), getCurrentCode().line, getCurrentCode().column));
+            else if (basic_type == "bool") 
+                runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Bool), getCurrentCode().line, getCurrentCode().column));
+            else if (basic_type == "tid") 
+                runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Tid), getCurrentCode().line, getCurrentCode().column));
+        }
     }
 }
 
@@ -157,30 +220,32 @@ void svm::VMInstance::vmArrTidyChk() {
 }
 
 void svm::VMInstance::vmDeclare() {
-    auto val = Pop();
-    auto name = codeArgs.at(0); // declare指令的第一个参数意为变量名
-    auto code = getCurrentCode();
-    if (scopeMgr.currentScope->isExist(name)) {
-        throw VMError::AlreadyIdentifierError(name, code.line, code.column);
+    if (codeArgs.at(1) == sakora::CodeArgs::Declare::HAS_TMOD) {
+        auto type = Pop();
+        auto val = Pop();
+        if (val.inferType() != type.getTypeIdValue()) 
+            throw VMError::NotMatchedTypeError(type.getTypeIdValue().toString(), getCurrentCode().line, getCurrentCode().column);
+        
+        scopeMgr.declare(codeArgs.at(0), val);
     }
-    scopeMgr.currentScope->members[name] = val;
+    else {
+        auto val = Pop();
+        scopeMgr.declare(codeArgs.at(0), val);
+    }
 }
 
 void svm::VMInstance::vmAssign() {
     auto val = Pop();
-    auto name = codeArgs.at(0);
+    auto name = Pop().getIdenResult();
     
     auto code = getCurrentCode();
-    scopeMgr.
-        currentScope->
-        locate(name, code.line, code.column)->
-        members[name] = val;
+    scopeMgr.get(name.at(0), code.line, code.column) = val; // TODO: 未来加入结构体之后这里需要修改
 }
 
 void svm::VMInstance::vmGet() {
     auto name = codeArgs.at(0);
     auto code = getCurrentCode();
-    runtimeStack.push(scopeMgr.currentScope->locate(name, code.line, code.column)->members[name]);
+    runtimeStack.push(scopeMgr.get(name, code.line, code.column));
 }
 
 void svm::VMInstance::vmFrom() {
@@ -250,6 +315,7 @@ void svm::VMInstance::load(vmThread thread) {
 void svm::VMInstance::start(bool isDebug) {
     for (; threadMgr.c_index < static_cast<int>(getCurrentThread().size()); threadMgr.c_index ++) {
         auto code = getCurrentCode();
+        codeArgs = code.getArgs();
         switch (code.getOp())
         {
         case sakora::PUSH:
