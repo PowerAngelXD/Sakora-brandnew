@@ -18,7 +18,7 @@ std::vector<std::string> sakoraConsole::sakConsole::split(std::string raw, char 
 void sakoraConsole::sakConsole::run() {
     std::cout << "Sakora REPL\nYou can type 'help' to get the help of this repl" << std::endl;
 
-    sakVM vm;
+    svm::VMInstance mainVM;
 
     while (true) {
         try {
@@ -46,18 +46,18 @@ void sakoraConsole::sakConsole::run() {
                 Parser parser(lexerResult);
                 auto parserResult = parser.parse();
 
-                Generator gen;
+                sakora::Visitor visitor;
                 for (auto stmt : parserResult) {
-                    gen.generate(*stmt);
+                    visitor.visit(*stmt);
                 }
 
-                for (auto code : gen.insSet) {
+                for (auto code : visitor.seq) {
                     std::cout << code.toString() << std::endl;
                 }
 
-                vm.loadCodes(gen.insSet);
+                mainVM.load(visitor.seq);
 
-                vm.run();
+                mainVM.start();
                 auto stop = std::chrono::high_resolution_clock::now();
                 auto duration = std::chrono::duration_cast<std::chrono::milliseconds>(stop - start).count();
 
@@ -70,15 +70,15 @@ void sakoraConsole::sakConsole::run() {
                 Parser parser(lexerResult);
                 auto parserResult = parser.parseWholeExpr();
 
-                Generator gen;
-                gen.generate(*parserResult);
+                sakora::Visitor visitor;
+                visitor.visit(*parserResult);
 
-                for (auto code : gen.insSet) {
+                for (auto code : visitor.seq) {
                     std::cout << code.toString() << std::endl;
                 }
 
-                vm.loadCodes(gen.insSet);
-                vm.run();
+                mainVM.load(visitor.seq);
+                mainVM.start(true);
             }
         }
         catch (SakoraError& e) {

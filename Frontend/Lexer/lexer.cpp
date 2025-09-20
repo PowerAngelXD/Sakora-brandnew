@@ -141,7 +141,7 @@ Lexer::TokenSequence Lexer::LexerInstance::startLexer(std::string raw) {
             sequence.emplace_back(Lexer::Char, out, ln, col);
         }
         else if (current == '"') {
-            std::string out;
+            std::string out = "\"";
             next();
             bool flag = false;
             while (raw.at(i) != '"') {
@@ -185,6 +185,7 @@ Lexer::TokenSequence Lexer::LexerInstance::startLexer(std::string raw) {
             }
             next(); // 跳过'"'
 
+            out += "\"";
             sequence.emplace_back(Lexer::String, out, ln, col);
         }
         else {
