@@ -1,51 +1,53 @@
 #include "scope.h"
 
 bool sakora::Scope::isExist(std::string field) {
-    if (members.find(field) != members.end()) {
-        return true;
-    }
-    else {
-        if (prev.expired()) {
-            return this->prev.lock()->isExist(field);
-        }
-        else return false;
-    }
-}
-
-std::shared_ptr<sakora::Scope> sakora::Scope::locate(std::string field, int ln, int col) {
-    if (members.find(field) != members.end()) {
-        return shared_from_this();
-    }
-    else {
-        if (prev.expired()) {
-            return this->prev.lock()->locate(field, ln, col);
-        }
-        else throw VMError::UnknownIdentifierError(field, ln, col);
-    }
+    return members.find(field) != members.end();
 }
 
 // Scope Manager
 
 sakora::ScopeManager::ScopeManager() {
-    currentScope = std::make_shared<Scope>();
-    globalScope = *currentScope;
+   scopeStorage.push_back(Scope());
 }
 
 void sakora::ScopeManager::createScope() {
-    auto newScope = std::make_shared<Scope>();
-    newScope->prev = currentScope;
-    currentScope->next = newScope;
-    currentScope = newScope;
+    scopeStorage.push_back(Scope());
 }
+
 void sakora::ScopeManager::removeScope() {
-    std::shared_ptr<Scope> prevScope = currentScope->prev.lock();
-    
-    if (prevScope) {
-        currentScope = prevScope;
-        currentScope->next = nullptr;
-    }
+    scopeStorage.pop_back();
 }
 
 sakora::Value& sakora::ScopeManager::get(std::string field, int ln, int col) {
-    return currentScope->locate(field, ln, col)->members[field];
+    if (!isExist(field))
+        throw VMError::UnknownIdentifierError(field, ln, col);
+    for (std::size_t i = scopeStorage.size() - 1; i > 0; i --) {
+        for (auto member : scopeStorage.at(i).members) {
+            if (member.first == field) return scopeStorage.at(i).members[field];
+        }
+    }
+}
+
+sakora::Scope& sakora::ScopeManager::getCurrent() {
+    return scopeStorage.at(scopeStorage.size() - 1);
+}
+
+sakora::Scope& sakora::ScopeManager::getGlobal() {
+    return scopeStorage.at(0);
+}
+
+bool sakora::ScopeManager::isExist(std::string field) {
+    for (std::size_t i = scopeStorage.size() - 1; i > 0; i --) {
+        for (auto member : scopeStorage.at(i).members) {
+            if (member.first == field) return true;
+        }
+    }
+    
+    return false;
+}
+
+void sakora::ScopeManager::declare(std::string name, sakora::Value val) {
+    if (isExist(name))
+        throw VMError::AlreadyIdentifierError(name, val.line, val.column);
+    getCurrent().members[name] = val;
 }

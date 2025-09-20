@@ -8,30 +8,29 @@
 
 namespace sakora {
     using memberPair = std::pair<std::string, Value>;
-    class Scope : public std::enable_shared_from_this<Scope> {
+    class Scope{
     public:
-        std::weak_ptr<Scope> prev; // 指针，指向上一个scope
-        std::shared_ptr<Scope> next = nullptr; // 指针，指向下一个scope
-
         std::map<std::string, Value> members;
 
         Scope()=default;
 
         bool isExist(std::string field);
-        std::shared_ptr<Scope> locate(std::string field, int ln, int col);
     };
 
     class ScopeManager {
     public:
-        Scope globalScope;
-        std::shared_ptr<Scope> currentScope;
+        std::vector<Scope> scopeStorage;
 
         ScopeManager();
 
+        Value& get(std::string field, int ln, int col);
+        Scope& getCurrent();
+        Scope& getGlobal();
+        bool isExist(std::string field);
+
         void createScope();
         void removeScope();
-
-        Value& get(std::string field, int ln, int col);
+        void declare(std::string name, Value val);
     };
 }
 
