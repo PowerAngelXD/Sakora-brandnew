@@ -7,7 +7,7 @@
 
 namespace sakora {
     // 表示sakora的基础类型
-    enum BasicType { Int, Float, String, Char, Bool, Null, Custom };
+    enum BasicType { Int, Float, String, Char, Bool, Null, Custom, Tid };
 
     struct ArrayModifier {
         int dimension = 0; // 数组维度

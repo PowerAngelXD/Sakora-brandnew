@@ -12,8 +12,12 @@ sakora::Value::Value(bool val, int ln, int col)
     : value(val), line(ln), column(col) {}
 sakora::Value::Value(StructValue stct_val, int ln, int col) 
     : value(std::make_shared<StructValue>(stct_val)), line(ln), column(col) {}
+sakora::Value::Value(IdenResult iden_result, int ln, int col) 
+    : value(iden_result), line(ln), column(col) {}
 sakora::Value::Value(int ln, int col)
     : value(nullptr), line(ln), column(col) {}
+sakora::Value::Value(TypeId type_id, int ln, int col)
+    : value(type_id), line(ln), column(col) {}
 
 int sakora::Value::getInt() {
     if (std::holds_alternative<int>(value))
@@ -50,6 +54,16 @@ sakora::ObjectPtr sakora::Value::getObject() {
         return std::get<ObjectPtr>(value);
     throw std::runtime_error("Type error: Expected Object at line " + std::to_string(line) + ", column " + std::to_string(column));
 }
+sakora::IdenResult sakora::Value::getIdenResult() {
+    if (std::holds_alternative<IdenResult>(value))
+        return std::get<IdenResult>(value);
+    throw std::runtime_error("Type error: Expected Identifier at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
+sakora::TypeId sakora::Value::getTypeIdValue() {
+    if (std::holds_alternative<TypeId>(value))
+        return std::get<TypeId>(value);
+    throw std::runtime_error("Type error: Expected TypeId at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
 void sakora::Value::intAssign(int i) {
     if (std::holds_alternative<int>(value))
         value = i;
@@ -79,6 +93,9 @@ void sakora::Value::boolAssign(bool b) {
         value = b;
     else
         throw std::runtime_error("Type error: Expected Bool at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
+void sakora::Value::appendCalling(std::string iden) {
+    std::get<IdenResult>(value).push_back(iden);
 }
 void sakora::Value::nullAssign() {
     if (std::holds_alternative<std::nullptr_t>(value))
@@ -144,6 +161,8 @@ sakora::TypeId sakora::Value::inferType() {
             return TypeId(BasicType::Bool);
         else if (std::holds_alternative<std::nullptr_t>(value))
             return TypeId(BasicType::Null);
+        else if (std::holds_alternative<TypeId>(value))
+            return TypeId(BasicType::Tid);
         else
             throw std::runtime_error("Unknown type at line " + std::to_string(line) + ", column " + std::to_string(column));
     }

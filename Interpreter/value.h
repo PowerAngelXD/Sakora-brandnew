@@ -13,12 +13,15 @@ namespace sakora {
 
     using ObjectPtr = std::shared_ptr<Object>;
 
+    using IdenResult = std::vector<std::string>;
+
     // 单值，不是结构
     // TODO: Object支持的时候需要对Value的其他函数进行修改
     class Value {
-        std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr> value;
-        int line, column;
+        std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr, IdenResult, TypeId> value;
     public:
+        int line, column;    
+
         Value()=default;
         
         Value(int val, int ln, int col);
@@ -27,6 +30,8 @@ namespace sakora {
         Value(char val, int ln, int col);
         Value(bool val, int ln, int col);
         Value(StructValue stct_val, int ln, int col);
+        Value(IdenResult iden_result, int ln, int col);
+        Value(TypeId type_id, int ln, int col);
         Value(int ln, int col); // 初始为Null
 
         int getInt();
@@ -36,12 +41,15 @@ namespace sakora {
         bool getBool();
         StructPtr getStruct();
         ObjectPtr getObject();
+        IdenResult getIdenResult();
+        TypeId getTypeIdValue();
 
         void intAssign(int i);
         void floatAssign(double f);
         void stringAssign(std::string s);
         void charAssign(char c);
         void boolAssign(bool b);
+        void appendCalling(std::string iden);
         void nullAssign();
 
         std::vector<int> inferLengthList(std::vector<Value> arr, std::vector<int> initd = {});
