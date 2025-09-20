@@ -140,28 +140,28 @@ void sakora::Visitor::visit(AST::BoolExprNode node) {
 
 void sakora::Visitor::visit(AST::PrimTypeExprNode node) {
     if (node.identifier->content == "int") {
-        make(CodeMaker::push(node.identifier->content, CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
+        make(CodeMaker::push(node.identifier->content + "|", CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
     }
     else if (node.identifier->content == "float") {
-        make(CodeMaker::push(node.identifier->content, CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
+        make(CodeMaker::push(node.identifier->content + "|", CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
     }
     else if (node.identifier->content == "string") {
-        make(CodeMaker::push(node.identifier->content, CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
+        make(CodeMaker::push(node.identifier->content + "|", CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
     }
     else if (node.identifier->content == "bool") {
-        make(CodeMaker::push(node.identifier->content, CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
+        make(CodeMaker::push(node.identifier->content + "|", CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
     }
     else if (node.identifier->content == "tid") {
-        make(CodeMaker::push(node.identifier->content, CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
+        make(CodeMaker::push(node.identifier->content + "|", CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
     }
     if (node.identifier->content == "char") {
-        make(CodeMaker::push(node.identifier->content, CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
+        make(CodeMaker::push(node.identifier->content + "|", CodeArgs::Push::TYPE, node.identifier->line, node.identifier->column));
     }
 }
 
 void sakora::Visitor::visit(AST::ArrayTypeExprNode node) {
     std::string result;
-    result += node.primType->identifier->content;
+    result += node.primType->identifier->content + "|array|";
     for (auto info : node.arrayInfos) {
         result += info->length->content;
     }
@@ -204,11 +204,11 @@ void sakora::Visitor::visit(AST::LetStmtNode node) {
 
 void sakora::Visitor::visit(AST::AssignStmtNode node) {
     visit(*node.expr);
-    visit(*node.iden);
+    visit(*node.iden, true);
     make(CodeMaker::assign(node.assignOp->line, node.assignOp->column));
 }
 
-void sakora::Visitor::visit(AST::BlockStmtNode node, bool jmpCond = false) {
+void sakora::Visitor::visit(AST::BlockStmtNode node, bool jmpCond) {
     BLK_START
         for (auto stmt : node.body) {
             visit(*stmt);
