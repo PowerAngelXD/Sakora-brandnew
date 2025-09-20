@@ -16,7 +16,7 @@ VMError::NotMatchedTypeError::NotMatchedTypeError(std::string s, int ln, int col
 
 void VMError::NotMatchedTypeError::print() {
     VM_ERROR_HEAD;
-    std::cout << "NotMatchedTypeError: Type not matched. Target operator: '" << src << "'" << std::endl;
+    std::cout << "NotMatchedTypeError: Type not matched. Target type: '" << src << "'" << std::endl;
 }
 
 VMError::NotTidyArrayError::NotTidyArrayError(int ln, int col)
