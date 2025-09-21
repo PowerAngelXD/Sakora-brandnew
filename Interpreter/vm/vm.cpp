@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "vm.h"
 
 inline sakora::Value svm::VMInstance::Pop() {
@@ -63,7 +64,9 @@ void svm::VMInstance::vmPush() {
         }
     }
     else if (codeArgs.at(1) == sakora::CodeArgs::Push::IDEN) {
-        runtimeStack.push(sakora::Value({s_val}, getCurrentCode().line, getCurrentCode().column));
+        sakora::IdenResult irt;
+        irt.push_back(s_val);
+        runtimeStack.push(sakora::Value(irt, getCurrentCode().line, getCurrentCode().column));
     }
     else if (codeArgs.at(1) == sakora::CodeArgs::Push::TYPE) {
         auto type_str = codeArgs.at(0);
@@ -122,6 +125,9 @@ void svm::VMInstance::vmPush() {
             else if (basic_type == "tid") 
                 runtimeStack.push(sakora::Value(sakora::TypeId(sakora::Tid), getCurrentCode().line, getCurrentCode().column));
         }
+    }
+    else if (codeArgs.at(1) == sakora::CodeArgs::Push::FLAG) {
+        runtimeStack.push(sakora::Value(sakora::FlagValue(codeArgs.at(0))));
     }
 }
 
@@ -235,10 +241,10 @@ void svm::VMInstance::vmDeclare() {
 }
 
 void svm::VMInstance::vmAssign() {
-    auto val = Pop();
     auto name = Pop().getIdenResult();
+    auto val = Pop();
     
-    auto code = getCurrentCode();
+     auto code = getCurrentCode();
     scopeMgr.get(name.at(0), code.line, code.column) = val; // TODO: 未来加入结构体之后这里需要修改
 }
 
@@ -267,11 +273,12 @@ void svm::VMInstance::vmEndScope() {
 
 void svm::VMInstance::vmJmptin() {
     auto cond = Pop();
+
     if (cond.getBool()); // 为真，进入block
     else {
         // 为假，跳过block
-        int st = 0;
-        while (true) {
+       int st = 0;
+       while (true) {
             nextCode();
             auto c = getCurrentCode();
             if (c.getOp() == sakora::BLOCK_START) st ++;
@@ -283,7 +290,12 @@ void svm::VMInstance::vmJmptin() {
 }
 
 void svm::VMInstance::vmJmpbck() {
+    if (runtimeStack.empty()) return;
+
     auto cond = Pop();
+
+    if (!cond.isBoolValue()) return;
+
     if (cond.getBool()) {
         // 为真，进入循环
         int st = 0;
@@ -295,8 +307,47 @@ void svm::VMInstance::vmJmpbck() {
 
             if (st == 0) break;
         }
+        backCode();
     }
     else {} // 为假，跳出循环
+}
+
+void svm::VMInstance::vmJmpnoflg_in() {
+    if (runtimeStack.empty()) return; // 为空，没有flag,进入block
+
+    auto cond = Pop();
+
+    if (cond.getFlagValue().content == codeArgs.at(0)) {
+        int st = 0;
+        while (true) {
+            nextCode();
+            auto c = getCurrentCode();
+            if (c.getOp() == sakora::BLOCK_START) st ++;
+            else if (c.getOp() == sakora::BLOCK_END) st --;
+
+            if (st == 0) break;
+        }
+    }
+    else {}
+}
+
+void svm::VMInstance::vmJmpflgin() {
+    if (runtimeStack.empty()) return; // 为空，没有flag,进入block
+
+    auto cond = Pop();
+
+    if (cond.getFlagValue().content == codeArgs.at(0)) {}
+    else {
+        int st = 0;
+        while (true) {
+            nextCode();
+            auto c = getCurrentCode();
+            if (c.getOp() == sakora::BLOCK_START) st ++;
+            else if (c.getOp() == sakora::BLOCK_END) st --;
+
+            if (st == 0) break;
+        }
+    }
 }
 //
 
@@ -388,6 +439,12 @@ void svm::VMInstance::start(bool isDebug) {
             vmJmpbck();
             break;
         case sakora::FLAG:
+            break;
+        case sakora::JFLGIN:
+            vmJmpflgin();
+            break;
+        case sakora::JNOFLG_IN:
+            vmJmpnoflg_in();
             break;
         
         default:
