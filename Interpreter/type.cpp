@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "type.h"
 
 sakora::TypeId::TypeId(BasicType t) : bType(t), arrMod(nullptr) {}
@@ -33,6 +34,8 @@ std::string sakora::TypeId::toString() {
         case Bool: res = "Bool"; break;
         case Null: res = "Null"; break;
         case Custom: res = "Custom"; break;
+        case Tid: res = "Tid"; break;
+        case Svmt: res = "Svmt"; break;
     }
     if (arrMod != nullptr) {
         res += "[";

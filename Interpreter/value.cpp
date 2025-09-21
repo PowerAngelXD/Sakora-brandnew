@@ -1,4 +1,9 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "value.h"
+
+sakora::FlagValue::FlagValue(std::string c) {
+    content = c;
+}
 
 sakora::Value::Value(int val, int ln, int col)
     : value(val), line(ln), column(col) {}
@@ -18,6 +23,8 @@ sakora::Value::Value(int ln, int col)
     : value(nullptr), line(ln), column(col) {}
 sakora::Value::Value(TypeId type_id, int ln, int col)
     : value(type_id), line(ln), column(col) {}
+sakora::Value::Value(FlagValue fv)
+    : value(fv), line(-1), column(-1) {}
 
 int sakora::Value::getInt() {
     if (std::holds_alternative<int>(value))
@@ -63,6 +70,17 @@ sakora::TypeId sakora::Value::getTypeIdValue() {
     if (std::holds_alternative<TypeId>(value))
         return std::get<TypeId>(value);
     throw std::runtime_error("Type error: Expected TypeId at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
+sakora::FlagValue sakora::Value::getFlagValue() {
+    if (std::holds_alternative<FlagValue>(value))
+        return std::get<FlagValue>(value);
+    throw std::runtime_error("Type error: Expected Flag at line " + std::to_string(line) + ", column " + std::to_string(column));
+}
+bool sakora::Value::isBoolValue() {
+    return std::holds_alternative<bool>(value);
+}
+bool sakora::Value::isFlagValue() {
+    return std::holds_alternative<FlagValue>(value);
 }
 void sakora::Value::intAssign(int i) {
     if (std::holds_alternative<int>(value))
@@ -390,6 +408,24 @@ sakora::Value sakora::Value::operator== (sakora::Value rval) {
             return sakora::Value(this->getFloat() == rval.getInt(), line, column);
         else if (std::holds_alternative<double>(rval.value))
             return sakora::Value(this->getFloat() == rval.getFloat(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<std::string>(value)) {
+        if (std::holds_alternative<std::string>(rval.value))
+            return sakora::Value(this->getString() == rval.getString(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<bool>(value)) {
+        if (std::holds_alternative<bool>(rval.value))
+            return sakora::Value(this->getBool() == rval.getBool(), line, column);
+        else
+            throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
+    }
+    else if (std::holds_alternative<TypeId>(value)) {
+        if (std::holds_alternative<TypeId>(rval.value))
+            return sakora::Value(this->getTypeIdValue() == rval.getTypeIdValue(), line, column);
         else
             throw std::runtime_error("Type error: Cannot compare type at line " + std::to_string(line) + ", column " + std::to_string(column));
     }

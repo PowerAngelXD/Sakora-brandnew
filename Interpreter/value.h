@@ -15,10 +15,18 @@ namespace sakora {
 
     using IdenResult = std::vector<std::string>;
 
+    class FlagValue {
+    public:
+        std::string svm_info = "SVM: 0.5.0";
+        std::string content = "";
+
+        FlagValue(std::string c);
+    };
+
     // 单值，不是结构
     // TODO: Object支持的时候需要对Value的其他函数进行修改
     class Value {
-        std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr, IdenResult, TypeId> value;
+        std::variant<int, double, std::string, char, bool, std::nullptr_t, StructPtr, ObjectPtr, IdenResult, TypeId, FlagValue> value;
     public:
         int line, column;    
 
@@ -32,6 +40,7 @@ namespace sakora {
         Value(StructValue stct_val, int ln, int col);
         Value(IdenResult iden_result, int ln, int col);
         Value(TypeId type_id, int ln, int col);
+        Value(FlagValue fv);
         Value(int ln, int col); // 初始为Null
 
         int getInt();
@@ -43,6 +52,10 @@ namespace sakora {
         ObjectPtr getObject();
         IdenResult getIdenResult();
         TypeId getTypeIdValue();
+        FlagValue getFlagValue();
+
+        bool isBoolValue();
+        bool isFlagValue();
 
         void intAssign(int i);
         void floatAssign(double f);
