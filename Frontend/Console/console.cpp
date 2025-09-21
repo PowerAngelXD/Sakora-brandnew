@@ -16,6 +16,7 @@ std::vector<std::string> sakoraConsole::sakConsole::split(std::string raw, char 
 }
 
 void sakoraConsole::sakConsole::run() {
+    std::cout << "GCC Version: " <<  __GNUC__ << "." << __GNUC_MINOR__ << "." << __GNUC_PATCHLEVEL__ << std::endl;
     std::cout << "Sakora REPL\nYou can type 'help' to get the help of this repl" << std::endl;
 
     svm::VMInstance mainVM;
