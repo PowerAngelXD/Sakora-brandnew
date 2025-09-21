@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "scope.h"
 
 bool sakora::Scope::isExist(std::string field) {
@@ -15,17 +16,19 @@ void sakora::ScopeManager::createScope() {
 }
 
 void sakora::ScopeManager::removeScope() {
-    scopeStorage.pop_back();
+    if (scopeStorage.size() != 1) scopeStorage.pop_back();
 }
 
 sakora::Value& sakora::ScopeManager::get(std::string field, int ln, int col) {
     if (!isExist(field))
         throw VMError::UnknownIdentifierError(field, ln, col);
-    for (std::size_t i = scopeStorage.size() - 1; i > 0; i --) {
-        for (auto member : scopeStorage.at(i).members) {
-            if (member.first == field) return scopeStorage.at(i).members[field];
+    for (std::size_t i = scopeStorage.size(); i > 0; i --) {
+        for (auto member : scopeStorage.at(i - 1).members) {
+            if (member.first == field) return scopeStorage.at(i - 1).members[field];
         }
     }
+
+    throw VMError::UnknownIdentifierError(field, ln, col);
 }
 
 sakora::Scope& sakora::ScopeManager::getCurrent() {
@@ -37,8 +40,8 @@ sakora::Scope& sakora::ScopeManager::getGlobal() {
 }
 
 bool sakora::ScopeManager::isExist(std::string field) {
-    for (std::size_t i = scopeStorage.size() - 1; i > 0; i --) {
-        for (auto member : scopeStorage.at(i).members) {
+    for (std::size_t i = scopeStorage.size(); i > 0; i --) {
+        for (auto member : scopeStorage.at(i - 1).members) {
             if (member.first == field) return true;
         }
     }
