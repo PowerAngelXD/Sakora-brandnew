@@ -3,12 +3,15 @@
 
 #include "../Frontend/Parser/parser.h"
 #include "instruction.h"
+#include <functional>
 
 
 #define BLK_START make(CodeMaker::blockStart());
 #define BLK_END make(CodeMaker::blockEnd());
 #define JMPTIN make(CodeMaker::jtin());
 #define JMPTBCK make(CodeMaker::jtbck());
+#define JFLGIN(target) make(CodeMaker::jflgin(target));
+#define JNOFLG_IN(target) make(CodeMaker::jnoflg_in(target));
 #define LGC_AND make(CodeMaker::lgcAnd());
 #define LGC_OR make(CodeMaker::lgcOr());
 #define LGC_EQU make(CodeMaker::lgcEqu());
@@ -26,6 +29,7 @@
 
 
 namespace sakora {
+    using Action = std::function<void()>;
     class Visitor {
     public:
         CodeSequence seq;
@@ -49,7 +53,8 @@ namespace sakora {
 
         void visit(AST::LetStmtNode node);
         void visit(AST::AssignStmtNode node);
-        void visit(AST::BlockStmtNode node, bool jmpCond = false);
+        void visit(AST::BlockStmtNode node, Action acts);
+        void visit(AST::BlockStmtNode node);
         void visit(AST::IfStmtNode node);
         void visit(AST::ElseStmtNode node);
         void visit(AST::MatchStmtNode node);

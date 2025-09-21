@@ -1,3 +1,4 @@
+#pragma GCC optimize(3,"Ofast","inline")
 #include "visitor.h"
 // Vistor
 
@@ -46,8 +47,9 @@ void sakora::Visitor::visit(AST::BasicIdentifierNode node, bool isPush) {
     else 
         make(CodeMaker::get(id->content, id->line, id->column));
 
-    if (node.selfOp)
+    if (node.selfOp) {
         make(CodeMaker::assign(id->line, id->column));
+    }
 }
 
 void sakora::Visitor::visit(AST::AtomIdentifierNode node, bool isPush) {
@@ -208,21 +210,29 @@ void sakora::Visitor::visit(AST::AssignStmtNode node) {
     make(CodeMaker::assign(node.assignOp->line, node.assignOp->column));
 }
 
-void sakora::Visitor::visit(AST::BlockStmtNode node, bool jmpCond) {
+void sakora::Visitor::visit(AST::BlockStmtNode node, Action acts) {
     BLK_START
         for (auto stmt : node.body) {
             visit(*stmt);
         }
-        if (jmpCond) 
-            make(CodeMaker::push("true", CodeArgs::Push::VAL, node.rightBrace->line, node.rightBrace->column));
+        acts();
+    BLK_END
+}
+
+void sakora::Visitor::visit(AST::BlockStmtNode node) {
+    BLK_START
+        for (auto stmt : node.body) {
+            visit(*stmt);
+        }
     BLK_END
 }
 
 void sakora::Visitor::visit(AST::IfStmtNode node) {
     visit(*node.condition);
     JMPTIN
-    visit(*node.bodyBlock, true);
-    LGC_NOT
+    visit(*node.bodyBlock, [&]() {
+        make(CodeMaker::push(VMFlags::CONTROL_FLOW_OVER, CodeArgs::Push::FLAG, node.bodyBlock->rightBrace->line, node.bodyBlock->rightBrace->column));
+    });
 
     if (node.elseStmt) {
         visit(*node.elseStmt);
@@ -231,49 +241,63 @@ void sakora::Visitor::visit(AST::IfStmtNode node) {
 
 
 void sakora::Visitor::visit(AST::ElseStmtNode node) {
-    JMPTIN
-    BLK_START
-        if (node.bodyBlock) {
-            visit(*node.bodyBlock);
-        }
-        else {
+    JNOFLG_IN(VMFlags::CONTROL_FLOW_OVER)
+    if (node.bodyBlock) {
+        visit(*node.bodyBlock);
+    }
+    else {
+        BLK_START
             visit(*node.stmt);
-        }
-    BLK_END
+        BLK_END
+    }
 }
 
 void sakora::Visitor::visit(AST::MatchStmtNode node) {
-    int count = 1;
-    for (auto block : node.matchBlocks) {
-        visit(*node.identifier);
-        visit(*block->caseExpr);
-        LGC_EQU
-        JMPTIN
-        visit(*block->bodyBlock, true);
-        LGC_NOT
-        JMPTIN
+    auto head_case = node.matchBlocks.at(0);
+
+    visit(*node.identifier);
+    visit(*head_case->caseExpr);
+    LGC_EQU
+    JMPTIN
+    visit(*head_case->bodyBlock, [&]() {
+        make(CodeMaker::push(VMFlags::CONTROL_FLOW_OVER, CodeArgs::Push::FLAG, head_case->bodyBlock->rightBrace->line, head_case->bodyBlock->rightBrace->column));
+    });
+    std::size_t i = 1;
+    for (; i < node.matchBlocks.size(); i ++) {
+        JNOFLG_IN(VMFlags::CONTROL_FLOW_OVER)
         BLK_START
-        count ++;
+            visit(*node.identifier);
+            visit(*node.matchBlocks.at(i)->caseExpr);
+            LGC_EQU
+            JMPTIN
+            visit(*node.matchBlocks.at(i)->bodyBlock, [&]() {
+                make(CodeMaker::push(VMFlags::CONTROL_FLOW_OVER, CodeArgs::Push::FLAG, head_case->bodyBlock->rightBrace->line, head_case->bodyBlock->rightBrace->column));
+            });
     }
 
-    for (int i = 0; i < count; i ++) {
-        BLK_END
+    if (node.defaultMark) {
+        // 存在default判断，进行visit
+        JNOFLG_IN(VMFlags::CONTROL_FLOW_OVER)
+        visit(*node.defaultBlock);
     }
+
+    for (std::size_t j = 1; j < i; j ++) 
+        BLK_END
 }
 
 void sakora::Visitor::visit(AST::WhileStmtNode node) {
     BLK_START
-        BLK_START
-            visit(*node.condition);
-            JMPTIN
-            visit(*node.bodyBlock, true);
-        BLK_END
-        JMPTBCK
+        visit(*node.condition);
+        JMPTIN
+        visit(*node.bodyBlock, [&]() {
+            make(CodeMaker::push("true", CodeArgs::Push::VAL, node.bodyBlock->rightBrace->line, node.bodyBlock->rightBrace->column));
+        });
     BLK_END
+    JMPTBCK
 }
 
 void sakora::Visitor::visit(AST::ExprStmtNode node) {
-    visit(*node.idenExpr);
+    visit(*node.idenExpr, true);
 }
 
 
