@@ -14,7 +14,7 @@ namespace sakora {
         ARR_MAKE, ARR_TIDY_CHK, 
         DECLARE, ASSIGN, GET, FROM, 
         BLOCK_START, BLOCK_END, 
-        FLAG, JTIN, JTBCK
+        FLAG, JTIN, JTBCK, JFLGIN, JNOFLG_IN
     };
 
     // 指令类，管理指令使用
@@ -47,6 +47,7 @@ namespace sakora {
            inline static std::string IDEN = "[IDEN]";
            inline static std::string TYPE = "[TYPE]"; 
            inline static std::string VAL = "[VAL]";
+           inline static std::string FLAG = "[FLAG]";
         };
 
         class Declare {
@@ -60,6 +61,11 @@ namespace sakora {
             inline static std::string INDEX = "[INDEX]";
             inline static std::string MEMBER = "[MEMBER]";
         };
+    };
+
+    class VMFlags {
+    public:
+        inline static std::string CONTROL_FLOW_OVER = "[CONTROL_FLOW_OVER]";
     };
 
     class CodeMaker {
@@ -89,6 +95,8 @@ namespace sakora {
         static VMCode flag(std::string flag_name);
         static VMCode jtin();
         static VMCode jtbck();
+        static VMCode jflgin(std::string target_flag);
+        static VMCode jnoflg_in(std::string target_flag);
     };
 }
 

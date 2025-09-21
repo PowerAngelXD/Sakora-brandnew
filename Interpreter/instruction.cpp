@@ -1,5 +1,5 @@
 
-
+#pragma GCC optimize(3,"Ofast","inline")
 #include "instruction.h"
 
 
@@ -31,7 +31,6 @@ std::string sakora::VMCode::getArg(int pos) {
 
 std::string sakora::VMCode::toString() {
     std::ostringstream oss;
-    oss << "Instruction(Op: ";
     switch (VMOp) {
         case PUSH: oss << "PUSH"; break;
         case ADD: oss << "ADD"; break;
@@ -58,13 +57,14 @@ std::string sakora::VMCode::toString() {
         case FLAG: oss << "FLAG"; break;
         case JTIN: oss << "JTIN"; break;
         case JTBCK: oss << "JTBCK"; break;
+        case JFLGIN: oss << "JFLGIN"; break;
+        case JNOFLG_IN: oss << "JNOFLG_IN"; break;
     }
-    oss << ", Line: " << line << ", Column: " << column << ", Args: [";
+    oss << " ";
     for (size_t i = 0; i < args.size(); ++i) {
         oss << args[i];
-        if (i < args.size() - 1) oss << ", ";
+        if (i < args.size() - 1) oss << " ";
     }
-    oss << "])";
     return oss.str();
 }
 
@@ -145,4 +145,10 @@ sakora::VMCode sakora::CodeMaker::jtin() {
 }
 sakora::VMCode sakora::CodeMaker::jtbck() {
     return VMCode(sakora::JTBCK, 0, 0, {});
+}
+sakora::VMCode sakora::CodeMaker::jflgin(std::string target_flag) {
+    return VMCode(sakora::JFLGIN, 0, 0, {target_flag});
+}
+sakora::VMCode sakora::CodeMaker::jnoflg_in(std::string target_flag) {
+    return VMCode(sakora::JNOFLG_IN, 0, 0, {target_flag});
 }
