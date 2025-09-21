@@ -1,0 +1,52 @@
+PUSH "who" [VAL]
+PUSH string| [TYPE]
+DECLARE a [HAS_TMOD]
+PUSH 0 [VAL]
+DECLARE i [NO_TMOD]
+BLOCK_START 
+    GET i
+    PUSH 20 [VAL]
+    LGC_LS_THAN 
+    JTIN 
+    BLOCK_START 
+        GET a
+        PUSH "who" [VAL]
+        LGC_EQU 
+        JTIN 
+        BLOCK_START 
+            PUSH "whowho" [VAL]
+            PUSH a [IDEN]
+            ASSIGN 
+            PUSH [CONTROL_FLOW_OVER] [FLAG]
+        BLOCK_END 
+        JNOFLG_IN [CONTROL_FLOW_OVER]
+        BLOCK_START 
+            GET a
+            PUSH "whowho" [VAL]
+            LGC_EQU 
+            JTIN 
+            BLOCK_START 
+                PUSH "hello" [VAL]
+                PUSH a [IDEN]
+                ASSIGN 
+                PUSH [CONTROL_FLOW_OVER] [FLAG]
+            BLOCK_END 
+            JNOFLG_IN [CONTROL_FLOW_OVER]
+            BLOCK_START 
+                GET a
+                PUSH " [] " [VAL]
+                ADD 
+                PUSH a [IDEN]
+                ASSIGN 
+            BLOCK_END 
+        BLOCK_END 
+    BLOCK_END 
+    GET i
+    PUSH 1 [VAL]
+    ADD 
+    PUSH i [IDEN]
+    ASSIGN 
+    PUSH true [VAL]
+BLOCK_END 
+BLOCK_END 
+JTBCK

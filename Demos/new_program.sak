@@ -1,6 +1,6 @@
 let a:string = "who";
 let i = 0;
-while (i < 200000) {
+while (i < 20) {
     match (a) {
         "who" => {
             a = "whowho";
@@ -8,19 +8,9 @@ while (i < 200000) {
         "whowho" => {
             a = "hello";
         }
-        "hello" => {
-            a += "world";
-        }
-        "hello world" => {
-            a += "what tf";
-        }
         default => {
-            a += " [X] ";
+            a += " [] ";
         }
-    }
-
-    if (i > 10) {
-        i += 5;
     }
     i ++;
 }
