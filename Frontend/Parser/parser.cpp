@@ -135,7 +135,7 @@ std::shared_ptr<AST::PrimExprNode> Parser::parsePrimExpr() {
         return node;
     }
     else if (isIdentifierExpr()) {
-        node->iden = parseIdentifierExpr();
+        node->idenExpr = parseIdentifierExpr();
         return node;
     }
     else {
@@ -471,7 +471,7 @@ std::shared_ptr<AST::AssignStmtNode> Parser::parseAssignStmt() {
         throw ParserError::WrongMatchError(peek().content, "Assign Statement", peek().line, peek().column);
     
     auto node = std::make_shared<AST::AssignStmtNode>();
-    node->iden = parseIdentifierExpr();
+    node->idenExpr = parseIdentifierExpr();
     node->assignOp = std::make_shared<Lexer::Token>(eat());
 
     if (!isWholeExpr()) 
@@ -556,7 +556,7 @@ std::shared_ptr<AST::MatchStmtNode> Parser::parseMatchStmt() {
 
     if (!isWholeExpr())
         throw ParserError::WrongMatchError(peek().content, "An expression", peek().line, peek().column);
-    node->identifier = parseIdentifierExpr();
+    node->idenExpr = parseIdentifierExpr();
 
     if (peek().content != ")")
         throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);

@@ -67,7 +67,7 @@ namespace AST {
         std::shared_ptr<Lexer::Token> prefixOp = nullptr;
 
         std::shared_ptr<Lexer::Token> literal = nullptr;
-        std::shared_ptr<IdentifierExprNode> iden = nullptr;
+        std::shared_ptr<IdentifierExprNode> idenExpr = nullptr;
         std::shared_ptr<ArrayExprNode> arrayExpr = nullptr;
         std::shared_ptr<WholeExprNode> wholeExpr = nullptr;
 
@@ -178,7 +178,7 @@ namespace AST {
 
     class AssignStmtNode : public Node {
     public:
-        std::shared_ptr<IdentifierExprNode> iden = nullptr;
+        std::shared_ptr<IdentifierExprNode> idenExpr = nullptr;
         std::shared_ptr<Lexer::Token> assignOp = nullptr;
         std::shared_ptr<WholeExprNode> expr = nullptr;
 
@@ -225,7 +225,7 @@ namespace AST {
     public:
         std::shared_ptr<Lexer::Token> matchMark = nullptr;
         std::shared_ptr<Lexer::Token> left = nullptr;
-        std::shared_ptr<IdentifierExprNode> identifier = nullptr;
+        std::shared_ptr<IdentifierExprNode> idenExpr = nullptr;
         std::shared_ptr<Lexer::Token> right = nullptr;
 
         std::shared_ptr<Lexer::Token> leftBrace = nullptr;
@@ -257,7 +257,17 @@ namespace AST {
         std::string toString() override;
     };
 
-    class RepeatStmtNode : public Node {};
+    class ForeachStmtNode : public Node {
+    public:
+        std::shared_ptr<Lexer::Token> foreachMark = nullptr;
+        std::shared_ptr<Lexer::Token> left = nullptr;
+
+        std::shared_ptr<Lexer::Token> letMark = nullptr;
+        std::shared_ptr<Lexer::Token> identifier = nullptr;
+        std::shared_ptr<Lexer::Token> fromMark = nullptr;
+        std::shared_ptr<WholeExprNode> expr = nullptr;
+
+    };
 
     class ExprStmtNode : public Node {
     public:

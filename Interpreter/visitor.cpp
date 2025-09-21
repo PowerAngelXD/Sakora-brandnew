@@ -79,8 +79,8 @@ void sakora::Visitor::visit(AST::PrimExprNode node) {
         visit(*node.wholeExpr);
     else if (node.arrayExpr)
         visit(*node.arrayExpr);
-    else if (node.iden) 
-        visit(*node.iden);
+    else if (node.idenExpr) 
+        visit(*node.idenExpr);
     else
         make(CodeMaker::push(node.literal->content, CodeArgs::Push::VAL, node.literal->line, node.literal->column));
 
@@ -206,7 +206,7 @@ void sakora::Visitor::visit(AST::LetStmtNode node) {
 
 void sakora::Visitor::visit(AST::AssignStmtNode node) {
     visit(*node.expr);
-    visit(*node.iden, true);
+    visit(*node.idenExpr, true);
     make(CodeMaker::assign(node.assignOp->line, node.assignOp->column));
 }
 
@@ -255,7 +255,7 @@ void sakora::Visitor::visit(AST::ElseStmtNode node) {
 void sakora::Visitor::visit(AST::MatchStmtNode node) {
     auto head_case = node.matchBlocks.at(0);
 
-    visit(*node.identifier);
+    visit(*node.idenExpr);
     visit(*head_case->caseExpr);
     LGC_EQU
     JMPTIN
@@ -266,7 +266,7 @@ void sakora::Visitor::visit(AST::MatchStmtNode node) {
     for (; i < node.matchBlocks.size(); i ++) {
         JNOFLG_IN(VMFlags::CONTROL_FLOW_OVER)
         BLK_START
-            visit(*node.identifier);
+            visit(*node.idenExpr);
             visit(*node.matchBlocks.at(i)->caseExpr);
             LGC_EQU
             JMPTIN

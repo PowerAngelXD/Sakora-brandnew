@@ -69,8 +69,8 @@ std::string AST::PrimExprNode::toString() {
         return prefix + "(" + wholeExpr->toString() + ")";
     } else if (arrayExpr) {
         return prefix + "(" + arrayExpr->toString() + ")";
-    } else if (iden) {
-        return prefix + "(" + iden->toString() + ")";
+    } else if (idenExpr) {
+        return prefix + "(" + idenExpr->toString() + ")";
     }
     return "<PrimExprNode: null>";
 }
@@ -199,7 +199,7 @@ std::string AST::LetStmtNode::toString() {
 std::string AST::AssignStmtNode::toString() {
     std::ostringstream oss;
     oss << "<AssignStmtNode: ";
-    oss << iden->toString() << " ";
+    oss << idenExpr->toString() << " ";
     oss << assignOp->content << " ";
     oss << expr->toString();
     oss << ">";
@@ -246,7 +246,7 @@ std::string AST::MatchStmtNode::toString() {
     std::ostringstream oss;
     oss << "MatchStmtNode(";
     if (matchMark) oss << "matchMark: " << matchMark->toString() << ", ";
-    if (identifier) oss << "iden: " << identifier->toString() << ", ";
+    if (idenExpr) oss << "iden: " << idenExpr->toString() << ", ";
     oss << "matchBlocks: [";
     for (size_t i = 0; i < matchBlocks.size(); ++i) {
         const auto& block = matchBlocks[i];
