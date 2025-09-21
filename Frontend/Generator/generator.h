@@ -104,11 +104,6 @@ public:
      */
     void generate(AST::IfStmtNode node);
     /**
-     * 生成else if语句相关指令
-     * Generate instructions for else-if statement
-     */
-    void generate(AST::ElseIfStmtNode node);
-    /**
      * 生成else语句相关指令
      * Generate instructions for else statement
      */

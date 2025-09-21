@@ -227,25 +227,8 @@ std::string AST::IfStmtNode::toString() {
     if (ifMark) oss << "ifMark: " << ifMark->toString() << ", ";
     if (condition) oss << "condition: " << condition->toString() << ", ";
     if (bodyBlock) oss << "bodyBlock: " << bodyBlock->toString() << ", ";
-    oss << "elseIfs: [";
-    for (size_t i = 0; i < elseIfstmts.size(); ++i) {
-        if (elseIfstmts[i]) oss << elseIfstmts[i]->toString();
-        if (i + 1 < elseIfstmts.size()) oss << ", ";
-    }
-    oss << "], ";
     if (elseStmt) oss << "elseStmt: " << elseStmt->toString();
     oss << ")";
-    return oss.str();
-}
-
-std::string AST::ElseIfStmtNode::toString() {
-    std::ostringstream oss;
-    oss << "ElseIfStmtNode(";
-    if (elseMark) oss << elseMark->toString() << ", ";
-    if (ifMark) oss << ifMark->toString() << ", ";
-    if (condition) oss << "condition: " << condition->toString() << ", ";
-    if (bodyBlock) oss << "bodyBlock: " << bodyBlock->toString();
-    oss << ")"; 
     return oss.str();
 }
 
@@ -301,7 +284,6 @@ std::string AST::ExprStmtNode::toString() {
 std::string AST::StmtNode::toString() {
     if (letStmt) return letStmt->toString();
     else if (ifStmt) return ifStmt->toString();
-    else if (elseIfStmt) return elseIfStmt->toString();
     else if (elseStmt) return elseStmt->toString();
     else if (blockStmt) return blockStmt->toString();
     else if (matchStmt) return matchStmt->toString();

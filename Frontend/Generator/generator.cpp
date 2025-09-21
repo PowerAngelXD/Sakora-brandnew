@@ -311,24 +311,10 @@ void Generator::generate(AST::IfStmtNode node) {
 
     insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[Finish-out]", node.ifMark->line, node.ifMark->column)}));
 
-    if (!node.elseIfstmts.empty()) {
-        for (auto elseIfStmt : node.elseIfstmts) {
-            generate(*elseIfStmt);
-        }
-    }
-
     if (node.elseStmt) {
         generate(*node.elseStmt);
     }
     insSet.emplace_back(INS::genIns(INS::END_SCOPE, node.right->line, node.right->column, {sakValue::createStringVal("[Tag=IfGroupEnd]", node.ifMark->line, node.ifMark->column)}));
-}
-void Generator::generate(AST::ElseIfStmtNode node) {
-    generate(*node.condition);
-    insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[True-in]", node.ifMark->line, node.ifMark->column)}));
-    
-    generate(*node.bodyBlock, true);
-    
-    insSet.emplace_back(INS::genIns(INS::JMP, node.ifMark->line, node.ifMark->column, {sakValue::createStringVal("[Finish-out]", node.ifMark->line, node.ifMark->column)}));
 }
 void Generator::generate(AST::ElseStmtNode node) {
     generate(*node.bodyBlock, true);

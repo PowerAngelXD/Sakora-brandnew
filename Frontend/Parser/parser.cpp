@@ -413,7 +413,7 @@ bool Parser::isIfStmt() {
 }
 
 bool Parser::isElseStmt() {
-    return peek().content == "else" && peek(1).content == "{";
+    return peek().content == "else";
 }
 
 bool Parser::isMatchStmt() {
@@ -522,9 +522,7 @@ std::shared_ptr<AST::IfStmtNode> Parser::parseIfStmt() {
 
     node->bodyBlock = parseBlockStmt();
 
-    if (isElseStmt()) {
-        node->elseStmt = parseElseStmt();
-    }
+    if (isElseStmt()) node->elseStmt = parseElseStmt();
 
     return node;
 }
@@ -645,7 +643,6 @@ std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
     if (isLetStmt()) stmt->letStmt = parseLetStmt();
     else if (isAssignStmt()) stmt->assignStmt = parseAssignStmt();
     else if (isIfStmt()) stmt->ifStmt = parseIfStmt();
-    else if (isElseStmt()) stmt->elseStmt = parseElseStmt();
     else if (isBlockStmt()) stmt->blockStmt = parseBlockStmt();
     else if (isMatchStmt()) stmt->matchStmt = parseMatchStmt();
     else if (isWhileStmt()) stmt->whileStmt = parseWhileStmt();

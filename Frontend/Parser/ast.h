@@ -197,20 +197,6 @@ namespace AST {
     };
 
     // Stage1
-    class ElseIfStmtNode : public Node {
-    public:
-        std::shared_ptr<Lexer::Token> elseMark = nullptr;
-        std::shared_ptr<Lexer::Token> ifMark = nullptr;
-
-        std::shared_ptr<Lexer::Token> left = nullptr;
-        std::shared_ptr<BoolExprNode> condition = nullptr;
-        std::shared_ptr<Lexer::Token> right = nullptr;
-
-        std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
-
-        std::string toString() override;
-    };
-
     class ElseStmtNode : public Node {
     public:
         std::shared_ptr<Lexer::Token> elseMark = nullptr;
@@ -230,7 +216,6 @@ namespace AST {
 
         std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
 
-        std::vector<std::shared_ptr<ElseIfStmtNode>> elseIfstmts;
         std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
 
         std::string toString() override;
@@ -295,7 +280,6 @@ namespace AST {
         std::shared_ptr<LetStmtNode> letStmt = nullptr;
         std::shared_ptr<AssignStmtNode> assignStmt = nullptr;
         std::shared_ptr<IfStmtNode> ifStmt = nullptr;
-        std::shared_ptr<ElseIfStmtNode> elseIfStmt = nullptr;
         std::shared_ptr<ElseStmtNode> elseStmt = nullptr;
         std::shared_ptr<BlockStmtNode> blockStmt = nullptr;
         std::shared_ptr<MatchStmtNode> matchStmt = nullptr;
