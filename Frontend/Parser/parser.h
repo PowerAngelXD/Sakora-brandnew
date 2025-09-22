@@ -72,6 +72,7 @@ public:
     bool isMatchStmt();       // match匹配语句检查 / Match statement check
     bool isWhileStmt();       // while循环语句检查 / While statement check
     bool isExprStmt();        // 表达式语句检查 / Expression statement check
+    bool isForeachStmt();     // foreach语句检查 / Foreach statement check
 
     // 解析器 / Parsers
     std::shared_ptr<AST::LetStmtNode> parseLetStmt();                // 解析let声明语句 / Parse let declaration
@@ -82,6 +83,7 @@ public:
     std::shared_ptr<AST::MatchStmtNode> parseMatchStmt();          // 解析match匹配语句 / Parse match statement
     std::shared_ptr<AST::WhileStmtNode> parseWhileStmt();          // 解析while循环语句 / Parse while statement
     std::shared_ptr<AST::ExprStmtNode> parseExprStmt();            // 解析表达式语句 / Parse expression statement
+    std::shared_ptr<AST::ForeachStmtNode> parseForeachStmt();      // 解析Foreach语句 / Parser foreach statement
     
 
     // 最终解析器 / Final Parser

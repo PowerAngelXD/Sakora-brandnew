@@ -276,6 +276,14 @@ std::string AST::WhileStmtNode::toString() {
     return oss.str();
 }
 
+std::string AST::ForeachStmtNode::toString() {
+    std::ostringstream oss;
+    oss << "ForeachStmtNode(";
+    if (identifier) oss << "identifier: " << identifier->toString() << ", ";
+    if (expr) oss << "expr: " << expr->toString() << ", ";
+    if (bodyBlock) oss << "body: " << bodyBlock->toString();
+}
+
 std::string AST::ExprStmtNode::toString() {
     if (idenExpr) return "ExprStmtNode(" + idenExpr->toString() + ")";
     return "<ExprStmtNode: null>";
@@ -289,6 +297,7 @@ std::string AST::StmtNode::toString() {
     else if (matchStmt) return matchStmt->toString();
     else if (whileStmt) return whileStmt->toString();
     else if (exprStmt) return exprStmt->toString();
+    else if (forEachStmt) return forEachStmt->toString();
     else return assignStmt->toString();
 }
 

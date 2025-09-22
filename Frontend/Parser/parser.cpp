@@ -428,6 +428,10 @@ bool Parser::isExprStmt() {
     return isIdentifierExpr() && !isAssignStmt();
 }
 
+bool Parser::isForeachStmt() {
+    return peek().content == "foreach";
+}
+
 
 std::shared_ptr<AST::LetStmtNode> Parser::parseLetStmt() {
     if (!isLetStmt())
@@ -632,9 +636,44 @@ std::shared_ptr<AST::ExprStmtNode> Parser::parseExprStmt() {
     return node;
 }
 
+std::shared_ptr<AST::ForeachStmtNode> Parser::parseForeachStmt() {
+    if (!isForeachStmt())
+        throw ParserError::WrongMatchError(peek().content, "\"foreach\"", peek().line, peek().column);
+
+    auto node = std::make_shared<AST::ForeachStmtNode>();
+    node->foreachMark = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().content != "(")
+        throw ParserError::WrongMatchError(peek().content, "'('", peek().line, peek().column);
+    node->left = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().content != "let")
+        throw ParserError::WrongMatchError(peek().content, "\"let\"", peek().line, peek().column);
+    node->letMark = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().type != Lexer::Identifier)
+        throw ParserError::WrongMatchError(peek().content, "Identifier", peek().line, peek().column);
+    node->identifier = std::make_shared<Lexer::Token>(eat());
+
+    if (peek().content != ":")
+        throw ParserError::WrongMatchError(peek().content, "':'", peek().line, peek().column);
+    node->fromMark = std::make_shared<Lexer::Token>(eat());
+
+    node->expr = parseWholeExpr();
+
+    if (peek().content != ")")
+        throw ParserError::WrongMatchError(peek().content, "')'", peek().line, peek().column);
+    node->right = std::make_shared<Lexer::Token>(eat());
+
+    node->bodyBlock = parseBlockStmt();
+
+    return node;
+}
+
 
 bool Parser::isStmt() {
-    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseStmt() || isBlockStmt() || isMatchStmt() || isWhileStmt() || isExprStmt();
+    return isLetStmt() || isAssignStmt() ||isIfStmt() || isElseStmt() || isBlockStmt() || isMatchStmt() || isWhileStmt() || isExprStmt()
+           || isForeachStmt();
 }
 
 std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
@@ -647,6 +686,7 @@ std::shared_ptr<AST::StmtNode> Parser::parseStmt() {
     else if (isMatchStmt()) stmt->matchStmt = parseMatchStmt();
     else if (isWhileStmt()) stmt->whileStmt = parseWhileStmt();
     else if (isExprStmt()) stmt->exprStmt = parseExprStmt();
+    else if (isForeachStmt()) stmt->forEachStmt = parseForeachStmt();
     else throw ParserError::WrongMatchError(peek().content, "Statement", peek().line, peek().column);
     return stmt;
 }

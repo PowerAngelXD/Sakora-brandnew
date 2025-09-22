@@ -267,6 +267,11 @@ namespace AST {
         std::shared_ptr<Lexer::Token> fromMark = nullptr;
         std::shared_ptr<WholeExprNode> expr = nullptr;
 
+        std::shared_ptr<Lexer::Token> right = nullptr;
+        
+        std::shared_ptr<BlockStmtNode> bodyBlock = nullptr;
+
+        std::string toString() override;
     };
 
     class ExprStmtNode : public Node {
@@ -295,6 +300,7 @@ namespace AST {
         std::shared_ptr<MatchStmtNode> matchStmt = nullptr;
         std::shared_ptr<WhileStmtNode> whileStmt = nullptr;
         std::shared_ptr<ExprStmtNode> exprStmt = nullptr;
+        std::shared_ptr<ForeachStmtNode> forEachStmt = nullptr;
 
         std::string toString() override;
     };
