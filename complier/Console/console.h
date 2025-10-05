@@ -9,8 +9,6 @@
 #include "../Frontend/Parser/parser.h"
 
 namespace sakoraConsole {
-    static std::string version = "ALPHA 0.1";
-
     class sakConsole {
     public:
         std::string instanceName;

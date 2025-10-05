@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include "../../Error/LexerError.h"
+#include "includes/magic_enum.hpp"
 
 /**
  * Sakora 词法分析器头文件

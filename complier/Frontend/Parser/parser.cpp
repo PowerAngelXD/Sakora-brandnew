@@ -5,8 +5,7 @@ Parser::Parser(Lexer::TokenSequence s) {
     seq = s;
 }
 
-const Lexer::Token& Parser::peek(int offset)
-{
+const Lexer::Token& Parser::peek(int offset) {
     return seq.at(index + offset);
 }
 

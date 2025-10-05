@@ -7,34 +7,7 @@ void Lexer::Token::print() {
 
 std::string Lexer::Token::toString() {
     std::string typeStr;
-    switch (type)
-    {
-    case Lexer::Identifier:
-        typeStr = "Identifier";
-        break;
-    case Lexer::Symbol:
-        typeStr = "Symbol";
-        break;
-    case Lexer::Number:
-        typeStr = "Number";
-        break;
-    case Lexer::Keyword: 
-        typeStr = "Keyword";    
-        break;
-    case Lexer::String:
-        typeStr = "String";
-        break;
-    case Lexer::Char:
-        typeStr = "Char";
-        break;
-    case Lexer::EndFlag:
-        typeStr = "EndFlag";
-        break;
-
-    default:
-        typeStr = "Unknown";
-        break;
-    }
+    typeStr = magic_enum::enum_name(type);
     return "<" + typeStr + ", " + content + ">";
 }
 
