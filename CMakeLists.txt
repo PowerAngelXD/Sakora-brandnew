@@ -59,4 +59,5 @@ file(GLOB SRC_FILES "main.cpp"
 add_executable(${CMAKE_PROJECT_NAME} ${SRC_FILES})
 
 include_directories(${LLVM_INCLUDE_DIRS})
+include_directories(${PROJECT_SOURCE_DIR})
 target_link_libraries(${CMAKE_PROJECT_NAME} PRIVATE ${llvm_components_list})
