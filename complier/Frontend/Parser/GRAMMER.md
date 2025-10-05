@@ -24,8 +24,11 @@ wholeExpr -> addExpr | boolExpr
 ```
 LetStatement -> 'let' identifier (':' typeExpr) '=' wholeExpr ';'
 AssignStatement -> identifierExpr '=' wholeExpr ';'
-IfStatement -> 'if' '('boolExpr')' '{' (Stmt)* '}'
-ElseIfStatement -> 'else' 'if' '('boolExpr')' '{' (Stmt)* '}'
-ElseStatement -> 'else' '{' (Stmt)* '}'
-Stmt -> LetStatement | AssignStatement | IfStatement
+IfStatement -> 'if' '('boolExpr')' BlockStatement | Stmt
+ElseIfStatement -> 'else' 'if' '('boolExpr')' BlockStatement | Stmt
+ElseStatement -> 'else' BlockStatement | Stmt
+WhileStatement -> 'while' '(' boolExpr ')' BlockStatement | Stmt
+MatchStatement -> 'match' '(' IdentifierExpr ')' '{' (wholeExpr '=>' (Stmt | BlockStatement))* ('default' '=>' (Stmt | BlockStatement)) '}'
+BlockStatement -> '{' (Stmt)* '}'
+Stmt -> LetStatement | AssignStatement | IfStatement | WhileStatement | MatchStatement
 ```

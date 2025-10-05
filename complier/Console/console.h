@@ -5,10 +5,8 @@
 #include <vector>
 #include <fstream>
 #include <chrono>
-#include "../Lexer/lexer.h"
-#include "../Parser/parser.h"
-#include "../../Interpreter/visitor.h"
-#include "../../Interpreter/vm/vm.h"
+#include "../Frontend/Lexer/lexer.h"
+#include "../Frontend/Parser/parser.h"
 
 namespace sakoraConsole {
     static std::string version = "ALPHA 0.1";

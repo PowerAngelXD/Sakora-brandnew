@@ -282,6 +282,8 @@ std::string AST::ForeachStmtNode::toString() {
     if (identifier) oss << "identifier: " << identifier->toString() << ", ";
     if (expr) oss << "expr: " << expr->toString() << ", ";
     if (bodyBlock) oss << "body: " << bodyBlock->toString();
+
+    return oss.str();
 }
 
 std::string AST::ExprStmtNode::toString() {
